@@ -1,5 +1,5 @@
 export const environment = {
     production: false,
-    baseUrl: 'https://masseru.com'
+    baseUrl: 'http://localhost:3000'
   };
   

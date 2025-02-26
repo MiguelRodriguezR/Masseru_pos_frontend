@@ -7,9 +7,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
 
 const routes: Routes = [
-  { path: 'login', component: LoginComponent },
+  { path: '', component: LoginComponent },
   { path: 'register', component: RegisterComponent }
 ];
 
@@ -25,6 +26,7 @@ const routes: Routes = [
     MatInputModule,
     MatButtonModule,
     MatSelectModule,
+    MatIconModule,
     RouterModule.forChild(routes)
   ]
 })
