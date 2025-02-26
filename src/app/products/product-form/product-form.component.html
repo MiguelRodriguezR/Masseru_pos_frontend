@@ -1,0 +1,61 @@
+<div class="product-form">
+    <h2>{{ isEdit ? 'Editar' : 'Crear' }} Producto</h2>
+    <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="fill">
+        <mat-label>Nombre</mat-label>
+        <input matInput formControlName="name">
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Código de Barras</mat-label>
+        <input matInput formControlName="barcode">
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Precio de Venta</mat-label>
+        <input matInput type="number" formControlName="salePrice">
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Costo de Compra</mat-label>
+        <input matInput type="number" formControlName="purchaseCost">
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Cantidad</mat-label>
+        <input matInput type="number" formControlName="quantity">
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Descripción</mat-label>
+        <textarea matInput formControlName="description"></textarea>
+      </mat-form-field>
+      <div formArrayName="images">
+        <h3>Imágenes</h3>
+        <div *ngFor="let image of images.controls; let i=index">
+          <mat-form-field appearance="fill">
+            <mat-label>URL Imagen</mat-label>
+            <input matInput [formControlName]="i">
+          </mat-form-field>
+          <button mat-button color="warn" (click)="removeImage(i)" type="button">Eliminar Imagen</button>
+        </div>
+        <button mat-button color="primary" (click)="addImage()" type="button">Agregar Imagen</button>
+      </div>
+      <div formArrayName="variants">
+        <h3>Variantes</h3>
+        <div *ngFor="let variant of variants.controls; let i=index" [formGroupName]="i">
+          <mat-form-field appearance="fill">
+            <mat-label>Color</mat-label>
+            <input matInput formControlName="color">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Tamaño</mat-label>
+            <input matInput formControlName="size">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Cantidad</mat-label>
+            <input matInput type="number" formControlName="quantity">
+          </mat-form-field>
+          <button mat-button color="warn" (click)="removeVariant(i)" type="button">Eliminar Variante</button>
+        </div>
+        <button mat-button color="primary" (click)="addVariant()" type="button">Agregar Variante</button>
+      </div>
+      <button mat-raised-button color="primary" type="submit">{{ isEdit ? 'Actualizar' : 'Crear' }}</button>
+    </form>
+  </div>
+  

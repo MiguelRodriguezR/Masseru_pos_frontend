@@ -1,0 +1,15 @@
+<div *ngIf="sale">
+    <h2>Detalles de la Venta</h2>
+    <p>Fecha: {{ sale.saleDate | date:'short' }}</p>
+    <p>Total: {{ sale.totalAmount }}</p>
+    <div>
+      <h3>Artículos</h3>
+      <ul>
+        <li *ngFor="let item of sale.items">
+          Producto: {{ item.productId }} - Cantidad: {{ item.quantity }}
+          <span *ngIf="item.variant"> - Variante: {{ item.variant.color }} / {{ item.variant.size }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+  

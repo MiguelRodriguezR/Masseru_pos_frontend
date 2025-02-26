@@ -1,0 +1,11 @@
+<div *ngIf="receipt">
+    <mat-card>
+      <mat-card-title>Recibo de Venta</mat-card-title>
+      <mat-card-content>
+        <p>ID Venta: {{ receipt.sale }}</p>
+        <pre>{{ receipt.receiptData | json }}</pre>
+        <p>Fecha: {{ receipt.createdAt | date:'short' }}</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  

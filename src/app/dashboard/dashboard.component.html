@@ -1,0 +1,36 @@
+<div class="dashboard">
+    <h1>Dashboard</h1>
+    <div class="stats">
+      <mat-card>
+        <mat-card-title>Total Ventas</mat-card-title>
+        <mat-card-content>{{ totalSales }}</mat-card-content>
+      </mat-card>
+      <mat-card>
+        <mat-card-title>Total Ganancias</mat-card-title>
+        <mat-card-content>{{ totalProfit }}</mat-card-content>
+      </mat-card>
+    </div>
+    <div class="filters">
+      <form>
+        <mat-form-field appearance="fill">
+          <mat-label>Fecha Inicio</mat-label>
+          <input matInput type="date" [(ngModel)]="filter.startDate" name="startDate">
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Fecha Fin</mat-label>
+          <input matInput type="date" [(ngModel)]="filter.endDate" name="endDate">
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>ID Producto</mat-label>
+          <input matInput [(ngModel)]="filter.productId" name="productId">
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="getStats()">Filtrar</button>
+      </form>
+    </div>
+    <div class="sales-table">
+      <table mat-table [dataSource]="sales">
+        <!-- Define las columnas según necesites -->
+      </table>
+    </div>
+  </div>
+  

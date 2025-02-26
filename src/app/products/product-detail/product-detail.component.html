@@ -1,0 +1,23 @@
+<div *ngIf="product">
+    <h2>{{ product.name }}</h2>
+    <p>Código de Barras: {{ product.barcode }}</p>
+    <p>Precio de Venta: {{ product.salePrice }}</p>
+    <p>Costo de Compra: {{ product.purchaseCost }}</p>
+    <p>Cantidad: {{ product.quantity }}</p>
+    <p>Descripción: {{ product.description }}</p>
+    <div *ngIf="product.images && product.images.length">
+      <h3>Imágenes:</h3>
+      <div *ngFor="let img of product.images">
+        <img [src]="img" alt="{{ product.name }}" width="100">
+      </div>
+    </div>
+    <div *ngIf="product.variants && product.variants.length">
+      <h3>Variantes:</h3>
+      <ul>
+        <li *ngFor="let variant of product.variants">
+          Color: {{ variant.color }}, Talla: {{ variant.size }}, Cantidad: {{ variant.quantity }}
+        </li>
+      </ul>
+    </div>
+  </div>
+  
