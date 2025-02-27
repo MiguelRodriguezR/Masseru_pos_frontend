@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { FilterPipe } from './filter.pipe';
+import { SharedModule } from '../shared/shared.module';
 
 const routes: Routes = [
   { path: '', component: PosComponent }
@@ -20,7 +21,8 @@ const routes: Routes = [
     MatButtonModule,
     MatInputModule,
     MatTableModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    SharedModule
   ]
 })
 export class PosModule { }

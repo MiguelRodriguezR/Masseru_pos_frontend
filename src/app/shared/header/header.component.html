@@ -1,0 +1,25 @@
+<mat-toolbar class="header-toolbar">
+  <div class="header-left">
+    <button mat-icon-button (click)="goToAppMenu()" aria-label="Go to app menu">
+      <mat-icon>apps</mat-icon>
+    </button>
+  </div>
+  
+  <div class="header-right">
+    <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-button">
+      <span class="username">{{ currentUser?.name || 'User' }}</span>
+      <mat-icon>arrow_drop_down</mat-icon>
+    </button>
+    
+    <mat-menu #userMenu="matMenu" xPosition="before">
+      <button mat-menu-item (click)="editProfile()">
+        <mat-icon>edit</mat-icon>
+        <span>Edit Profile</span>
+      </button>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>exit_to_app</mat-icon>
+        <span>Log Out</span>
+      </button>
+    </mat-menu>
+  </div>
+</mat-toolbar>

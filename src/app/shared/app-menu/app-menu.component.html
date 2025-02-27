@@ -1,0 +1,11 @@
+<div class="app-menu-container">
+  <h1 class="app-menu-title">Masseru POS</h1>
+  <div class="app-menu-grid">
+    <div class="menu-item" *ngFor="let item of menuItems" (click)="navigateTo(item.route)">
+      <div class="menu-icon-container">
+        <mat-icon>{{ item.icon }}</mat-icon>
+      </div>
+      <div class="menu-item-name">{{ item.name }}</div>
+    </div>
+  </div>
+</div>

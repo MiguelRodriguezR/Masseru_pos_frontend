@@ -5,6 +5,7 @@ import { SaleDetailComponent } from './sale-detail/sale-detail.component';
 import { RouterModule, Routes } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
+import { SharedModule } from '../shared/shared.module';
 
 const routes: Routes = [
   { path: '', component: SaleListComponent },
@@ -20,7 +21,8 @@ const routes: Routes = [
     CommonModule,
     MatTableModule,
     MatButtonModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    SharedModule
   ]
 })
 export class SalesModule { }

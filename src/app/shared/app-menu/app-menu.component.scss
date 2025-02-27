@@ -1,0 +1,124 @@
+$soft-purple: #9370DB;
+$soft-purple-light: #B19CD9;
+$soft-purple-dark: #7B68EE;
+$white: #ffffff;
+
+.app-menu-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  background-image: linear-gradient(135deg, rgba($soft-purple, 0.1) 0%, rgba($soft-purple, 0.05) 100%);
+}
+
+.app-menu-title {
+  color: $soft-purple-dark;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  font-weight: 500;
+}
+
+.app-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 500px;
+}
+
+.menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+  
+  &:hover {
+    transform: translateY(-5px);
+    
+    .menu-icon-container {
+      background-color: $soft-purple;
+      box-shadow: 0 8px 16px rgba($soft-purple-dark, 0.3);
+      .mat-icon{
+        color: $white;
+      }
+    }
+  }
+}
+
+.menu-icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80px;
+  height: 80px;
+  background-color: $white;
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
+  
+  mat-icon {
+    font-size: 36px;
+    height: 36px;
+    width: 36px;
+    color: $soft-purple;
+  }
+}
+
+.menu-item-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #333;
+  text-align: center;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .app-menu-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .menu-icon-container {
+    width: 70px;
+    height: 70px;
+    
+    mat-icon {
+      font-size: 30px;
+      height: 30px;
+      width: 30px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .app-menu-container {
+    padding: 1rem;
+  }
+  
+  .app-menu-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .app-menu-grid {
+    gap: 1rem;
+  }
+  
+  .menu-icon-container {
+    width: 60px;
+    height: 60px;
+    
+    mat-icon {
+      font-size: 24px;
+      height: 24px;
+      width: 24px;
+    }
+  }
+  
+  .menu-item-name {
+    font-size: 0.8rem;
+  }
+}

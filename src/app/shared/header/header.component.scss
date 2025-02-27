@@ -1,0 +1,66 @@
+$soft-purple: #9370DB;
+$soft-purple-light: #B19CD9;
+$soft-purple-dark: #7B68EE;
+$white: #ffffff;
+
+.header-toolbar {
+  background-color: $soft-purple;
+  color: $white;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 64px;
+}
+
+.header-left, .header-right {
+  display: flex;
+  align-items: center;
+}
+
+.user-menu-button {
+  display: flex;
+  align-items: center;
+  color: $white;
+  font-weight: 500;
+  
+  .username {
+    margin-right: 4px;
+  }
+  
+  mat-icon {
+    font-size: 20px;
+    height: 20px;
+    width: 20px;
+  }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .header-toolbar {
+    height: 56px;
+    padding: 0 12px;
+  }
+  
+  .user-menu-button {
+    .username {
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .header-toolbar {
+    height: 48px;
+    padding: 0 8px;
+  }
+  
+  .user-menu-button {
+    .username {
+      max-width: 80px;
+    }
+  }
+}

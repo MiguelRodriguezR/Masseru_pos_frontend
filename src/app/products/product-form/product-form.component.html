@@ -1,3 +1,4 @@
+<app-header></app-header>
 <div class="product-form">
     <h2>{{ isEdit ? 'Editar' : 'Crear' }} Producto</h2>
     <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
@@ -58,4 +59,3 @@
       <button mat-raised-button color="primary" type="submit">{{ isEdit ? 'Actualizar' : 'Crear' }}</button>
     </form>
   </div>
-  

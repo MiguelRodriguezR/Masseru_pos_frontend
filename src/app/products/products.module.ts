@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
+import { SharedModule } from '../shared/shared.module';
 
 const routes: Routes = [
   { path: '', component: ProductListComponent },
@@ -31,7 +32,8 @@ const routes: Routes = [
     MatInputModule,
     MatButtonModule,
     MatSelectModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    SharedModule
   ]
 })
 export class ProductsModule { }

@@ -1,3 +1,4 @@
+<app-header></app-header>
 <div class="sale-list">
     <h2>Ventas</h2>
     <table mat-table [dataSource]="sales" class="mat-elevation-z8">
@@ -19,4 +20,3 @@
       <tr mat-row *matRowDef="let row; columns: ['saleDate','totalAmount','actions']"></tr>
     </table>
   </div>
-  
