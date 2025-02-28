@@ -48,8 +48,13 @@ $white: #ffffff;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    
     }
   }
+}
+
+.mat-mdc-button:not(:disabled) {
+    color: rgb(255 255 255 / 87%) !important;
 }
 
 @media (max-width: 480px) {

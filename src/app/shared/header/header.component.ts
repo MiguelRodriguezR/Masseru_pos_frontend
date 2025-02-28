@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
 import { User } from '../../users/user.model';
+import { UserDataService } from '../user-data.service';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -12,24 +13,36 @@ import { User } from '../../users/user.model';
 })
 export class HeaderComponent implements OnInit {
   currentUser: User | null = null;
-  baseUrl = environment.baseUrl;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private router: Router,
     private authService: AuthService,
-    private http: HttpClient
+    private userDataService: UserDataService
   ) {}
 
   ngOnInit(): void {
-    this.getCurrentUser();
+    this.loadUserData();
+    
+    // Subscribe to user data changes
+    this.userDataService.currentUser$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(user => {
+        this.currentUser = user;
+      });
   }
 
-  getCurrentUser(): void {
-    const token = this.authService.getToken();
-    if (token) {
-      this.http.get<User>(`${this.baseUrl}/api/users/me`).subscribe(
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  loadUserData(): void {
+    const userData = this.userDataService.loadUserData();
+    if (userData) {
+      userData.pipe(takeUntil(this.destroy$)).subscribe(
         (user) => {
-          this.currentUser = user;
+          // User data is already set via the subscription to currentUser$
         },
         (error) => {
           console.error('Error fetching current user:', error);
@@ -43,8 +56,9 @@ export class HeaderComponent implements OnInit {
   }
 
   editProfile(): void {
-    if (this.currentUser && this.currentUser._id) {
-      this.router.navigate(['/users', this.currentUser._id]);
+    const userId = this.userDataService.getUserId();
+    if (userId) {
+      this.router.navigate(['/users', userId]);
     }
   }
 
