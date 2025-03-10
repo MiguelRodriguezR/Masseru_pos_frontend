@@ -51,7 +51,9 @@
         <button mat-raised-button class="action-button disc-btn">
           <span>Descuento</span>
         </button>
-        <button mat-raised-button class="action-button qty-btn" (click)="updateQuantity()">
+        <button mat-raised-button class="action-button qty-btn" 
+                [class.selected]="isQuantityButtonSelected"
+                (click)="toggleQuantityButton()">
           <span>Cantidad</span>
         </button>
         <button mat-raised-button class="action-button price-btn">
@@ -77,9 +79,21 @@
           <button mat-raised-button class="numpad-btn" (click)="addDigit(9)">9</button>
         </div>
         <div class="numpad-row">
-          <button mat-raised-button class="numpad-btn">+/-</button>
+          <button mat-raised-button class="numpad-btn" 
+                  *ngIf="selectedCartItem && isQuantityButtonSelected"
+                  (click)="removeFromCart(selectedCartItem)" 
+                  class="remove-btn">
+            <mat-icon>delete</mat-icon>
+          </button>
+          <button mat-raised-button class="numpad-btn" *ngIf="!(selectedCartItem && isQuantityButtonSelected)">+/-</button>
           <button mat-raised-button class="numpad-btn" (click)="addDigit(0)">0</button>
-          <button mat-raised-button class="numpad-btn">.</button>
+          <button mat-raised-button class="numpad-btn" 
+                  *ngIf="selectedCartItem && isQuantityButtonSelected"
+                  (click)="deleteDigit()" 
+                  class="backspace-btn">
+            <mat-icon>backspace</mat-icon>
+          </button>
+          <button mat-raised-button class="numpad-btn" *ngIf="!(selectedCartItem && isQuantityButtonSelected)">.</button>
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
 import { PosSessionService } from '../pos-session.service';
@@ -29,6 +29,7 @@ export class PosSessionComponent implements OnInit, OnDestroy {
   errorMessage: string = '';
   selectedCartItem: CartItem | null = null;
   quantityInput = new FormControl(1);
+  isQuantityButtonSelected: boolean = false;
   
   // Totals
   total: number = 0;
@@ -43,11 +44,37 @@ export class PosSessionComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Get session ID from route params
-    this.route.params.subscribe(params => {
+    const subscription = this.route.params.subscribe(params => {
       this.sessionId = params['id'];
       this.loadSessionData();
       this.loadProducts();
     });
+    this.subscriptions.push(subscription);
+  }
+
+  /**
+   * Handle keyboard events for quantity input and item removal
+   */
+  @HostListener('window:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent): void {
+    // Only process keyboard events when a cart item is selected and quantity button is selected
+    if (this.selectedCartItem && this.isQuantityButtonSelected) {
+      if (/^[0-9]$/.test(event.key)) {
+        // Handle numeric keys
+        this.addDigit(parseInt(event.key, 10));
+        event.preventDefault();
+      } else if (event.key === 'Backspace') {
+        // Handle backspace key to delete last digit
+        this.deleteDigit();
+        event.preventDefault();
+      } else if (event.key === 'Delete') {
+        // Handle delete key to remove item
+        this.removeFromCart(this.selectedCartItem);
+        this.selectedCartItem = null;
+        this.isQuantityButtonSelected = false;
+        event.preventDefault();
+      }
+    }
   }
 
   /**
@@ -136,9 +163,21 @@ export class PosSessionComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Update quantity of selected cart item
+   * Toggle quantity button selection
    */
-  updateQuantity(): void {
+  toggleQuantityButton(): void {
+    this.isQuantityButtonSelected = !this.isQuantityButtonSelected;
+    
+    // If turning off quantity mode, update the quantity
+    if (!this.isQuantityButtonSelected && this.selectedCartItem) {
+      this.applyQuantityChange();
+    }
+  }
+
+  /**
+   * Apply quantity change to selected cart item
+   */
+  applyQuantityChange(): void {
     if (this.selectedCartItem) {
       const newQuantity = this.quantityInput.value || 1;
       this.selectedCartItem.quantity = newQuantity;
@@ -151,9 +190,39 @@ export class PosSessionComponent implements OnInit, OnDestroy {
    * Add digit to quantity input
    */
   addDigit(digit: number): void {
+    if (!this.selectedCartItem || !this.isQuantityButtonSelected) {
+      return;
+    }
+    
     const currentValue = this.quantityInput.value || 0;
     const newValue = Number(`${currentValue}${digit}`);
     this.quantityInput.setValue(newValue);
+    
+    // Apply the change immediately for real-time update
+    this.applyQuantityChange();
+  }
+
+  /**
+   * Delete last digit from quantity input
+   */
+  deleteDigit(): void {
+    if (!this.selectedCartItem || !this.isQuantityButtonSelected) {
+      return;
+    }
+    
+    const currentValue = this.quantityInput.value?.toString() || '0';
+    
+    if (currentValue.length <= 1) {
+      // If only one digit, set to 0 (minimum quantity)
+      this.quantityInput.setValue(0);
+    } else {
+      // Remove last digit
+      const newValue = Number(currentValue.slice(0, -1));
+      this.quantityInput.setValue(newValue);
+    }
+    
+    // Apply the change immediately for real-time update
+    this.applyQuantityChange();
   }
 
   /**

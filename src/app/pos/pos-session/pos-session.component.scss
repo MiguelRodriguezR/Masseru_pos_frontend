@@ -266,6 +266,11 @@
   .qty-btn {
     background-color: $success-color;
     color: white;
+    
+    &.selected {
+      background-color: darken($success-color, 20%);
+      box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+    }
   }
   
   .price-btn {
@@ -289,6 +294,16 @@
     height: 50px;
     font-size: 1.2rem;
     background-color: white;
+    
+    &.remove-btn {
+      background-color: $error-color;
+      color: white;
+    }
+    
+    &.backspace-btn {
+      background-color: $warning-color;
+      color: white;
+    }
   }
 }
 
