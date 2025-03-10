@@ -54,26 +54,4 @@
       </button>
     </div>
   </div>
-
-  <!-- POS interface (hidden until session is selected) -->
-  <div *ngIf="products.length > 0" class="pos-interface">
-    <div class="product-search">
-      <input matInput placeholder="Buscar producto" [(ngModel)]="searchTerm">
-    </div>
-    <div class="product-list">
-      <div *ngFor="let product of products | filter:searchTerm">
-        <p>{{ product.name }} - {{ product.salePrice }}</p>
-        <button mat-button color="primary" (click)="addToCart(product)">Agregar al carrito</button>
-      </div>
-    </div>
-    <div class="cart">
-      <h3>Carrito</h3>
-      <ul>
-        <li *ngFor="let item of cart">
-          Producto ID: {{ item.productId }} - Cantidad: {{ item.quantity }}
-        </li>
-      </ul>
-      <button mat-raised-button color="accent" (click)="checkout()">Realizar Venta</button>
-    </div>
-  </div>
 </div>

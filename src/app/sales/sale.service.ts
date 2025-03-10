@@ -20,7 +20,11 @@ export class SaleService {
     return this.http.get<Sale>(`${this.baseUrl}/api/sales/${id}`);
   }
 
-  createSale(saleData: { items: any[] }): Observable<any> {
+  createSale(saleData: { 
+    items: any[], 
+    paymentMethod: string, 
+    paymentAmount: number 
+  }): Observable<any> {
     return this.http.post(`${this.baseUrl}/api/sales`, saleData);
   }
 

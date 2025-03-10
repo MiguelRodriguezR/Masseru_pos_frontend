@@ -1,0 +1,111 @@
+<div class="payment-container">
+  <!-- Header with back button and title -->
+  <div class="payment-header">
+    <button mat-button class="back-button" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+      Volver
+    </button>
+    <h1 class="payment-title">Pago</h1>
+  </div>
+
+  <!-- Main content area -->
+  <div class="payment-content">
+    <!-- Left side: Payment methods and summary -->
+    <div class="left-section">
+      <!-- Payment method selection -->
+      <div class="payment-method-section">
+        <h2 class="section-title">METODO DE PAGO</h2>
+        <div class="payment-methods">
+          <div class="payment-method-option" 
+               [class.selected]="selectedPaymentMethod === 'cash'"
+               (click)="selectPaymentMethod('cash')">
+            Efectivo
+          </div>
+          <div class="payment-method-option" 
+               [class.selected]="selectedPaymentMethod === 'credit_card'"
+               (click)="selectPaymentMethod('credit_card')">
+            Tarjeta de Credito
+          </div>
+          <div class="payment-method-option disabled">
+            Banco/Nequi
+          </div>
+          <!-- <div class="payment-method-option disabled">
+            
+          </div> -->
+        </div>
+      </div>
+
+      <!-- Payment summary -->
+      <div class="payment-summary">
+        <h2 class="section-title">RESUMEN</h2>
+        <div class="summary-item" *ngIf="paymentAmount > 0">
+          <span class="summary-label">{{ selectedPaymentMethod === 'cash' ? 'Efectivo' : 'Credito' }}</span>
+          <span class="summary-amount">{{ paymentAmount | currency:'$ ':'symbol':'1.0-0' }}</span>
+          <button mat-icon-button class="remove-button" (click)="clearAmount()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Validate payment button -->
+      <div class="validate-button-container">
+        <button mat-raised-button 
+                class="validate-button" 
+                [disabled]="paymentAmount < total || isProcessing"
+                (click)="validatePayment()">
+          <mat-icon>arrow_forward</mat-icon>
+          Validar
+        </button>
+      </div>
+    </div>
+
+    <!-- Right side: Amount display and numpad -->
+    <div class="right-section">
+      <!-- Amount display -->
+      <div class="amount-display">
+        <div class="amount-row">
+          <div class="amount-label">Faltante</div>
+          <div class="amount-value">{{ remainingAmount | currency:'$ ':'symbol':'1.0-0' }}</div>
+        </div>
+        <div class="amount-row">
+          <div class="amount-label">Cambio</div>
+          <div class="amount-value">{{ changeAmount | currency:'$ ':'symbol':'1.0-0' }}</div>
+        </div>
+        <div class="amount-row total-row">
+          <div class="amount-label">Total</div>
+          <div class="amount-value">{{ total | currency:'$ ':'symbol':'1.0-0' }}</div>
+        </div>
+      </div>
+
+      <!-- Numpad -->
+      <div class="numpad">
+        <div class="numpad-row">
+          <button mat-raised-button class="numpad-btn" (click)="addDigit(1)">1</button>
+          <button mat-raised-button class="numpad-btn" (click)="addDigit(2)">2</button>
+          <button mat-raised-button class="numpad-btn" (click)="addDigit(3)">3</button>
+          <button mat-raised-button class="numpad-btn amount-btn" (click)="addAmount(5000)">+ $5,000</button>
+        </div>
+        <div class="numpad-row">
+          <button mat-raised-button class="numpad-btn" (click)="addDigit(4)">4</button>
+          <button mat-raised-button class="numpad-btn" (click)="addDigit(5)">5</button>
+          <button mat-raised-button class="numpad-btn" (click)="addDigit(6)">6</button>
+          <button mat-raised-button class="numpad-btn amount-btn" (click)="addAmount(10000)">+ $10,000</button>
+        </div>
+        <div class="numpad-row">
+          <button mat-raised-button class="numpad-btn" (click)="addDigit(7)">7</button>
+          <button mat-raised-button class="numpad-btn" (click)="addDigit(8)">8</button>
+          <button mat-raised-button class="numpad-btn" (click)="addDigit(9)">9</button>
+          <button mat-raised-button class="numpad-btn amount-btn" (click)="addAmount(50000)">+ $50,000</button>
+        </div>
+        <div class="numpad-row">
+          <button mat-raised-button class="numpad-btn" (click)="clearAmount()">+/-</button>
+          <button mat-raised-button class="numpad-btn" (click)="addDigit(0)">0</button>
+          <button mat-raised-button class="numpad-btn">.</button>
+          <button mat-raised-button class="numpad-btn backspace-btn" (click)="deleteLastDigit()">
+            <mat-icon>backspace</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

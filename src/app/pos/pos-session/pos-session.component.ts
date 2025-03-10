@@ -5,6 +5,7 @@ import { PosSessionService } from '../pos-session.service';
 import { ProductService } from '../../products/product.service';
 import { CartItem } from '../models/cart-item.model';
 import { Subscription } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-pos-session',
@@ -48,6 +49,14 @@ export class PosSessionComponent implements OnInit, OnDestroy {
       this.sessionId = params['id'];
       this.loadSessionData();
       this.loadProducts();
+      
+      // Check if we have cart items in the state (coming back from payment)
+      const state = history.state;
+      if (state && state.preserveCart && state.cartItems && state.cartItems.length > 0) {
+        console.log('Restoring cart items from state:', state.cartItems);
+        this.cartItems = state.cartItems;
+        this.updateTotals();
+      }
     });
     this.subscriptions.push(subscription);
   }
@@ -245,33 +254,105 @@ export class PosSessionComponent implements OnInit, OnDestroy {
    * Proceed to payment
    */
   proceedToPayment(): void {
-    // This will be implemented later
+    if (this.cartItems.length === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Carrito vacío',
+        text: 'Debe agregar productos al carrito antes de proceder al pago'
+      });
+      return;
+    }
+    
     console.log('Proceeding to payment with items:', this.cartItems);
+    
+    // Create a deep copy of the cart items to avoid reference issues
+    const cartItemsCopy = JSON.parse(JSON.stringify(this.cartItems));
+    
+    // Navigate to payment component with session ID
+    this.router.navigate(['/pos/payment', this.sessionId], {
+      state: {
+        cartItems: cartItemsCopy,
+        total: this.total,
+        taxes: this.taxes
+      }
+    });
   }
 
   /**
    * Close POS session
    */
   closeSession(): void {
-    // Default values for closing the session
-    const actualCash = this.sessionData?.initialCash || 0;
+    // Get initial cash amount from session data
+    const initialCash = this.sessionData?.initialCash || 0;
     
-    const subscription = this.posSessionService.closeSession(
-      this.sessionId,
-      actualCash,
-      'Sesión cerrada desde la interfaz POS'
-    ).subscribe({
-      next: (response) => {
-        console.log('Sesión POS cerrada correctamente:', response);
-        this.router.navigate(['/pos']);
-      },
-      error: (error) => {
-        console.error('Error al cerrar la sesión POS:', error);
-        this.errorMessage = 'Error al cerrar la sesión POS. Por favor, intente nuevamente.';
+    Swal.fire({
+      title: 'Cerrar Caja',
+      html: `
+        <div class="swal-cash-close">
+          <p>Cantidad inicial: ${initialCash.toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</p>
+          <div class="swal-input-group">
+            <label for="swal-actual-cash">Cantidad final de dinero en caja</label>
+            <input id="swal-actual-cash" type="number" class="swal2-input" value="${initialCash}" min="0" step="1000">
+          </div>
+          <div class="swal-input-group">
+            <label for="swal-notes">Notas adicionales</label>
+            <textarea id="swal-notes" class="swal2-textarea" placeholder="Ingrese notas adicionales sobre el cierre de caja"></textarea>
+          </div>
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: 'Cerrar Caja',
+      cancelButtonText: 'Cancelar',
+      focusConfirm: false,
+      preConfirm: () => {
+        const actualCashInput = document.getElementById('swal-actual-cash') as HTMLInputElement;
+        const notesInput = document.getElementById('swal-notes') as HTMLTextAreaElement;
+        
+        const actualCash = Number(actualCashInput.value);
+        const notes = notesInput.value;
+        
+        if (isNaN(actualCash) || actualCash < 0) {
+          Swal.showValidationMessage('Por favor ingrese una cantidad válida de dinero');
+          return false;
+        }
+        
+        return { actualCash, notes };
+      }
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        const { actualCash, notes } = result.value;
+        
+        const subscription = this.posSessionService.closeSession(
+          this.sessionId,
+          actualCash,
+          notes || 'Sesión cerrada desde la interfaz POS'
+        ).subscribe({
+          next: (response) => {
+            console.log('Sesión POS cerrada correctamente:', response);
+            Swal.fire({
+              icon: 'success',
+              title: 'Caja Cerrada',
+              text: 'La sesión de POS ha sido cerrada correctamente',
+              timer: 2000,
+              showConfirmButton: false
+            }).then(() => {
+              this.router.navigate(['/pos']);
+            });
+          },
+          error: (error) => {
+            console.error('Error al cerrar la sesión POS:', error);
+            this.errorMessage = 'Error al cerrar la sesión POS. Por favor, intente nuevamente.';
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Error al cerrar la sesión POS. Por favor, intente nuevamente.'
+            });
+          }
+        });
+        
+        this.subscriptions.push(subscription);
       }
     });
-    
-    this.subscriptions.push(subscription);
   }
 
   /**

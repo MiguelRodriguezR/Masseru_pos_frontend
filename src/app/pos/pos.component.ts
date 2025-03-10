@@ -1,6 +1,4 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ProductService } from '../products/product.service';
-import { SaleService } from '../sales/sale.service';
 import { PosSessionService } from './pos-session.service';
 import { UserDataService } from '../shared/user-data.service';
 import { Router } from '@angular/router';
@@ -26,8 +24,6 @@ export class PosComponent implements OnInit, OnDestroy {
   errorMessage: string = '';
 
   constructor(
-    private productService: ProductService, 
-    private saleService: SaleService,
     private posSessionService: PosSessionService,
     private userDataService: UserDataService,
     private router: Router
@@ -148,36 +144,6 @@ export class PosComponent implements OnInit, OnDestroy {
   viewPosSessionDetails(): void {
     // Navigate to POS session details page (to be implemented)
     console.log('Ver detalles de sesiones POS');
-  }
-
-  loadProducts() {
-    const subscription = this.productService.getProducts().subscribe({
-      next: (data) => this.products = data,
-      error: (err) => console.error(err)
-    });
-    
-    // Add subscription to the array for later cleanup
-    this.subscriptions.push(subscription);
-  }
-
-  addToCart(product: any) {
-    // Lógica simple: se agrega el producto con cantidad 1
-    this.cart.push({ productId: product._id, quantity: 1 });
-  }
-
-  checkout() {
-    if(this.cart.length > 0) {
-      const subscription = this.saleService.createSale({ items: this.cart }).subscribe({
-        next: (res) => {
-          alert('Venta realizada');
-          this.cart = [];
-        },
-        error: (err) => console.error(err)
-      });
-      
-      // Add subscription to the array for later cleanup
-      this.subscriptions.push(subscription);
-    }
   }
   
   /**

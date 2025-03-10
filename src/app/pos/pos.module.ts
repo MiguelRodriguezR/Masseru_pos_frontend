@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PosComponent } from './pos.component';
 import { PosSessionComponent } from './pos-session/pos-session.component';
+import { PaymentComponent } from './payment/payment.component';
 import { RouterModule, Routes } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -17,13 +18,15 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 
 const routes: Routes = [
   { path: '', component: PosComponent },
-  { path: 'session/:id', component: PosSessionComponent }
+  { path: 'session/:id', component: PosSessionComponent },
+  { path: 'payment/:sessionId', component: PaymentComponent }
 ];
 
 @NgModule({
   declarations: [
     PosComponent, 
     PosSessionComponent, 
+    PaymentComponent,
     FilterPipe
   ],
   imports: [
