@@ -1,0 +1,126 @@
+<div class="pos-session-container">
+  <!-- Header with session info and close button -->
+  <div class="pos-header">
+    <div class="session-info">
+      <h2>Punto de Pago</h2>
+      <div class="session-time">
+        <span class="session-number">{{sessionId}}</span>
+        <span class="session-clock">12:10</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button mat-raised-button color="warn" (click)="closeSession()">Close</button>
+    </div>
+  </div>
+
+  <!-- Main content area -->
+  <div class="pos-content">
+    <!-- Left side: Cart, action buttons and numpad -->
+    <div class="left-section">
+      <!-- Cart items list -->
+      <div class="cart-items">
+        <div *ngFor="let item of cartItems" 
+             class="cart-item"
+             [class.selected]="selectedCartItem === item"
+             (click)="selectCartItem(item)">
+          <div class="item-details">
+            <span class="item-name">{{ item.name }}</span>
+            <span class="item-quantity">{{ item.quantity }} {{ item.unitOfMeasure }} a {{ item.unitPrice | currency:'$ ':'symbol':'1.0-0' }} / {{ item.unitOfMeasure }}</span>
+          </div>
+          <div class="item-price">{{ item.totalPrice | currency:'$ ':'symbol':'1.0-0' }}</div>
+        </div>
+      </div>
+
+      <!-- Cart totals -->
+      <div class="cart-totals">
+        <div class="total-line">
+          <span>Total:</span>
+          <span>{{ total | currency:'$ ':'symbol':'1.0-0' }}</span>
+        </div>
+        <div class="taxes-line">
+          <span>Iva:</span>
+          <span>{{ taxes | currency:'$ ':'symbol':'1.0-0' }}</span>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="action-buttons">
+        <button mat-raised-button class="action-button customer-btn">
+          <span>Cliente</span>
+        </button>
+        <button mat-raised-button class="action-button disc-btn">
+          <span>Descuento</span>
+        </button>
+        <button mat-raised-button class="action-button qty-btn" (click)="updateQuantity()">
+          <span>Cantidad</span>
+        </button>
+        <button mat-raised-button class="action-button price-btn">
+          <span>Precio</span>
+        </button>
+      </div>
+
+      <!-- Numpad -->
+      <div class="numpad">
+        <div class="numpad-row">
+          <button mat-raised-button class="numpad-btn" (click)="addDigit(1)">1</button>
+          <button mat-raised-button class="numpad-btn" (click)="addDigit(2)">2</button>
+          <button mat-raised-button class="numpad-btn" (click)="addDigit(3)">3</button>
+        </div>
+        <div class="numpad-row">
+          <button mat-raised-button class="numpad-btn" (click)="addDigit(4)">4</button>
+          <button mat-raised-button class="numpad-btn" (click)="addDigit(5)">5</button>
+          <button mat-raised-button class="numpad-btn" (click)="addDigit(6)">6</button>
+        </div>
+        <div class="numpad-row">
+          <button mat-raised-button class="numpad-btn" (click)="addDigit(7)">7</button>
+          <button mat-raised-button class="numpad-btn" (click)="addDigit(8)">8</button>
+          <button mat-raised-button class="numpad-btn" (click)="addDigit(9)">9</button>
+        </div>
+        <div class="numpad-row">
+          <button mat-raised-button class="numpad-btn">+/-</button>
+          <button mat-raised-button class="numpad-btn" (click)="addDigit(0)">0</button>
+          <button mat-raised-button class="numpad-btn">.</button>
+        </div>
+      </div>
+
+      <!-- Payment button -->
+      <div class="payment-button">
+        <button mat-raised-button color="primary" class="pay-btn" (click)="proceedToPayment()">
+          <mat-icon>payment</mat-icon>
+          Pagar
+        </button>
+      </div>
+    </div>
+
+    <!-- Right side: Products grid -->
+    <div class="right-section">
+      <!-- Navigation and search -->
+      <div class="navigation-bar">
+        <button mat-icon-button>
+          <mat-icon>home</mat-icon>
+        </button>
+        <div class="breadcrumb">
+          Productos de belleza
+        </div>
+        <div class="search-box">
+          <input type="text" placeholder="Buscar productos" [(ngModel)]="searchTerm">
+          <mat-icon>search</mat-icon>
+        </div>
+      </div>
+
+      <!-- Products grid -->
+      <div class="products-grid">
+        <div *ngFor="let product of products | filter:searchTerm" 
+             class="product-card"
+             (click)="addToCart(product)">
+          <div class="product-price">{{ product.salePrice | currency:'$ ':'symbol':'1.0-0' }}</div>
+          <div class="product-image">
+            <img *ngIf="product.images && product.images.length" [src]="product.images[0]" alt="{{ product.name }}">
+            <div *ngIf="!product.images || !product.images.length" class="no-image">Sin imagen</div>
+          </div>
+          <div class="product-name">{{ product.name }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

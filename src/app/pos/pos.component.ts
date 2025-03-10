@@ -80,18 +80,36 @@ export class PosComponent implements OnInit, OnDestroy {
    * Continue with existing POS session
    */
   continuePosSession(): void {
-    // Navigate to POS session page (to be implemented)
-    console.log('Continuando con la sesión POS existente:', this.sessionData._id);
-    this.loadProducts(); // For now, just load products
+    if (this.sessionData && this.sessionData._id) {
+      this.router.navigate(['/pos/session', this.sessionData._id]);
+    } else {
+      this.errorMessage = 'No se pudo obtener la información de la sesión.';
+    }
   }
 
   /**
    * Create a new POS session
    */
   createPosSession(): void {
-    // Navigate to create POS session page (to be implemented)
-    console.log('Creando nueva sesión POS');
-    this.loadProducts(); // For now, just load products
+    // Default initial cash value - this could be a form input in a real app
+    const initialCash = 100000;
+    
+    const subscription = this.posSessionService.openSession(initialCash).subscribe({
+      next: (response) => {
+        if (response && response.session && response.session._id) {
+          this.router.navigate(['/pos/session', response.session._id]);
+        } else {
+          this.errorMessage = 'Error al crear la sesión POS.';
+        }
+      },
+      error: (error) => {
+        console.error('Error al crear la sesión POS:', error);
+        this.errorMessage = 'Error al crear la sesión POS. Por favor, intente nuevamente.';
+      }
+    });
+    
+    // Add subscription to the array for later cleanup
+    this.subscriptions.push(subscription);
   }
 
   /**
