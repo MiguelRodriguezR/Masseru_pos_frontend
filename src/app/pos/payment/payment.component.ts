@@ -171,7 +171,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Error al procesar la venta. Por favor, intente nuevamente.'
+          text: 'Error al procesar la venta: ' + error.error.msg
         });
       }
     });
