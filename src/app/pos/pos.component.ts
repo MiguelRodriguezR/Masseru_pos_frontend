@@ -5,6 +5,7 @@ import { PosSessionService } from './pos-session.service';
 import { UserDataService } from '../shared/user-data.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-pos',
@@ -91,25 +92,54 @@ export class PosComponent implements OnInit, OnDestroy {
    * Create a new POS session
    */
   createPosSession(): void {
-    // Default initial cash value - this could be a form input in a real app
-    const initialCash = 100000;
-    
-    const subscription = this.posSessionService.openSession(initialCash).subscribe({
-      next: (response) => {
-        if (response && response.session && response.session._id) {
-          this.router.navigate(['/pos/session', response.session._id]);
-        } else {
-          this.errorMessage = 'Error al crear la sesión POS.';
-        }
+    Swal.fire({
+      title: 'Cantidad inicial de dinero',
+      input: 'number',
+      inputLabel: 'Ingrese la cantidad inicial de dinero en caja',
+      inputPlaceholder: 'Cantidad en pesos',
+      inputAttributes: {
+        min: '0',
+        step: '1000'
       },
-      error: (error) => {
-        console.error('Error al crear la sesión POS:', error);
-        this.errorMessage = 'Error al crear la sesión POS. Por favor, intente nuevamente.';
+      showCancelButton: true,
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+      inputValidator: (value) => {
+        if (!value) {
+          return 'Debe ingresar una cantidad';
+        }
+        if (Number(value) < 0) {
+          return 'La cantidad no puede ser negativa';
+        }
+        return null;
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const initialCash = Number(result.value);
+        
+        const subscription = this.posSessionService.openSession(initialCash).subscribe({
+          next: (response) => {
+            if (response && response.session && response.session._id) {
+              this.router.navigate(['/pos/session', response.session._id]);
+            } else {
+              this.errorMessage = 'Error al crear la sesión POS.';
+            }
+          },
+          error: (error) => {
+            console.error('Error al crear la sesión POS:', error);
+            this.errorMessage = 'Error al crear la sesión POS. Por favor, intente nuevamente.';
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Error al crear la sesión POS. Por favor, intente nuevamente.'
+            });
+          }
+        });
+        
+        // Add subscription to the array for later cleanup
+        this.subscriptions.push(subscription);
       }
     });
-    
-    // Add subscription to the array for later cleanup
-    this.subscriptions.push(subscription);
   }
 
   /**

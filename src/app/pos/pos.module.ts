@@ -13,6 +13,7 @@ import { MatTableModule } from '@angular/material/table';
 import { FilterPipe } from './filter.pipe';
 import { SharedModule } from '../shared/shared.module';
 import { PosSessionService } from './pos-session.service';
+import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 
 const routes: Routes = [
   { path: '', component: PosComponent },
@@ -36,7 +37,8 @@ const routes: Routes = [
     MatDialogModule,
     MatTableModule,
     RouterModule.forChild(routes),
-    SharedModule
+    SharedModule,
+    SweetAlert2Module.forRoot()
   ],
   providers: [PosSessionService]
 })
