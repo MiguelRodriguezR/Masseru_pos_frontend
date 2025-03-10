@@ -1,31 +1,12 @@
-// Variables
-$primary-color: #8a6bce; // Soft purple
-$primary-light: #a58fe0;
-$primary-dark: #6a4fa0;
-$white: #ffffff;
-$gray-light: #f5f5f5;
-$gray: #e0e0e0;
-$gray-dark: #9e9e9e;
-$error-color: #f44336;
-$success-color: #4caf50;
-$warning-color: #ff9800;
+@import '../../../styles.scss';
 
-// Mixins
-@mixin flex-center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-@mixin card-shadow {
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-}
+// We can remove these mixins since they're now in the main styles.scss file
 
 // Main container
 .auth-container {
   @include flex-center;
   min-height: 100vh;
-  padding: 20px;
+  padding: $spacing-md;
   background: linear-gradient(135deg, lighten($primary-color, 25%), lighten($primary-color, 15%));
 }
 
@@ -36,7 +17,7 @@ $warning-color: #ff9800;
   max-width: 900px;
   min-height: 500px;
   background-color: $white;
-  border-radius: 12px;
+  border-radius: $border-radius-lg;
   overflow: hidden;
   @include card-shadow;
 }
@@ -111,15 +92,15 @@ $warning-color: #ff9800;
 // Form side
 .form-side {
   flex: 1;
-  padding: 40px;
+  padding: $spacing-2xl;
   @include flex-center;
   flex-direction: column;
   
   h1 {
     color: $primary-color;
-    margin-bottom: 30px;
-    font-size: 32px;
-    font-weight: 600;
+    margin-bottom: $spacing-xl;
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-semibold;
     text-align: center;
   }
   
@@ -132,26 +113,26 @@ $warning-color: #ff9800;
 // Form fields
 .form-field {
   position: relative;
-  margin-bottom: 20px;
+  margin-bottom: $spacing-md;
   
   .input-icon {
     position: absolute;
-    left: 12px;
+    left: $spacing-sm;
     top: 50%;
     transform: translateY(-50%);
-    color: $gray-dark;
+    color: $gray-600;
     
     i {
-      font-size: 20px;
+      font-size: $font-size-lg;
     }
   }
   
   input, select {
     width: 100%;
-    padding: 15px 15px 15px 45px;
-    border: 1px solid $gray;
-    border-radius: 50px;
-    font-size: 16px;
+    padding: $spacing-sm $spacing-sm $spacing-sm $spacing-xl;
+    border: 1px solid $gray-300;
+    border-radius: $border-radius-pill;
+    font-size: $font-size-md;
     transition: all 0.3s ease;
     
     &:focus {
@@ -190,12 +171,12 @@ $warning-color: #ff9800;
 
 // Password strength
 .password-strength {
-  margin-bottom: 20px;
+  margin-bottom: $spacing-md;
   
   .strength-text {
-    font-size: 14px;
-    color: $gray-dark;
-    margin-bottom: 5px;
+    font-size: $font-size-sm;
+    color: $gray-600;
+    margin-bottom: $spacing-xs;
   }
   
   .strength-meter {
@@ -205,7 +186,7 @@ $warning-color: #ff9800;
     .strength-segment {
       height: 5px;
       flex: 1;
-      background-color: $gray;
+      background-color: $gray-300;
       border-radius: 5px;
       transition: all 0.3s ease;
       
@@ -227,8 +208,8 @@ $warning-color: #ff9800;
 // Error message
 .error-message {
   color: $error-color;
-  font-size: 14px;
-  margin-bottom: 20px;
+  font-size: $font-size-sm;
+  margin-bottom: $spacing-md;
   text-align: center;
 }
 
@@ -236,14 +217,14 @@ $warning-color: #ff9800;
 .auth-actions {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  margin-top: 10px;
+  gap: $spacing-sm;
+  margin-top: $spacing-sm;
   
   button, a {
-    padding: 12px 24px;
-    border-radius: 50px;
-    font-size: 16px;
-    font-weight: 500;
+    padding: $spacing-sm $spacing-md;
+    border-radius: $border-radius-pill;
+    font-size: $font-size-md;
+    font-weight: $font-weight-medium;
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -278,7 +259,7 @@ $warning-color: #ff9800;
 }
 
 // Responsive styles
-@media (max-width: 768px) {
+@media (max-width: $breakpoint-md) {
   .auth-card {
     flex-direction: column;
     max-width: 400px;
@@ -297,13 +278,13 @@ $warning-color: #ff9800;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: $breakpoint-sm) {
   .auth-container {
-    padding: 10px;
+    padding: $spacing-sm;
   }
   
   .auth-card {
-    border-radius: 8px;
+    border-radius: $border-radius-md;
   }
   
   .illustration-side {
@@ -315,32 +296,32 @@ $warning-color: #ff9800;
   }
   
   .form-side {
-    padding: 20px 15px;
+    padding: $spacing-md $spacing-sm;
     
     h1 {
-      font-size: 24px;
-      margin-bottom: 20px;
+      font-size: $font-size-xl;
+      margin-bottom: $spacing-md;
     }
   }
   
   .form-field {
-    margin-bottom: 15px;
+    margin-bottom: $spacing-sm;
     
     input, select {
-      padding: 12px 12px 12px 40px;
-      font-size: 14px;
+      padding: $spacing-sm $spacing-sm $spacing-sm $spacing-lg;
+      font-size: $font-size-sm;
     }
     
     .input-icon i {
-      font-size: 18px;
+      font-size: $font-size-md;
     }
   }
   
   .password-strength {
-    margin-bottom: 15px;
+    margin-bottom: $spacing-sm;
     
     .strength-text {
-      font-size: 12px;
+      font-size: $font-size-xs;
     }
     
     .strength-meter {
@@ -354,8 +335,8 @@ $warning-color: #ff9800;
   
   .auth-actions {
     button, a {
-      padding: 10px 20px;
-      font-size: 14px;
+      padding: $spacing-xs $spacing-md;
+      font-size: $font-size-sm;
     }
   }
 }

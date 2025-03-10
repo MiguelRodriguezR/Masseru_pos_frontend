@@ -1,7 +1,110 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-*{
-    box-sizing: border-box;
+// Color Variables
+// Primary Colors - Purple Theme
+$primary-color: #8a6bce; // Soft purple
+$primary-light: #a58fe0;
+$primary-dark: #6a4fa0;
+
+// Secondary Colors - Purple Variants
+$soft-purple: #9370DB;
+$soft-purple-light: #B19CD9;
+$soft-purple-dark: #7B68EE;
+
+// Neutral Colors
+$white: #ffffff;
+$black: #000000;
+$gray-100: #f8f9fa;
+$gray-200: #f5f5f5; // gray-light
+$gray-300: #e0e0e0; // gray
+$gray-400: #ced4da;
+$gray-500: #adb5bd;
+$gray-600: #9e9e9e; // gray-dark
+$gray-dark: #9e9e9e; // gray-dark
+$gray-700: #6c757d;
+$gray-800: #495057;
+$gray-900: #343a40;
+
+// Feedback Colors
+$error-color: #f44336;
+$success-color: #4caf50;
+$warning-color: #ff9800;
+$info-color: #2196f3;
+
+// Typography
+$font-family-base: Roboto, "Helvetica Neue", sans-serif;
+$font-size-base: 1rem;
+$font-size-xs: 0.75rem;    // 12px
+$font-size-sm: 0.875rem;   // 14px
+$font-size-md: 1rem;       // 16px
+$font-size-lg: 1.25rem;    // 20px
+$font-size-xl: 1.5rem;     // 24px
+$font-size-2xl: 2rem;      // 32px
+$font-size-3xl: 2.5rem;    // 40px
+
+// Font Weights
+$font-weight-light: 300;
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+// Line Heights
+$line-height-tight: 1.25;
+$line-height-normal: 1.5;
+$line-height-loose: 1.75;
+
+// Spacing
+$spacing-xs: 0.25rem;  // 4px
+$spacing-sm: 0.5rem;   // 8px
+$spacing-md: 1rem;     // 16px
+$spacing-lg: 1.5rem;   // 24px
+$spacing-xl: 2rem;     // 32px
+$spacing-2xl: 3rem;    // 48px
+
+// Border Radius
+$border-radius-sm: 0.25rem;  // 4px
+$border-radius-md: 0.5rem;   // 8px
+$border-radius-lg: 0.75rem;  // 12px
+$border-radius-xl: 1rem;     // 16px
+$border-radius-pill: 50rem;  // Pill shape
+
+// Shadows
+$shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+$shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.1);
+
+// Breakpoints
+$breakpoint-xs: 0;
+$breakpoint-sm: 576px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 992px;
+$breakpoint-xl: 1200px;
+$breakpoint-xxl: 1400px;
+
+// Mixins
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin card-shadow {
+  box-shadow: $shadow-lg;
+}
+
+// Global Styles
+html, body { 
+  height: 100%; 
+}
+
+body { 
+  margin: 0; 
+  font-family: $font-family-base; 
+  font-size: $font-size-base;
+  line-height: $line-height-normal;
+}
+
+* {
+  box-sizing: border-box;
 }
