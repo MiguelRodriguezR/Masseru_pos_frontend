@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { FilterPipe } from './filter.pipe';
 import { SharedModule } from '../shared/shared.module';
+import { PosSessionService } from './pos-session.service';
 
 const routes: Routes = [
   { path: '', component: PosComponent }
@@ -23,6 +24,7 @@ const routes: Routes = [
     MatTableModule,
     RouterModule.forChild(routes),
     SharedModule
-  ]
+  ],
+  providers: [PosSessionService]
 })
 export class PosModule { }

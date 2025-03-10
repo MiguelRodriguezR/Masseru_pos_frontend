@@ -1,5 +1,62 @@
-<div class="pos">
-    <h2>Punto de Venta</h2>
+<div class="pos-container">
+  <h2>Punto de Venta</h2>
+
+  <!-- Loading state -->
+  <div *ngIf="isLoading" class="loading-container">
+    <p>Cargando información de sesión...</p>
+  </div>
+
+  <!-- Error message -->
+  <div *ngIf="errorMessage" class="error-container">
+    <p class="error-message">{{ errorMessage }}</p>
+  </div>
+
+  <!-- Session selection screen -->
+  <div *ngIf="!isLoading && !errorMessage" class="session-selection">
+    <div class="session-info">
+      <h3>Sesión POS</h3>
+      <p *ngIf="hasOpenSession">
+        Tienes una sesión POS abierta desde {{ sessionData.openingDate | date:'dd/MM/yyyy HH:mm' }}
+      </p>
+      <p *ngIf="!hasOpenSession">
+        No tienes ninguna sesión POS abierta actualmente.
+      </p>
+    </div>
+
+    <div class="session-actions">
+      <!-- Continue with existing session button -->
+      <button 
+        *ngIf="hasOpenSession" 
+        mat-raised-button 
+        color="primary" 
+        (click)="continuePosSession()"
+        class="action-button">
+        Continuar sesión POS
+      </button>
+
+      <!-- Create new session button -->
+      <button 
+        *ngIf="!hasOpenSession" 
+        mat-raised-button 
+        color="primary" 
+        (click)="createPosSession()"
+        class="action-button">
+        Nueva sesión POS
+      </button>
+
+      <!-- View session details button -->
+      <button 
+        mat-raised-button 
+        color="accent" 
+        (click)="viewPosSessionDetails()"
+        class="action-button">
+        Detalle sesiones POS
+      </button>
+    </div>
+  </div>
+
+  <!-- POS interface (hidden until session is selected) -->
+  <div *ngIf="products.length > 0" class="pos-interface">
     <div class="product-search">
       <input matInput placeholder="Buscar producto" [(ngModel)]="searchTerm">
     </div>
@@ -19,3 +76,4 @@
       <button mat-raised-button color="accent" (click)="checkout()">Realizar Venta</button>
     </div>
   </div>
+</div>
