@@ -1,60 +1,174 @@
-<div class="product-form">
-    <h2>{{ isEdit ? 'Editar' : 'Crear' }} Producto</h2>
-    <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
-      <mat-form-field appearance="fill">
-        <mat-label>Nombre</mat-label>
-        <input matInput formControlName="name">
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label>Código de Barras</mat-label>
-        <input matInput formControlName="barcode">
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label>Precio de Venta</mat-label>
-        <input matInput type="number" formControlName="salePrice">
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label>Costo de Compra</mat-label>
-        <input matInput type="number" formControlName="purchaseCost">
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label>Cantidad</mat-label>
-        <input matInput type="number" formControlName="quantity">
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label>Descripción</mat-label>
-        <textarea matInput formControlName="description"></textarea>
-      </mat-form-field>
-      <div formArrayName="images">
-        <h3>Imágenes</h3>
-        <div *ngFor="let image of images.controls; let i=index">
-          <mat-form-field appearance="fill">
-            <mat-label>URL Imagen</mat-label>
-            <input matInput [formControlName]="i">
-          </mat-form-field>
-          <button mat-button color="warn" (click)="removeImage(i)" type="button">Eliminar Imagen</button>
-        </div>
-        <button mat-button color="primary" (click)="addImage()" type="button">Agregar Imagen</button>
+<div class="product-form-container">
+  <h2 class="form-title">{{ isEdit ? 'Editar' : 'Crear' }} Producto</h2>
+  
+  <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+    <!-- Basic Information -->
+    <div class="form-row">
+      <div class="form-col">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="name" placeholder="Nombre del producto">
+          <mat-error *ngIf="productForm.get('name')?.hasError('required')">
+            El nombre es requerido
+          </mat-error>
+        </mat-form-field>
       </div>
-      <div formArrayName="variants">
-        <h3>Variantes</h3>
-        <div *ngFor="let variant of variants.controls; let i=index" [formGroupName]="i">
-          <mat-form-field appearance="fill">
-            <mat-label>Color</mat-label>
-            <input matInput formControlName="color">
-          </mat-form-field>
-          <mat-form-field appearance="fill">
-            <mat-label>Tamaño</mat-label>
-            <input matInput formControlName="size">
-          </mat-form-field>
-          <mat-form-field appearance="fill">
-            <mat-label>Cantidad</mat-label>
-            <input matInput type="number" formControlName="quantity">
-          </mat-form-field>
-          <button mat-button color="warn" (click)="removeVariant(i)" type="button">Eliminar Variante</button>
-        </div>
-        <button mat-button color="primary" (click)="addVariant()" type="button">Agregar Variante</button>
+      
+      <div class="form-col">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Código de Barras</mat-label>
+          <input matInput formControlName="barcode" placeholder="Código de barras">
+          <mat-error *ngIf="productForm.get('barcode')?.hasError('required')">
+            El código de barras es requerido
+          </mat-error>
+        </mat-form-field>
       </div>
-      <button mat-raised-button color="primary" type="submit">{{ isEdit ? 'Actualizar' : 'Crear' }}</button>
-    </form>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-col">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Precio de Venta</mat-label>
+          <input matInput type="number" formControlName="salePrice" placeholder="0.00">
+          <span matPrefix>$&nbsp;</span>
+          <mat-error *ngIf="productForm.get('salePrice')?.hasError('required')">
+            El precio de venta es requerido
+          </mat-error>
+          <mat-error *ngIf="productForm.get('salePrice')?.hasError('min')">
+            El precio debe ser mayor o igual a 0
+          </mat-error>
+        </mat-form-field>
+      </div>
+      
+      <div class="form-col">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Costo de Compra</mat-label>
+          <input matInput type="number" formControlName="purchaseCost" placeholder="0.00">
+          <span matPrefix>$&nbsp;</span>
+          <mat-error *ngIf="productForm.get('purchaseCost')?.hasError('required')">
+            El costo de compra es requerido
+          </mat-error>
+          <mat-error *ngIf="productForm.get('purchaseCost')?.hasError('min')">
+            El costo debe ser mayor o igual a 0
+          </mat-error>
+        </mat-form-field>
+      </div>
+      
+      <div class="form-col">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Cantidad</mat-label>
+          <input matInput type="number" formControlName="quantity" placeholder="0">
+          <mat-error *ngIf="productForm.get('quantity')?.hasError('required')">
+            La cantidad es requerida
+          </mat-error>
+          <mat-error *ngIf="productForm.get('quantity')?.hasError('min')">
+            La cantidad debe ser mayor o igual a 0
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+    
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Descripción</mat-label>
+      <textarea matInput formControlName="description" placeholder="Descripción del producto" rows="3"></textarea>
+    </mat-form-field>
+    
+    <!-- Image Upload Section -->
+    <h3 class="section-title">Imágenes del Producto</h3>
+    <div class="image-upload-container">
+      <input type="file" #fileInput style="display: none" accept="image/*" multiple (change)="onFileSelected($event)">
+      <button mat-raised-button color="primary" type="button" class="image-upload-button" (click)="fileInput.click()">
+        <mat-icon>add_photo_alternate</mat-icon>
+        Subir Imágenes
+      </button>
+      <mat-hint>Máximo 5 imágenes. Formatos aceptados: JPG, PNG, GIF</mat-hint>
+      
+      <!-- Keep Images Toggle (Edit Mode) -->
+      <mat-slide-toggle *ngIf="isEdit && existingImages.length > 0" [(ngModel)]="keepImages" [ngModelOptions]="{standalone: true}" class="keep-images-toggle">
+        Mantener imágenes existentes
+      </mat-slide-toggle>
+      
+      <!-- Existing Images Preview -->
+      <div *ngIf="existingImages.length > 0" class="image-preview-container">
+        <div *ngFor="let image of existingImages; let i = index" class="image-preview-item">
+          <img [src]="getImageUrl(image)" alt="Imagen existente">
+          <button mat-mini-fab color="warn" class="remove-image-button" (click)="removeExistingImage(i)" type="button">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+      
+      <!-- New Images Preview -->
+      <div *ngIf="imagePreviews.length > 0" class="image-preview-container">
+        <div *ngFor="let preview of imagePreviews; let i = index" class="image-preview-item">
+          <img [src]="preview" alt="Vista previa">
+          <button mat-mini-fab color="warn" class="remove-image-button" (click)="removeImagePreview(i)" type="button">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Variants Section -->
+    <h3 class="section-title">Variantes</h3>
+    <div formArrayName="variants">
+      <div *ngFor="let variant of variants.controls; let i=index" [formGroupName]="i" class="variant-container">
+        <button mat-icon-button color="warn" class="remove-variant-button" (click)="removeVariant(i)" type="button">
+          <mat-icon>delete</mat-icon>
+        </button>
+        
+        <div class="variant-row">
+          <div class="variant-col">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Color</mat-label>
+              <input matInput formControlName="color" placeholder="Ej: Rojo">
+              <mat-error *ngIf="variants.at(i).get('color')?.hasError('required')">
+                El color es requerido
+              </mat-error>
+            </mat-form-field>
+          </div>
+          
+          <div class="variant-col">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Tamaño</mat-label>
+              <input matInput formControlName="size" placeholder="Ej: M">
+              <mat-error *ngIf="variants.at(i).get('size')?.hasError('required')">
+                El tamaño es requerido
+              </mat-error>
+            </mat-form-field>
+          </div>
+          
+          <div class="variant-col">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Cantidad</mat-label>
+              <input matInput type="number" formControlName="quantity" placeholder="0">
+              <mat-error *ngIf="variants.at(i).get('quantity')?.hasError('required')">
+                La cantidad es requerida
+              </mat-error>
+              <mat-error *ngIf="variants.at(i).get('quantity')?.hasError('min')">
+                La cantidad debe ser mayor o igual a 0
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+      
+      <button mat-stroked-button color="primary" (click)="addVariant()" type="button">
+        <mat-icon>add</mat-icon> Agregar Variante
+      </button>
+    </div>
+    
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button mat-stroked-button routerLink="/products" type="button">Cancelar</button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="loading">
+        {{ isEdit ? 'Actualizar' : 'Crear' }} Producto
+      </button>
+    </div>
+  </form>
+  
+  <!-- Loading Overlay -->
+  <div *ngIf="loading" class="loading-overlay">
+    <mat-spinner></mat-spinner>
   </div>
+</div>

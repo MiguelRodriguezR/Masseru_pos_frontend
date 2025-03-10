@@ -6,6 +6,7 @@ import { ProductService } from '../../products/product.service';
 import { CartItem } from '../models/cart-item.model';
 import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
+import { Product } from '../../products/product.model';
 
 @Component({
   selector: 'app-pos-session',
@@ -353,6 +354,16 @@ export class PosSessionComponent implements OnInit, OnDestroy {
         this.subscriptions.push(subscription);
       }
     });
+  }
+
+  /**
+   * Get the image URL for a product
+   */
+  getProductImage(product: Product): string {
+    if (product.images && product.images.length > 0) {
+      return this.productService.getImageUrl(product.images[0]);
+    }
+    return '';
   }
 
   /**

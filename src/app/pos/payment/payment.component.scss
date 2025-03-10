@@ -263,6 +263,7 @@
 @media (max-width: $breakpoint-lg) {
   .payment-content {
     flex-direction: column;
+    overflow: scroll;
   }
   
   .left-section, .right-section {

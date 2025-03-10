@@ -129,7 +129,7 @@
              (click)="addToCart(product)">
           <div class="product-price">{{ product.salePrice | currency:'$ ':'symbol':'1.0-0' }}</div>
           <div class="product-image">
-            <img *ngIf="product.images && product.images.length" [src]="product.images[0]" alt="{{ product.name }}">
+            <img *ngIf="product.images && product.images.length" [src]="getProductImage(product)" alt="{{ product.name }}">
             <div *ngIf="!product.images || !product.images.length" class="no-image">Sin imagen</div>
           </div>
           <div class="product-name">{{ product.name }}</div>

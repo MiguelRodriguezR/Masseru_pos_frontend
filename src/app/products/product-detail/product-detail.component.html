@@ -1,22 +1,117 @@
-<div *ngIf="product">
-    <h2>{{ product.name }}</h2>
-    <p>Código de Barras: {{ product.barcode }}</p>
-    <p>Precio de Venta: {{ product.salePrice }}</p>
-    <p>Costo de Compra: {{ product.purchaseCost }}</p>
-    <p>Cantidad: {{ product.quantity }}</p>
-    <p>Descripción: {{ product.description }}</p>
-    <div *ngIf="product.images && product.images.length">
-      <h3>Imágenes:</h3>
-      <div *ngFor="let img of product.images">
-        <img [src]="img" alt="{{ product.name }}" width="100">
+<div class="product-detail-container">
+  <!-- Loading Overlay -->
+  <div *ngIf="loading" class="loading-overlay">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <div *ngIf="product">
+    <!-- Product Header -->
+    <div class="product-header">
+      <h1 class="product-title">{{ product.name }}</h1>
+      <div class="action-buttons">
+        <button mat-stroked-button color="primary" (click)="editProduct()">
+          <mat-icon>edit</mat-icon> Editar
+        </button>
+        <button mat-stroked-button color="warn" (click)="deleteProduct()">
+          <mat-icon>delete</mat-icon> Eliminar
+        </button>
       </div>
     </div>
-    <div *ngIf="product.variants && product.variants.length">
-      <h3>Variantes:</h3>
-      <ul>
-        <li *ngFor="let variant of product.variants">
-          Color: {{ variant.color }}, Talla: {{ variant.size }}, Cantidad: {{ variant.quantity }}
-        </li>
-      </ul>
+
+    <!-- Product Content -->
+    <div class="product-content">
+      <!-- Product Images -->
+      <div class="product-images">
+        <div *ngIf="product.images && product.images.length > 0; else noImages">
+          <div class="main-image">
+            <img [src]="getImageUrl(product.images[selectedImageIndex])" [alt]="product.name">
+          </div>
+          
+          <div *ngIf="product.images.length > 1" class="thumbnail-container">
+            <div 
+              *ngFor="let image of product.images; let i = index" 
+              class="thumbnail" 
+              [class.active]="i === selectedImageIndex"
+              (click)="selectImage(i)"
+            >
+              <img [src]="getImageUrl(image)" [alt]="product.name + ' thumbnail ' + i">
+            </div>
+          </div>
+        </div>
+        
+        <ng-template #noImages>
+          <div class="no-images">
+            <mat-icon>image_not_supported</mat-icon>
+            <span>No hay imágenes disponibles</span>
+          </div>
+        </ng-template>
+      </div>
+
+      <!-- Product Info -->
+      <div class="product-info">
+        <div class="info-card">
+          <h3 class="card-title">Información General</h3>
+          
+          <div class="info-row">
+            <span class="info-label">Código de Barras:</span>
+            <span class="info-value">{{ product.barcode }}</span>
+          </div>
+          
+          <div class="info-row">
+            <span class="info-label">Cantidad:</span>
+            <span class="info-value">{{ product.quantity }} unidades</span>
+          </div>
+          
+          <div *ngIf="product.description" class="info-row">
+            <span class="info-label">Descripción:</span>
+            <span class="info-value">{{ product.description }}</span>
+          </div>
+          
+          <div class="price-info">
+            <div class="price-row">
+              <span class="price-label">Precio de Venta:</span>
+              <span class="price-value">${{ product.salePrice.toFixed(2) }}</span>
+            </div>
+            
+            <div class="price-row">
+              <span class="price-label">Costo de Compra:</span>
+              <span class="price-value">${{ product.purchaseCost.toFixed(2) }}</span>
+            </div>
+            
+            <div class="price-row">
+              <span class="price-label">Margen de Ganancia:</span>
+              <span class="price-value profit">${{ getProfitMargin().toFixed(2) }} ({{ getProfitPercentage().toFixed(2) }}%)</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <!-- Variants Section -->
+    <div *ngIf="product.variants && product.variants.length > 0" class="variants-section">
+      <h3 class="section-title">Variantes del Producto</h3>
+      
+      <table class="variants-table">
+        <thead>
+          <tr>
+            <th>Color</th>
+            <th>Tamaño</th>
+            <th>Cantidad</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let variant of product.variants">
+            <td>{{ variant.color }}</td>
+            <td>{{ variant.size }}</td>
+            <td>{{ variant.quantity }} unidades</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Back Button -->
+    <button mat-stroked-button routerLink="/products" class="back-button">
+      <mat-icon>arrow_back</mat-icon> Volver a la lista
+    </button>
   </div>
+</div>

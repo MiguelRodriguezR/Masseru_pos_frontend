@@ -4,12 +4,23 @@ import { ProductListComponent } from './product-list/product-list.component';
 import { ProductDetailComponent } from './product-detail/product-detail.component';
 import { ProductFormComponent } from './product-form/product-form.component';
 import { RouterModule, Routes } from '@angular/router';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SharedModule } from '../shared/shared.module';
+
+// Angular Material Modules
 import { MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
-import { SharedModule } from '../shared/shared.module';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatCardModule } from '@angular/material/card';
+import { MatDialogModule } from '@angular/material/dialog';
 
 const routes: Routes = [
   { path: '', component: ProductListComponent },
@@ -28,12 +39,23 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    RouterModule.forChild(routes),
+    SharedModule,
+    
+    // Angular Material
     MatTableModule,
     MatInputModule,
     MatButtonModule,
     MatSelectModule,
-    RouterModule.forChild(routes),
-    SharedModule
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatSlideToggleModule,
+    MatFormFieldModule,
+    MatCardModule,
+    MatDialogModule
   ]
 })
 export class ProductsModule { }
