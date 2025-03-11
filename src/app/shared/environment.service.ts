@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, Inject } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { DOCUMENT } from '@angular/common';
 
 export interface EnvironmentConfig {
   baseUrl: string;
@@ -11,30 +12,34 @@ export interface EnvironmentConfig {
   providedIn: 'root'
 })
 export class EnvironmentService {
-  private masseruServerURL = 'http://100.73.149.127:3000'
+  private remoteEnvURL = 'http://100.73.149.127:3000'
 
   private availableEnvironments: EnvironmentConfig[] = [
-    { baseUrl: this.masseruServerURL, name: 'Remote' },
+    { baseUrl: this.remoteEnvURL , name: 'Remote' },
     { baseUrl: 'http://localhost:3000', name: 'Local' }
   ];
 
-  private currentEnvironmentSubject = new BehaviorSubject<EnvironmentConfig>(
-    this.availableEnvironments.find(env => env.baseUrl === environment.baseUrl) || this.availableEnvironments[0]
-  );
+  private isLocalhost: boolean;
+  private currentEnvironmentSubject: BehaviorSubject<EnvironmentConfig>;
+  public currentEnvironment$: Observable<EnvironmentConfig>;
 
-  public currentEnvironment$ = this.currentEnvironmentSubject.asObservable();
-
-  constructor() {
-    // If we're in production mode, force the remote environment and don't allow changes
-    if (environment.production) {
-      // Make sure we're using the remote environment in production
-      const remoteEnv = this.availableEnvironments.find(env => env.baseUrl === this.masseruServerURL);
-      if (remoteEnv) {
-        this.currentEnvironmentSubject.next(remoteEnv);
-      } else {
-        this.currentEnvironmentSubject.next(this.availableEnvironments[0]);
-      }
+  constructor(@Inject(DOCUMENT) private document: Document) {
+    // Check if we're running on localhost:4200
+    this.isLocalhost = this.document.location.host === 'localhost:4200';
+    
+    // Initialize with the appropriate environment
+    let initialEnv: EnvironmentConfig;
+    
+    if (this.isLocalhost) {
+      // On localhost, use the environment from the config file
+      initialEnv = this.availableEnvironments.find(env => env.baseUrl === environment.baseUrl) || this.availableEnvironments[0];
+    } else {
+      // On any other host, always use the remote environment
+      initialEnv = this.availableEnvironments.find(env => env.baseUrl === this.remoteEnvURL) || this.availableEnvironments[0];
     }
+    
+    this.currentEnvironmentSubject = new BehaviorSubject<EnvironmentConfig>(initialEnv);
+    this.currentEnvironment$ = this.currentEnvironmentSubject.asObservable();
   }
 
   getEnvironments(): EnvironmentConfig[] {
@@ -46,16 +51,13 @@ export class EnvironmentService {
   }
 
   setEnvironment(env: EnvironmentConfig): void {
-    // Don't allow changing environment in production mode
-    if (environment.production) {
-      console.warn('Cannot change environment in production mode');
+    // Only allow changing environment on localhost:4200
+    if (!this.isLocalhost) {
+      console.warn('Cannot change environment when not running on localhost:4200');
       return;
     }
     
-    // Only update if we're in development mode
-    if (!environment.production) {
-      this.currentEnvironmentSubject.next(env);
-    }
+    this.currentEnvironmentSubject.next(env);
   }
 
   getBaseUrl(): string {

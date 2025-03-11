@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { isPlatformBrowser } from '@angular/common';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-environment-selector',
@@ -19,10 +20,16 @@ export class EnvironmentSelectorComponent implements OnInit, OnDestroy {
 
   constructor(
     private environmentService: EnvironmentService,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
+    @Inject(DOCUMENT) private document: Document
   ) {
-    // Only show the selector in development mode and when running in a browser
-    this.showSelector = !environment.production && isPlatformBrowser(this.platformId);
+    // Only show the selector when running on localhost:4200
+    if (isPlatformBrowser(this.platformId)) {
+      const hostname = this.document.location.host;
+      this.showSelector = hostname === 'localhost:4200';
+    } else {
+      this.showSelector = false;
+    }
   }
 
   ngOnInit(): void {

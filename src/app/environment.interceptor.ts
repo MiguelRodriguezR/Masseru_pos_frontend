@@ -1,16 +1,25 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { EnvironmentService } from './shared/environment.service';
 import { environment } from '../environments/environment';
+import { DOCUMENT } from '@angular/common';
 
 @Injectable()
 export class EnvironmentInterceptor implements HttpInterceptor {
-  constructor(private environmentService: EnvironmentService) {}
+  private isLocalhost: boolean;
+
+  constructor(
+    private environmentService: EnvironmentService,
+    @Inject(DOCUMENT) private document: Document
+  ) {
+    // Check if we're running on localhost:4200
+    this.isLocalhost = this.document.location.host === 'localhost:4200';
+  }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // Skip if we're in production mode - always use the production URL
-    if (environment.production) {
+    // Skip if we're not on localhost - always use the production URL
+    if (!this.isLocalhost) {
       return next.handle(req);
     }
 
