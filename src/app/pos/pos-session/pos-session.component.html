@@ -117,14 +117,14 @@
           Productos de belleza
         </div>
         <div class="search-box">
-          <input type="text" placeholder="Buscar productos" [(ngModel)]="searchTerm">
-          <mat-icon>search</mat-icon>
+          <input #searchInput type="text" placeholder="Buscar productos" [(ngModel)]="searchTerm" (keyup)="onSearchInputChange($event)">
+          <mat-icon (click)="searchProducts()">search</mat-icon>
         </div>
       </div>
 
       <!-- Products grid -->
       <div class="products-grid">
-        <div *ngFor="let product of products | filter:searchTerm" 
+        <div *ngFor="let product of products" 
              class="product-card"
              (click)="addToCart(product)">
           <div class="product-price">{{ product.salePrice | currency:'$ ':'symbol':'1.0-0' }}</div>

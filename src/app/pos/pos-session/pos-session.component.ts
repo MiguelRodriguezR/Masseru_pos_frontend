@@ -1,10 +1,11 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
 import { PosSessionService } from '../pos-session.service';
 import { ProductService } from '../../products/product.service';
 import { CartItem } from '../models/cart-item.model';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { Product } from '../../products/product.model';
 
@@ -16,6 +17,10 @@ import { Product } from '../../products/product.model';
 export class PosSessionComponent implements OnInit, OnDestroy {
   // Track all subscriptions for cleanup
   private subscriptions: Subscription[] = [];
+  private destroy$ = new Subject<void>();
+  private searchSubject = new Subject<string>();
+  
+  @ViewChild('searchInput') searchInput!: ElementRef;
   
   // Session data
   sessionId: string = '';
@@ -60,6 +65,15 @@ export class PosSessionComponent implements OnInit, OnDestroy {
       }
     });
     this.subscriptions.push(subscription);
+    
+    // Setup search debouncer
+    this.searchSubject.pipe(
+      debounceTime(400), // Wait for 400ms after the last event before emitting
+      distinctUntilChanged(), // Only emit if value is different from previous
+      takeUntil(this.destroy$)
+    ).subscribe(searchTerm => {
+      this.loadProducts(searchTerm);
+    });
   }
 
   /**
@@ -115,8 +129,8 @@ export class PosSessionComponent implements OnInit, OnDestroy {
   /**
    * Load products from API
    */
-  loadProducts(): void {
-    const subscription = this.productService.getProducts(1, 10000).subscribe({
+  loadProducts(search: string = ''): void {
+    const subscription = this.productService.getProducts(1, 10000, search).subscribe({
       next: (data) => {
         this.products = data.products;
       },
@@ -126,6 +140,22 @@ export class PosSessionComponent implements OnInit, OnDestroy {
     });
     
     this.subscriptions.push(subscription);
+  }
+
+  /**
+   * Search products
+   */
+  searchProducts(): void {
+    this.searchSubject.next(this.searchTerm);
+  }
+  
+  /**
+   * Handle search input changes
+   */
+  onSearchInputChange(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.searchTerm = value;
+    this.searchSubject.next(value);
   }
 
   /**
@@ -376,5 +406,9 @@ export class PosSessionComponent implements OnInit, OnDestroy {
         subscription.unsubscribe();
       }
     });
+    
+    // Complete the destroy subject
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

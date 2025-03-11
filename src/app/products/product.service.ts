@@ -36,10 +36,15 @@ export class ProductService {
     return `${this.baseUrl}${imagePath}`;
   }
 
-  getProducts(page: number = 1, limit: number = 5): Observable<PaginatedProducts> {
-    const params = new HttpParams()
+  getProducts(page: number = 1, limit: number = 5, search: string = ''): Observable<PaginatedProducts> {
+    let params = new HttpParams()
       .set('page', page.toString())
       .set('limit', limit.toString());
+    
+    // Add search parameter if provided
+    if (search) {
+      params = params.set('search', search);
+    }
     
     return this.http.get<PaginatedProducts>(`${this.baseUrl}/api/products`, { params });
   }

@@ -16,7 +16,7 @@
   <div class="search-container">
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Buscar productos</mat-label>
-      <input matInput (keyup)="applyFilter($event)" [(ngModel)]="searchTerm" placeholder="Nombre, código de barras...">
+      <input #searchInput matInput (keyup)="applyFilter($event)" [(ngModel)]="searchTerm" placeholder="Nombre, código de barras...">
       <mat-icon matPrefix>search</mat-icon>
       <button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Clear" (click)="searchTerm=''; applyFilter($event)">
         <mat-icon>close</mat-icon>

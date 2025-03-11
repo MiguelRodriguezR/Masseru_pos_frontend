@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, ElementRef } from '@angular/core';
 import { ProductService, PaginatedProducts } from '../product.service';
 import { Product } from '../product.model';
 import { Router } from '@angular/router';
@@ -6,8 +6,8 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, fromEvent } from 'rxjs';
+import { takeUntil, debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -29,9 +29,11 @@ export class ProductListComponent implements OnInit, OnDestroy {
   
   // Subject for unsubscribing observables
   private destroy$ = new Subject<void>();
+  private searchSubject = new Subject<string>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild('searchInput') searchInput!: ElementRef;
 
   constructor(
     private productService: ProductService, 
@@ -42,6 +44,19 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadProducts(this.currentPage, this.pageSize);
+    
+    // Setup search debouncer
+    this.searchSubject.pipe(
+      debounceTime(400), // Wait for 400ms after the last event before emitting
+      distinctUntilChanged(), // Only emit if value is different from previous
+      takeUntil(this.destroy$)
+    ).subscribe(searchTerm => {
+      this.currentPage = 1;
+      if (this.paginator) {
+        this.paginator.pageIndex = 0;
+      }
+      this.loadProducts(1, this.pageSize, searchTerm);
+    });
   }
   
   ngOnDestroy(): void {
@@ -70,10 +85,10 @@ export class ProductListComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadProducts(page: number = 1, limit: number = 10) {
-    // console.log('loadProducts called with page:', page, 'limit:', limit);
+  loadProducts(page: number = 1, limit: number = 10, search: string = this.searchTerm) {
+    console.log('loadProducts called with page:', page, 'limit:', limit, 'search:', search);
     this.loading = true;
-    this.productService.getProducts(page, limit)
+    this.productService.getProducts(page, limit, search)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: PaginatedProducts) => {
@@ -101,15 +116,13 @@ export class ProductListComponent implements OnInit, OnDestroy {
   }
 
   applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    const filterValue = (event.target as HTMLInputElement).value.trim();
+    this.searchTerm = filterValue;
     
-    // For now, just do client-side filtering on the current page
-    // TODO: Implement server-side filtering in the future
+    console.log('Search term updated:', filterValue);
     
-    // Reset to first page when filtering
-    if (this.paginator) {
-      this.paginator.firstPage();
-    }
+    // Push to the search subject, which will debounce and then trigger the search
+    this.searchSubject.next(filterValue);
   }
 
   viewProduct(id: string) {
