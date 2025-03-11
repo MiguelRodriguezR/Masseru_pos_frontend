@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { SaleListComponent } from './sale-list/sale-list.component';
 import { SaleDetailComponent } from './sale-detail/sale-detail.component';
 import { RouterModule, Routes } from '@angular/router';
@@ -22,6 +22,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 const routes: Routes = [
   { path: '', component: SaleListComponent },
@@ -36,6 +37,7 @@ const routes: Routes = [
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     RouterModule.forChild(routes),
     SharedModule,
     
@@ -54,7 +56,8 @@ const routes: Routes = [
     MatProgressSpinnerModule,
     MatSnackBarModule,
     MatDividerModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatCheckboxModule
   ]
 })
 export class SalesModule { }

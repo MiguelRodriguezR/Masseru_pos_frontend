@@ -46,25 +46,71 @@
 
     .filter-form {
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
       gap: $spacing-md;
-      align-items: flex-end;
 
-      .date-field {
-        flex: 1;
-        min-width: 200px;
+      .date-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: $spacing-md;
+        
+        .date-field {
+          flex: 1;
+          min-width: 200px;
+        }
+      }
+
+      .search-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: $spacing-md;
+        align-items: flex-start;
+        
+        .search-field {
+          flex: 1;
+          min-width: 250px;
+        }
+        
+        .filter-options {
+          display: flex;
+          flex-wrap: wrap;
+          gap: $spacing-sm;
+          align-items: center;
+          
+          .filter-by-label {
+            margin-right: $spacing-sm;
+            color: $gray-700;
+            font-weight: $font-weight-medium;
+          }
+          
+          .filter-option {
+            margin-right: $spacing-md;
+          }
+        }
       }
 
       .filter-actions {
         display: flex;
         gap: $spacing-sm;
+        justify-content: flex-end;
       }
 
       @media (max-width: $breakpoint-sm) {
-        flex-direction: column;
+        .date-filters, .search-filters {
+          flex-direction: column;
+          
+          .date-field, .search-field {
+            width: 100%;
+          }
+        }
         
-        .date-field {
-          width: 100%;
+        .filter-options {
+          margin-top: $spacing-sm;
+          
+          .filter-by-label {
+            width: 100%;
+            margin-bottom: $spacing-xs;
+          }
         }
         
         .filter-actions {

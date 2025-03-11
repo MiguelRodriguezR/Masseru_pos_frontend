@@ -12,19 +12,42 @@
   <!-- Filter Section -->
   <div class="filter-container">
     <form [formGroup]="filterForm" class="filter-form">
-      <mat-form-field appearance="outline" class="date-field">
-        <mat-label>Fecha inicial</mat-label>
-        <input matInput [matDatepicker]="startPicker" formControlName="startDate">
-        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
-        <mat-datepicker #startPicker></mat-datepicker>
-      </mat-form-field>
+      <div class="date-filters">
+        <mat-form-field appearance="outline" class="date-field">
+          <mat-label>Fecha inicial</mat-label>
+          <input matInput [matDatepicker]="startPicker" formControlName="startDate">
+          <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+          <mat-datepicker #startPicker></mat-datepicker>
+        </mat-form-field>
 
-      <mat-form-field appearance="outline" class="date-field">
-        <mat-label>Fecha final</mat-label>
-        <input matInput [matDatepicker]="endPicker" formControlName="endDate">
-        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
-        <mat-datepicker #endPicker></mat-datepicker>
-      </mat-form-field>
+        <mat-form-field appearance="outline" class="date-field">
+          <mat-label>Fecha final</mat-label>
+          <input matInput [matDatepicker]="endPicker" formControlName="endDate">
+          <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+          <mat-datepicker #endPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="search-filters">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Buscar</mat-label>
+          <input matInput [(ngModel)]="searchTerm" [ngModelOptions]="{standalone: true}" placeholder="Buscar...">
+          <button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Clear" (click)="searchTerm=''; applyFilter()">
+            <mat-icon>close</mat-icon>
+          </button>
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+
+        <div class="filter-options">
+          <mat-label class="filter-by-label">Filtrar por:</mat-label>
+          <mat-checkbox *ngFor="let option of filterOptions" 
+                       [(ngModel)]="option.selected" 
+                       [ngModelOptions]="{standalone: true}"
+                       class="filter-option">
+            {{ option.label }}
+          </mat-checkbox>
+        </div>
+      </div>
 
       <div class="filter-actions">
         <button mat-raised-button color="primary" (click)="applyFilter()">
@@ -38,7 +61,7 @@
   </div>
 
   <!-- Sales Table -->
-  <div class="table-container" *ngIf="sales.length > 0; else noSales">
+  <div class="table-container" *ngIf="sales && sales.length > 0; else noSales">
     <table mat-table [dataSource]="dataSource" matSort>
       <!-- Sale Date Column -->
       <ng-container matColumnDef="saleDate">
@@ -98,7 +121,13 @@
   </ng-template>
 
   <!-- Paginator -->
-  <div class="paginator-container" *ngIf="sales.length > 0">
-    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator>
+  <div class="paginator-container" *ngIf="totalSales > 0">
+    <mat-paginator 
+      [length]="totalSales"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      [pageIndex]="currentPage - 1"
+      showFirstLastButtons>
+    </mat-paginator>
   </div>
 </div>

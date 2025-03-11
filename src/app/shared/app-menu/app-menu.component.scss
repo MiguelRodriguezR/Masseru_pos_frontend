@@ -19,10 +19,10 @@
 
 .app-menu-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: $spacing-lg;
   width: 100%;
-  max-width: 500px;
+  max-width: 600px;
 }
 
 .menu-item {
@@ -49,8 +49,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 80px;
-  height: 80px;
+  width: 110px;
+  height: 110px;
   background-color: $white;
   border-radius: $border-radius-lg;
   margin-bottom: $spacing-sm;

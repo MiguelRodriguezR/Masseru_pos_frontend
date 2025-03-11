@@ -5,7 +5,7 @@ import { SaleService } from '../sale.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import Swal from 'sweetalert2';
+import { ReceiptService } from '../../receipts/receipt.service';
 
 @Component({
   selector: 'app-sale-detail',
@@ -22,7 +22,8 @@ export class SaleDetailComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute, 
     private router: Router,
     private saleService: SaleService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private receiptService: ReceiptService
   ) {}
 
   ngOnInit(): void {
@@ -62,23 +63,9 @@ export class SaleDetailComponent implements OnInit, OnDestroy {
   generateReceipt(): void {
     if (!this.sale || !this.sale._id) return;
     
-    Swal.fire({
-      title: 'Generando recibo',
-      text: 'El recibo se está generando...',
-      icon: 'info',
-      showConfirmButton: false,
-      allowOutsideClick: false
-    });
-    
-    // Aquí se implementará la generación del recibo
-    setTimeout(() => {
-      Swal.fire({
-        title: 'Recibo generado',
-        text: 'El recibo se ha generado correctamente',
-        icon: 'success',
-        confirmButtonText: 'Aceptar'
-      });
-    }, 1000);
+    this.receiptService.generateReceipt(this.sale._id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe();
   }
 
   getPaymentMethodLabel(method: string): string {

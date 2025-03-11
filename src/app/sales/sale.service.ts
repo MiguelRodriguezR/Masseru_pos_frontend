@@ -4,6 +4,25 @@ import { Sale } from './sale.model';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
+export interface PaginatedSales {
+  sales: Sale[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    pages: number;
+  };
+}
+
+export interface SaleFilters {
+  startDate?: string;
+  endDate?: string;
+  search?: string;
+  filterBy?: string[];
+  page?: number;
+  limit?: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -12,7 +31,7 @@ export class SaleService {
 
   constructor(private http: HttpClient) {}
 
-  getSales(filters?: { startDate?: string, endDate?: string }): Observable<Sale[]> {
+  getSales(filters?: SaleFilters): Observable<PaginatedSales> {
     let params = new HttpParams();
     
     if (filters) {
@@ -22,9 +41,23 @@ export class SaleService {
       if (filters.endDate) {
         params = params.set('endDate', filters.endDate);
       }
+      if (filters.search) {
+        params = params.set('search', filters.search);
+      }
+      if (filters.page) {
+        params = params.set('page', filters.page.toString());
+      }
+      if (filters.limit) {
+        params = params.set('limit', filters.limit.toString());
+      }
+      if (filters.filterBy && filters.filterBy.length > 0) {
+        filters.filterBy.forEach(filter => {
+          params = params.append('filterBy', filter);
+        });
+      }
     }
     
-    return this.http.get<Sale[]>(`${this.baseUrl}/api/sales`, { params });
+    return this.http.get<PaginatedSales>(`${this.baseUrl}/api/sales`, { params });
   }
 
   getSale(id: string): Observable<Sale> {
