@@ -127,6 +127,7 @@
       [pageSize]="pageSize"
       [pageSizeOptions]="pageSizeOptions"
       [pageIndex]="currentPage - 1"
+      (page)="loadSales($event.pageIndex + 1, $event.pageSize)"
       showFirstLastButtons>
     </mat-paginator>
   </div>

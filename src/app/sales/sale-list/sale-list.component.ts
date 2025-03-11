@@ -49,23 +49,17 @@ export class SaleListComponent implements OnInit, OnDestroy {
     this.restoreFilters();
     
     // Cargar ventas con los filtros restaurados
-    this.loadSales();
+    this.loadSales(this.currentPage, this.pageSize);
+    
+    // Log para depuración
+    // console.log('ngOnInit - Restored values:', { 
+    //   currentPage: this.currentPage, 
+    //   pageSize: this.pageSize 
+    // });
   }
 
   ngAfterViewInit() {
-    if (this.paginator) {
-      this.paginator.page.pipe(
-        takeUntil(this.destroy$)
-      ).subscribe((event: PageEvent) => {
-        // Actualizar el tamaño de página en el servicio de filtros
-        this.salesFilterService.pageSize = event.pageSize;
-        this.salesFilterService.currentPage = event.pageIndex + 1;
-        
-        // Cargar ventas con la nueva página y tamaño
-        this.loadSales(event.pageIndex + 1, event.pageSize);
-      });
-    }
-    
+    // Set up sorting
     if (this.sort) {
       this.dataSource.sort = this.sort;
     }
@@ -133,6 +127,16 @@ export class SaleListComponent implements OnInit, OnDestroy {
   ];
 
   loadSales(page: number = this.currentPage, limit: number = this.pageSize) {
+    // console.log('loadSales called with page:', page, 'limit:', limit);
+    
+    // Actualizar valores locales
+    this.currentPage = page;
+    this.pageSize = limit;
+    
+    // Actualizar valores en el servicio de filtros
+    this.salesFilterService.pageSize = limit;
+    this.salesFilterService.currentPage = page;
+    
     this.loading = true;
     
     // Construir objeto de filtros
@@ -155,11 +159,13 @@ export class SaleListComponent implements OnInit, OnDestroy {
     // Guardar los filtros actuales
     this.saveFilters(filters);
     
+    // console.log('Calling API with filters:', filters);
+    
     this.saleService.getSales(filters)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          console.log('API Response:', response); // Depuración
+          // console.log('API Response:', response); // Depuración
           
           if (response && response.sales) {
             this.sales = response.sales;
