@@ -1,8 +1,18 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Product, Variant } from './product.model';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+
+export interface PaginatedProducts {
+  products: Product[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    pages: number;
+  };
+}
 
 @Injectable({
   providedIn: 'root'
@@ -26,8 +36,12 @@ export class ProductService {
     return `${this.baseUrl}${imagePath}`;
   }
 
-  getProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(`${this.baseUrl}/api/products`);
+  getProducts(page: number = 1, limit: number = 5): Observable<PaginatedProducts> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+    
+    return this.http.get<PaginatedProducts>(`${this.baseUrl}/api/products`, { params });
   }
 
   getProduct(id: string): Observable<Product> {

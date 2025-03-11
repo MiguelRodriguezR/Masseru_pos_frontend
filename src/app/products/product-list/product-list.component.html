@@ -25,8 +25,8 @@
   </div>
 
   <!-- Products Table -->
-  <div class="table-container" *ngIf="dataSource.data.length > 0; else noProducts">
-    <table mat-table [dataSource]="dataSource" matSort>
+  <div class="table-container" *ngIf="products.length > 0; else noProducts">
+    <table mat-table [dataSource]="products" matSort>
       <!-- Image Column -->
       <ng-container matColumnDef="image">
         <th mat-header-cell *matHeaderCellDef></th>
@@ -96,7 +96,14 @@
   </ng-template>
 
   <!-- Paginator -->
-  <div class="paginator-container" *ngIf="dataSource.data.length > 0">
-    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator>
+  <div class="paginator-container" *ngIf="totalProducts > 0">
+    <mat-paginator #paginator
+      [length]="totalProducts"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      [pageIndex]="currentPage - 1"
+      (page)="loadProducts($event.pageIndex + 1, $event.pageSize)"
+      showFirstLastButtons>
+    </mat-paginator>
   </div>
 </div>

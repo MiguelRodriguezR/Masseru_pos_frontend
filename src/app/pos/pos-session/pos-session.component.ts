@@ -116,9 +116,9 @@ export class PosSessionComponent implements OnInit, OnDestroy {
    * Load products from API
    */
   loadProducts(): void {
-    const subscription = this.productService.getProducts().subscribe({
+    const subscription = this.productService.getProducts(1, 10000).subscribe({
       next: (data) => {
-        this.products = data;
+        this.products = data.products;
       },
       error: (error) => {
         console.error('Error al cargar productos:', error);

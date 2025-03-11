@@ -1,23 +1,33 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { ProductService } from '../product.service';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { ProductService, PaginatedProducts } from '../product.service';
 import { Product } from '../product.model';
 import { Router } from '@angular/router';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-product-list',
   templateUrl: './product-list.component.html',
   styleUrls: ['./product-list.component.scss']
 })
-export class ProductListComponent implements OnInit {
-  dataSource: MatTableDataSource<Product> = new MatTableDataSource<Product>([]);
+export class ProductListComponent implements OnInit, OnDestroy {
+  products: Product[] = [];
   displayedColumns: string[] = ['image', 'name', 'barcode', 'salePrice', 'quantity', 'actions'];
   loading: boolean = false;
   searchTerm: string = '';
+  
+  // Pagination variables
+  totalProducts: number = 0;
+  currentPage: number = 1;
+  pageSize: number = 5;
+  pageSizeOptions: number[] = [5, 10, 25, 100];
+  
+  // Subject for unsubscribing observables
+  private destroy$ = new Subject<void>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -30,35 +40,74 @@ export class ProductListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadProducts();
+    this.loadProducts(this.currentPage, this.pageSize);
+  }
+  
+  ngOnDestroy(): void {
+    // Unsubscribe from all observables
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
-
-  loadProducts() {
-    this.loading = true;
-    this.productService.getProducts().subscribe({
-      next: (data) => {
-        this.dataSource.data = data;
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error(err);
-        this.snackBar.open('Error al cargar los productos', 'Cerrar', { duration: 3000 });
-        this.loading = false;
+    // Configure paginator
+    setTimeout(() => {
+      if (this.paginator) {
+        console.log('Paginator initialized:', this.paginator);
+        this.paginator.page.pipe(
+          takeUntil(this.destroy$)
+        ).subscribe((event: PageEvent) => {
+          console.log('Paginator event:', event);
+          this.currentPage = event.pageIndex + 1;
+          this.pageSize = event.pageSize;
+          console.log('Loading products with page:', this.currentPage, 'size:', this.pageSize);
+          this.loadProducts(this.currentPage, this.pageSize);
+        });
+      } else {
+        console.error('Paginator not initialized');
       }
     });
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+  loadProducts(page: number = 1, limit: number = 10) {
+    // console.log('loadProducts called with page:', page, 'limit:', limit);
+    this.loading = true;
+    this.productService.getProducts(page, limit)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: PaginatedProducts) => {
+          // console.log('API response:', response);
+          this.products = response.products;
+          this.totalProducts = response.pagination.total;
+          this.loading = false;
+          
+          // Update paginator
+          if (this.paginator) {
+            // console.log('Updating paginator with:', response.pagination);
+            this.paginator.length = response.pagination.total;
+            this.paginator.pageIndex = response.pagination.page - 1;
+            this.paginator.pageSize = response.pagination.limit;
+          } else {
+            // console.error('Paginator not available when updating');
+          }
+        },
+        error: (err) => {
+          console.error(err);
+          this.snackBar.open('Error al cargar los productos', 'Cerrar', { duration: 3000 });
+          this.loading = false;
+        }
+      });
+  }
 
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    
+    // For now, just do client-side filtering on the current page
+    // TODO: Implement server-side filtering in the future
+    
+    // Reset to first page when filtering
+    if (this.paginator) {
+      this.paginator.firstPage();
     }
   }
 
@@ -77,17 +126,19 @@ export class ProductListComponent implements OnInit {
     
     if (confirmDelete) {
       this.loading = true;
-      this.productService.deleteProduct(id).subscribe({
-        next: () => {
-          this.snackBar.open('Producto eliminado con éxito', 'Cerrar', { duration: 3000 });
-          this.loadProducts();
-        },
-        error: (err) => {
-          console.error(err);
-          this.snackBar.open('Error al eliminar el producto', 'Cerrar', { duration: 3000 });
-          this.loading = false;
-        }
-      });
+      this.productService.deleteProduct(id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.snackBar.open('Producto eliminado con éxito', 'Cerrar', { duration: 3000 });
+            this.loadProducts(this.currentPage, this.pageSize);
+          },
+          error: (err) => {
+            console.error(err);
+            this.snackBar.open('Error al eliminar el producto', 'Cerrar', { duration: 3000 });
+            this.loading = false;
+          }
+        });
     }
   }
 
