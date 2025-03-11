@@ -8,6 +8,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-product-list',
@@ -122,24 +123,41 @@ export class ProductListComponent implements OnInit, OnDestroy {
   deleteProduct(id: string, event: Event) {
     event.stopPropagation();
     
-    const confirmDelete = window.confirm('¿Está seguro de eliminar este producto?');
-    
-    if (confirmDelete) {
-      this.loading = true;
-      this.productService.deleteProduct(id)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: () => {
-            this.snackBar.open('Producto eliminado con éxito', 'Cerrar', { duration: 3000 });
-            this.loadProducts(this.currentPage, this.pageSize);
-          },
-          error: (err) => {
-            console.error(err);
-            this.snackBar.open('Error al eliminar el producto', 'Cerrar', { duration: 3000 });
-            this.loading = false;
-          }
-        });
-    }
+    Swal.fire({
+      title: '¿Está seguro?',
+      text: '¿Está seguro de eliminar este producto?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loading = true;
+        this.productService.deleteProduct(id)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: () => {
+              Swal.fire(
+                'Eliminado',
+                'Producto eliminado con éxito',
+                'success'
+              );
+              this.loadProducts(this.currentPage, this.pageSize);
+            },
+            error: (err) => {
+              console.error(err);
+              Swal.fire(
+                'Error',
+                'Error al eliminar el producto',
+                'error'
+              );
+              this.loading = false;
+            }
+          });
+      }
+    });
   }
 
   getProductImage(product: Product): string {

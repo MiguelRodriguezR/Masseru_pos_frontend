@@ -4,6 +4,7 @@ import { Product } from '../product.model';
 import { ProductService } from '../product.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-product-detail',
@@ -62,23 +63,43 @@ export class ProductDetailComponent implements OnInit {
 
   deleteProduct(): void {
     if (!this.product?._id) return;
-
-    const confirmDelete = window.confirm('¿Está seguro de eliminar este producto?');
     
-    if (confirmDelete) {
-      this.loading = true;
-      this.productService.deleteProduct(this.product._id).subscribe({
-        next: () => {
-          this.snackBar.open('Producto eliminado con éxito', 'Cerrar', { duration: 3000 });
-          this.router.navigate(['/products']);
-        },
-        error: (err) => {
-          console.error(err);
-          this.snackBar.open('Error al eliminar el producto', 'Cerrar', { duration: 3000 });
-          this.loading = false;
-        }
-      });
-    }
+    // Store the ID in a local variable to avoid TypeScript errors
+    const productId = this.product._id;
+
+    Swal.fire({
+      title: '¿Está seguro?',
+      text: '¿Está seguro de eliminar este producto?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loading = true;
+        this.productService.deleteProduct(productId).subscribe({
+          next: () => {
+            Swal.fire(
+              'Eliminado',
+              'Producto eliminado con éxito',
+              'success'
+            );
+            this.router.navigate(['/products']);
+          },
+          error: (err) => {
+            console.error(err);
+            Swal.fire(
+              'Error',
+              'Error al eliminar el producto',
+              'error'
+            );
+            this.loading = false;
+          }
+        });
+      }
+    });
   }
 
   selectImage(index: number): void {
