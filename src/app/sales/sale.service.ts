@@ -12,8 +12,19 @@ export class SaleService {
 
   constructor(private http: HttpClient) {}
 
-  getSales(): Observable<Sale[]> {
-    return this.http.get<Sale[]>(`${this.baseUrl}/api/sales`);
+  getSales(filters?: { startDate?: string, endDate?: string }): Observable<Sale[]> {
+    let params = new HttpParams();
+    
+    if (filters) {
+      if (filters.startDate) {
+        params = params.set('startDate', filters.startDate);
+      }
+      if (filters.endDate) {
+        params = params.set('endDate', filters.endDate);
+      }
+    }
+    
+    return this.http.get<Sale[]>(`${this.baseUrl}/api/sales`, { params });
   }
 
   getSale(id: string): Observable<Sale> {

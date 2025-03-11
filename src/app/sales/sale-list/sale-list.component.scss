@@ -1,0 +1,173 @@
+@import '../../../styles.scss';
+
+.sale-list-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+    @include flex-center;
+    z-index: 1000;
+  }
+
+  .list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    .list-title {
+      margin: 0;
+      color: $gray-900;
+      font-weight: $font-weight-medium;
+      font-size: $font-size-xl;
+    }
+
+    @media (max-width: $breakpoint-sm) {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
+  .filter-container {
+    background-color: $white;
+    padding: $spacing-md;
+    border-radius: $border-radius-md;
+    margin-bottom: $spacing-lg;
+    @include card-shadow;
+
+    .filter-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: $spacing-md;
+      align-items: flex-end;
+
+      .date-field {
+        flex: 1;
+        min-width: 200px;
+      }
+
+      .filter-actions {
+        display: flex;
+        gap: $spacing-sm;
+      }
+
+      @media (max-width: $breakpoint-sm) {
+        flex-direction: column;
+        
+        .date-field {
+          width: 100%;
+        }
+        
+        .filter-actions {
+          width: 100%;
+          justify-content: space-between;
+        }
+      }
+    }
+  }
+
+  .table-container {
+    overflow-x: auto;
+    box-shadow: $shadow-md;
+    border-radius: $border-radius-md;
+    background-color: $white;
+    margin-bottom: $spacing-lg;
+
+    table {
+      width: 100%;
+      
+      .mat-mdc-row {
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        
+        &:hover {
+          background-color: $gray-200;
+        }
+      }
+      
+      .mat-column-saleDate {
+        min-width: 160px;
+      }
+      
+      .mat-column-totalAmount {
+        font-weight: $font-weight-medium;
+        min-width: 120px;
+      }
+      
+      .mat-column-paymentMethod {
+        min-width: 140px;
+        
+        .payment-method-chip {
+          border-radius: $border-radius-pill;
+          padding: 4px 12px;
+          font-size: $font-size-xs;
+          font-weight: $font-weight-medium;
+          
+          &.cash {
+            background-color: $success-color;
+            color: $white;
+          }
+          
+          &.credit_card {
+            background-color: $info-color;
+            color: $white;
+          }
+        }
+      }
+      
+      .mat-column-user {
+        min-width: 180px;
+      }
+      
+      .mat-column-actions {
+        min-width: 120px;
+        text-align: right;
+        
+        .action-button {
+          min-width: 36px;
+          padding: 0 8px;
+          margin-left: 4px;
+        }
+      }
+    }
+  }
+
+  .no-sales {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 0;
+    background-color: $gray-100;
+    border-radius: $border-radius-md;
+    margin-top: $spacing-xl;
+    
+    .no-sales-icon {
+      font-size: 48px;
+      height: 48px;
+      width: 48px;
+      color: $gray-500;
+      margin-bottom: $spacing-md;
+    }
+    
+    .no-sales-text {
+      color: $gray-700;
+      font-size: $font-size-md;
+      text-align: center;
+      margin-bottom: $spacing-lg;
+    }
+  }
+
+  .paginator-container {
+    margin-top: $spacing-md;
+  }
+}

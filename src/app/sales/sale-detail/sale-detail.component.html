@@ -1,14 +1,127 @@
-<div *ngIf="sale">
-    <h2>Detalles de la Venta</h2>
-    <p>Fecha: {{ sale.saleDate | date:'short' }}</p>
-    <p>Total: {{ sale.totalAmount }}</p>
-    <div>
-      <h3>Artículos</h3>
-      <ul>
-        <li *ngFor="let item of sale.items">
-          Producto: {{ item.productId }} - Cantidad: {{ item.quantity }}
-          <span *ngIf="item.variant"> - Variante: {{ item.variant.color }} / {{ item.variant.size }}</span>
-        </li>
-      </ul>
+<div class="sale-detail-container">
+  <!-- Loading Overlay -->
+  <div *ngIf="loading" class="loading-overlay">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <div *ngIf="sale">
+    <!-- Header -->
+    <div class="detail-header">
+      <h1 class="header-title">Detalles de la Venta</h1>
+      <div class="header-actions">
+        <button mat-stroked-button color="primary" (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon> Volver
+        </button>
+        <button mat-raised-button color="accent" (click)="generateReceipt()">
+          <mat-icon>receipt</mat-icon> Generar Recibo
+        </button>
+      </div>
+    </div>
+
+    <!-- Sale Info Card -->
+    <div class="sale-info-card">
+      <div class="sale-info-header">
+        <div class="sale-date">{{ formatDate(sale.saleDate) }}</div>
+        <div class="sale-id">ID: {{ sale._id }}</div>
+      </div>
+
+      <div class="sale-info-grid">
+        <div class="info-item">
+          <div class="info-label">Total</div>
+          <div class="info-value">{{ formatCurrency(sale.totalAmount) }}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Método de Pago</div>
+          <div class="info-value payment-method {{ sale.paymentMethod }}">
+            {{ getPaymentMethodLabel(sale.paymentMethod) }}
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Monto Pagado</div>
+          <div class="info-value">{{ formatCurrency(sale.paymentAmount) }}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Cambio</div>
+          <div class="info-value">{{ formatCurrency(sale.changeAmount) }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Items Card -->
+    <div class="items-card">
+      <h2 class="items-header">Productos Vendidos</h2>
+      
+      <div class="items-table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Imagen</th>
+              <th>Producto</th>
+              <th>Precio</th>
+              <th>Cantidad</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of sale.items">
+              <td>
+                <div class="product-image">
+                  <img *ngIf="item.product.images && item.product.images.length > 0" 
+                       [src]="item.product.images[0]" 
+                       [alt]="item.product.name">
+                  <mat-icon *ngIf="!item.product.images || item.product.images.length === 0" 
+                            class="no-image-icon">image_not_supported</mat-icon>
+                </div>
+              </td>
+              <td>
+                <div class="product-name">{{ item.product.name }}</div>
+                <div class="product-barcode" *ngIf="item.product.barcode">{{ item.product.barcode }}</div>
+                <div class="product-variant" *ngIf="item.variant">
+                  <ng-container *ngIf="item.variant.color">Color: {{ item.variant.color }}</ng-container>
+                  <ng-container *ngIf="item.variant.size">, Talla: {{ item.variant.size }}</ng-container>
+                </div>
+              </td>
+              <td class="product-price">{{ formatCurrency(item.salePrice) }}</td>
+              <td class="product-quantity">{{ item.quantity }}</td>
+              <td class="product-subtotal">{{ formatCurrency(item.salePrice * item.quantity) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="items-summary">
+        <div class="summary-row">
+          <div class="summary-label">Total:</div>
+          <div class="summary-value total">{{ formatCurrency(sale.totalAmount) }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Card -->
+    <div class="user-card" *ngIf="sale.user">
+      <h2 class="user-header">Vendedor</h2>
+      <div class="user-info">
+        <div class="user-avatar">
+          <ng-container *ngIf="isUserObject(sale.user); else defaultAvatar">
+            {{ getUserName(sale.user).charAt(0).toUpperCase() }}
+          </ng-container>
+          <ng-template #defaultAvatar>U</ng-template>
+        </div>
+        <div class="user-details">
+          <div class="user-name">
+            <ng-container *ngIf="isUserObject(sale.user); else unknownUser">
+              {{ getUserName(sale.user) }}
+            </ng-container>
+            <ng-template #unknownUser>Usuario desconocido</ng-template>
+          </div>
+          <div class="user-email">
+            <ng-container *ngIf="isUserObject(sale.user) && getUserEmail(sale.user); else noEmail">
+              {{ getUserEmail(sale.user) }}
+            </ng-container>
+            <ng-template #noEmail>Sin correo electrónico</ng-template>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
+</div>

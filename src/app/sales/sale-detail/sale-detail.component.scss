@@ -1,0 +1,274 @@
+@import '../../../styles.scss';
+
+.sale-detail-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+    @include flex-center;
+    z-index: 1000;
+  }
+
+  .detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-lg;
+    flex-wrap: wrap;
+    gap: $spacing-md;
+
+    .header-title {
+      margin: 0;
+      color: $gray-900;
+      font-weight: $font-weight-medium;
+      font-size: $font-size-xl;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: $spacing-sm;
+    }
+
+    @media (max-width: $breakpoint-sm) {
+      flex-direction: column;
+      align-items: flex-start;
+      
+      .header-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+  }
+
+  .sale-info-card {
+    background-color: $white;
+    border-radius: $border-radius-md;
+    padding: $spacing-lg;
+    margin-bottom: $spacing-lg;
+    @include card-shadow;
+
+    .sale-info-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: $spacing-md;
+      flex-wrap: wrap;
+      gap: $spacing-md;
+
+      .sale-date {
+        font-size: $font-size-md;
+        color: $gray-700;
+      }
+
+      .sale-id {
+        font-size: $font-size-sm;
+        color: $gray-600;
+        font-family: monospace;
+      }
+    }
+
+    .sale-info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: $spacing-md;
+      margin-bottom: $spacing-lg;
+
+      .info-item {
+        .info-label {
+          font-size: $font-size-sm;
+          color: $gray-700;
+          margin-bottom: $spacing-xs;
+        }
+
+        .info-value {
+          font-size: $font-size-md;
+          font-weight: $font-weight-medium;
+          color: $gray-900;
+
+          &.payment-method {
+            display: inline-block;
+            border-radius: $border-radius-pill;
+            padding: 4px 12px;
+            font-size: $font-size-xs;
+            font-weight: $font-weight-medium;
+            
+            &.cash {
+              background-color: $success-color;
+              color: $white;
+            }
+            
+            &.credit_card {
+              background-color: $info-color;
+              color: $white;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .items-card {
+    background-color: $white;
+    border-radius: $border-radius-md;
+    padding: $spacing-lg;
+    margin-bottom: $spacing-lg;
+    @include card-shadow;
+
+    .items-header {
+      margin-bottom: $spacing-md;
+      font-size: $font-size-lg;
+      font-weight: $font-weight-medium;
+      color: $gray-900;
+    }
+
+    .items-table-container {
+      overflow-x: auto;
+      margin-bottom: $spacing-md;
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        
+        th {
+          text-align: left;
+          padding: $spacing-sm;
+          border-bottom: 1px solid $gray-300;
+          color: $gray-700;
+          font-weight: $font-weight-medium;
+          font-size: $font-size-sm;
+        }
+        
+        td {
+          padding: $spacing-sm;
+          border-bottom: 1px solid $gray-200;
+          color: $gray-900;
+          font-size: $font-size-md;
+        }
+        
+        .product-image {
+          width: 60px;
+          height: 60px;
+          border-radius: $border-radius-sm;
+          overflow: hidden;
+          background-color: $gray-100;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+          
+          .no-image-icon {
+            color: $gray-500;
+            font-size: 24px;
+          }
+        }
+        
+        .product-name {
+          font-weight: $font-weight-medium;
+        }
+        
+        .product-variant {
+          font-size: $font-size-xs;
+          color: $gray-700;
+          background-color: $gray-200;
+          border-radius: $border-radius-pill;
+          padding: 2px 8px;
+          display: inline-block;
+        }
+        
+        .product-price, .product-subtotal {
+          font-weight: $font-weight-medium;
+          text-align: right;
+        }
+        
+        .product-quantity {
+          text-align: center;
+        }
+      }
+    }
+
+    .items-summary {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: $spacing-xs;
+      padding-top: $spacing-md;
+      border-top: 1px solid $gray-300;
+      
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        width: 250px;
+        
+        .summary-label {
+          color: $gray-700;
+        }
+        
+        .summary-value {
+          font-weight: $font-weight-medium;
+          
+          &.total {
+            font-weight: $font-weight-bold;
+            font-size: $font-size-lg;
+            color: $primary-color;
+          }
+        }
+      }
+    }
+  }
+
+  .user-card {
+    background-color: $white;
+    border-radius: $border-radius-md;
+    padding: $spacing-lg;
+    @include card-shadow;
+
+    .user-header {
+      margin-bottom: $spacing-md;
+      font-size: $font-size-lg;
+      font-weight: $font-weight-medium;
+      color: $gray-900;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: $spacing-md;
+      
+      .user-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: $primary-light;
+        color: $white;
+        @include flex-center;
+        font-size: $font-size-lg;
+        font-weight: $font-weight-bold;
+      }
+      
+      .user-details {
+        .user-name {
+          font-weight: $font-weight-medium;
+          font-size: $font-size-md;
+          color: $gray-900;
+        }
+        
+        .user-email {
+          font-size: $font-size-sm;
+          color: $gray-700;
+        }
+      }
+    }
+  }
+}

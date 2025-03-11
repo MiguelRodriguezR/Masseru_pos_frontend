@@ -1,20 +1,30 @@
+import { Product } from '../products/product.model';
+
 export interface SaleItem {
-  productId: string;
+  product: Product;
   quantity: number;
   variant?: {
-    color: string;
-    size: string;
+    color?: string;
+    size?: string;
+    [key: string]: any;
   };
+  salePrice: number;
+}
+
+export interface User {
+  _id: string;
+  name: string;
+  email: string;
 }
 
 export interface Sale {
   _id?: string;
-  user: string;
+  user: User | string;
   items: SaleItem[];
   totalAmount: number;
   paymentAmount: number;
   changeAmount: number;
-  paymentMethod: string;
+  paymentMethod: 'cash' | 'credit_card' | string;
   saleDate: string;
   createdAt?: string;
   updatedAt?: string;

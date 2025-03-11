@@ -1,21 +1,104 @@
-<div class="sale-list">
-    <h2>Ventas</h2>
-    <table mat-table [dataSource]="sales" class="mat-elevation-z8">
+<div class="sale-list-container">
+  <!-- Loading Overlay -->
+  <div *ngIf="loading" class="loading-overlay">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <!-- List Header -->
+  <div class="list-header">
+    <h1 class="list-title">Ventas</h1>
+  </div>
+
+  <!-- Filter Section -->
+  <div class="filter-container">
+    <form [formGroup]="filterForm" class="filter-form">
+      <mat-form-field appearance="outline" class="date-field">
+        <mat-label>Fecha inicial</mat-label>
+        <input matInput [matDatepicker]="startPicker" formControlName="startDate">
+        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+        <mat-datepicker #startPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="date-field">
+        <mat-label>Fecha final</mat-label>
+        <input matInput [matDatepicker]="endPicker" formControlName="endDate">
+        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+        <mat-datepicker #endPicker></mat-datepicker>
+      </mat-form-field>
+
+      <div class="filter-actions">
+        <button mat-raised-button color="primary" (click)="applyFilter()">
+          <mat-icon>filter_list</mat-icon> Filtrar
+        </button>
+        <button mat-stroked-button color="warn" (click)="resetFilter()">
+          <mat-icon>clear</mat-icon> Limpiar
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Sales Table -->
+  <div class="table-container" *ngIf="sales.length > 0; else noSales">
+    <table mat-table [dataSource]="dataSource" matSort>
+      <!-- Sale Date Column -->
       <ng-container matColumnDef="saleDate">
-        <th mat-header-cell *matHeaderCellDef>Fecha de Venta</th>
-        <td mat-cell *matCellDef="let sale">{{ sale.saleDate | date:'short' }}</td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha de Venta</th>
+        <td mat-cell *matCellDef="let sale">{{ sale.saleDate | date:'dd/MM/yyyy HH:mm' }}</td>
       </ng-container>
+
+      <!-- Total Amount Column -->
       <ng-container matColumnDef="totalAmount">
-        <th mat-header-cell *matHeaderCellDef>Total</th>
-        <td mat-cell *matCellDef="let sale">{{ sale.totalAmount }}</td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Total</th>
+        <td mat-cell *matCellDef="let sale">{{ formatCurrency(sale.totalAmount) }}</td>
       </ng-container>
+
+      <!-- Payment Method Column -->
+      <ng-container matColumnDef="paymentMethod">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Método de Pago</th>
+        <td mat-cell *matCellDef="let sale">
+          <span class="payment-method-chip {{ sale.paymentMethod }}">
+            {{ getPaymentMethodLabel(sale.paymentMethod) }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- User Column -->
+      <ng-container matColumnDef="user">
+        <th mat-header-cell *matHeaderCellDef>Vendedor</th>
+        <td mat-cell *matCellDef="let sale">
+          <span *ngIf="isUserObject(sale.user)">{{ getUserName(sale.user) }}</span>
+          <span *ngIf="!isUserObject(sale.user)">Usuario desconocido</span>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Acciones</th>
         <td mat-cell *matCellDef="let sale">
-          <button mat-button color="accent" (click)="viewSale(sale._id)">Ver Detalles</button>
+          <button mat-icon-button color="primary" class="action-button" (click)="viewSale(sale._id); $event.stopPropagation()">
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button mat-icon-button color="accent" class="action-button" (click)="generateReceipt(sale._id, $event)">
+            <mat-icon>receipt</mat-icon>
+          </button>
         </td>
       </ng-container>
-      <tr mat-header-row *matHeaderRowDef="['saleDate','totalAmount','actions']"></tr>
-      <tr mat-row *matRowDef="let row; columns: ['saleDate','totalAmount','actions']"></tr>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="viewSale(row._id)"></tr>
     </table>
   </div>
+
+  <!-- No Sales Template -->
+  <ng-template #noSales>
+    <div class="no-sales">
+      <mat-icon class="no-sales-icon">receipt_long</mat-icon>
+      <p class="no-sales-text">No hay ventas disponibles</p>
+    </div>
+  </ng-template>
+
+  <!-- Paginator -->
+  <div class="paginator-container" *ngIf="sales.length > 0">
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator>
+  </div>
+</div>
