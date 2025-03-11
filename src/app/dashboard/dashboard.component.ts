@@ -51,6 +51,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   averageTicket = 0;
   inventoryValue = 0;
   inventoryTurnover = 0;
+  operativeExpensesPercentage = 0.3
   
   // Top products
   topSellingProducts: any[] = [];
@@ -614,7 +615,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     
     // Estimate net profit (simplified - in a real app you'd include more expenses)
     // Assuming operating expenses are about 30% of gross profit
-    const operatingExpenses = this.grossProfit * 0.3;
+    const operatingExpenses = this.grossProfit * this.operativeExpensesPercentage;
     this.netProfit = this.grossProfit - operatingExpenses;
     
     // Update profit margin chart data
