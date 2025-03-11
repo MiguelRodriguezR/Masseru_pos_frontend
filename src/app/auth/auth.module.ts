@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
+import { SharedModule } from '../shared/shared.module';
 
 const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -27,6 +28,7 @@ const routes: Routes = [
     MatButtonModule,
     MatSelectModule,
     MatIconModule,
+    SharedModule,
     RouterModule.forChild(routes)
   ]
 })

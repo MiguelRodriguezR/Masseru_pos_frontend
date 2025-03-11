@@ -1,17 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { BaseService } from '../shared/base.service';
+import { EnvironmentService } from '../shared/environment.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
-  private baseUrl = environment.baseUrl;
+export class AuthService extends BaseService {
   private userDataService: any; // Will be set by setUserDataService to avoid circular dependency
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    environmentService: EnvironmentService
+  ) {
+    super(environmentService);
+  }
 
   // Method to set UserDataService to avoid circular dependency
   setUserDataService(userDataService: any): void {

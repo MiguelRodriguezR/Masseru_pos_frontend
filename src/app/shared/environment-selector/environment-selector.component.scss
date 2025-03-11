@@ -1,0 +1,49 @@
+@import '../../../styles.scss';
+
+.environment-selector-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.environment-selector {
+  width: 150px;
+  margin: 0 $spacing-md;
+  
+  ::ng-deep {
+    .mat-form-field-wrapper {
+      padding-bottom: 0;
+    }
+    
+    .mat-form-field-infix {
+      padding: 0.5em 0;
+    }
+    
+    .mat-select-value, .mat-select-arrow, .mat-form-field-label {
+      color: $white;
+    }
+    
+    .mat-form-field-underline {
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+  }
+}
+
+// Login/register page specific styles
+:host-context(.auth-container) {
+  .environment-selector-container {
+    margin-bottom: $spacing-md;
+  }
+  
+  .environment-selector {
+    ::ng-deep {
+      .mat-select-value, .mat-select-arrow, .mat-form-field-label {
+        color: $soft-purple;
+      }
+      
+      .mat-form-field-underline {
+        background-color: rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
+}

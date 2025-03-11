@@ -5,6 +5,10 @@
     </button>
   </div>
   
+  <div class="header-center">
+    <app-environment-selector></app-environment-selector>
+  </div>
+  
   <div class="header-right">
     <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-button">
       <span class="username">{{ currentUser?.name || 'User' }}</span>

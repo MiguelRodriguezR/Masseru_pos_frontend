@@ -8,6 +8,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { TokenInterceptor } from '../app/token.interceptor';
+import { EnvironmentInterceptor } from '../app/environment.interceptor';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { SharedModule } from './shared/shared.module';
 
@@ -34,6 +35,7 @@ registerLocaleData(localeEs);
     SharedModule
   ],
   providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: EnvironmentInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
     { provide: LOCALE_ID, useValue: 'es' }
   ],
