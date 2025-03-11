@@ -1,4 +1,4 @@
-<div class="environment-selector-container" *ngIf="!isProduction">
+<div class="environment-selector-container" *ngIf="showSelector">
   <mat-form-field appearance="fill" class="environment-selector">
     <mat-label>Environment</mat-label>
     <mat-select [value]="selectedEnvironment" (selectionChange)="onEnvironmentChange($event.value)">

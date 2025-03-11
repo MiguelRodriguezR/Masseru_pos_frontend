@@ -11,8 +11,10 @@ export interface EnvironmentConfig {
   providedIn: 'root'
 })
 export class EnvironmentService {
+  private masseruServerURL = 'http://100.73.149.127:3000'
+
   private availableEnvironments: EnvironmentConfig[] = [
-    { baseUrl: 'http://100.73.149.127:3000', name: 'Remote' },
+    { baseUrl: this.masseruServerURL, name: 'Remote' },
     { baseUrl: 'http://localhost:3000', name: 'Local' }
   ];
 
@@ -23,9 +25,15 @@ export class EnvironmentService {
   public currentEnvironment$ = this.currentEnvironmentSubject.asObservable();
 
   constructor() {
-    // If we're in production mode, force the remote environment
+    // If we're in production mode, force the remote environment and don't allow changes
     if (environment.production) {
-      this.currentEnvironmentSubject.next(this.availableEnvironments[0]);
+      // Make sure we're using the remote environment in production
+      const remoteEnv = this.availableEnvironments.find(env => env.baseUrl === this.masseruServerURL);
+      if (remoteEnv) {
+        this.currentEnvironmentSubject.next(remoteEnv);
+      } else {
+        this.currentEnvironmentSubject.next(this.availableEnvironments[0]);
+      }
     }
   }
 
@@ -44,7 +52,10 @@ export class EnvironmentService {
       return;
     }
     
-    this.currentEnvironmentSubject.next(env);
+    // Only update if we're in development mode
+    if (!environment.production) {
+      this.currentEnvironmentSubject.next(env);
+    }
   }
 
   getBaseUrl(): string {
