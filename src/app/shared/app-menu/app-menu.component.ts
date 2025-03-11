@@ -17,7 +17,7 @@ export class AppMenuComponent {
     { name: 'Dashboard', route: '/dashboard', icon: 'dashboard' },
     { name: 'POS', route: '/pos', icon: 'point_of_sale' },
     { name: 'Productos', route: '/products', icon: 'inventory_2' },
-    { name: 'Recivos', route: '/receipts', icon: 'receipt' },
+    { name: 'Recibos', route: '/receipts', icon: 'receipt' },
     { name: 'Ventas', route: '/sales', icon: 'trending_up' },
     { name: 'Usuarios', route: '/users', icon: 'people' }
   ];
