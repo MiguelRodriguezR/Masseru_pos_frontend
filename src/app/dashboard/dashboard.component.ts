@@ -398,10 +398,12 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   
   applyFilter(): void {
+    this.loading = true;
     this.loadAllStats();
   }
   
   resetFilter(): void {
+    this.loading = true;
     this.filterForm.reset({
       startDate: '',
       endDate: '',
@@ -420,6 +422,15 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     // Process sales data for charts if available
     if (data.sales && data.sales.length > 0) {
       this.processSalesChartData(data.sales);
+    } else {
+      // Reset chart data if no sales
+      this.salesChartData.labels = [];
+      this.salesChartData.datasets[0].data = [];
+      
+      // Update chart if it exists
+      if (this.salesChart) {
+        this.salesChart.update();
+      }
     }
   }
   
@@ -434,6 +445,15 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     // Process product data for charts
     if (this.topSellingProducts.length > 0) {
       this.processProductSalesChartData(this.topSellingProducts.slice(0, 5));
+    } else {
+      // Reset chart data if no products
+      this.productSalesChartData.labels = [];
+      this.productSalesChartData.datasets[0].data = [];
+      
+      // Update chart if it exists
+      if (this.productSalesChart) {
+        this.productSalesChart.update();
+      }
     }
   }
   
@@ -446,11 +466,29 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     // Process customer flow data for charts
     if (data.customerFlow && data.customerFlow.length > 0) {
       this.processSalesChartData(data.customerFlow);
+    } else {
+      // Reset sales chart if no customer flow data
+      this.salesChartData.labels = [];
+      this.salesChartData.datasets[0].data = [];
+      
+      // Update chart if it exists
+      if (this.salesChart) {
+        this.salesChart.update();
+      }
     }
     
     // Process peak hours data for charts
     if (data.peakHours && data.peakHours.length > 0) {
       this.processPeakHoursChartData(data.peakHours);
+    } else {
+      // Reset peak hours chart if no peak hours data
+      this.peakHoursChartData.labels = [];
+      this.peakHoursChartData.datasets[0].data = [];
+      
+      // Update chart if it exists
+      if (this.peakHoursChart) {
+        this.peakHoursChart.update();
+      }
     }
   }
   
@@ -459,7 +497,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     
     this.posSessionStats = data;
     
-    // Update payment method chart data
+    // Update payment method chart data with zeros if no data
     this.paymentMethodChartData.datasets[0].data = [
       data.totalCashSales || 0,
       data.totalCardSales || 0
@@ -472,6 +510,18 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   
   processSalesChartData(sales: any[]): void {
+    if (!sales || sales.length === 0) {
+      // Reset chart data if no sales
+      this.salesChartData.labels = [];
+      this.salesChartData.datasets[0].data = [];
+      
+      // Update chart if it exists
+      if (this.salesChart) {
+        this.salesChart.update();
+      }
+      return;
+    }
+    
     // Group sales by date
     const salesByDate: Record<string, number> = {};
     
@@ -499,6 +549,18 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   
   processProductSalesChartData(products: any[]): void {
+    if (!products || products.length === 0) {
+      // Reset chart data if no products
+      this.productSalesChartData.labels = [];
+      this.productSalesChartData.datasets[0].data = [];
+      
+      // Update chart if it exists
+      if (this.productSalesChart) {
+        this.productSalesChart.update();
+      }
+      return;
+    }
+    
     this.productSalesChartData.labels = products.map(p => p.name);
     this.productSalesChartData.datasets[0].data = products.map(p => p.totalQuantity);
     
@@ -509,6 +571,18 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   
   processPeakHoursChartData(peakHours: any[]): void {
+    if (!peakHours || peakHours.length === 0) {
+      // Reset chart data if no peak hours
+      this.peakHoursChartData.labels = [];
+      this.peakHoursChartData.datasets[0].data = [];
+      
+      // Update chart if it exists
+      if (this.peakHoursChart) {
+        this.peakHoursChart.update();
+      }
+      return;
+    }
+    
     // Format hours (e.g., "8:00", "9:00", etc.)
     this.peakHoursChartData.labels = peakHours.map(ph => `${ph.hour}:00`);
     this.peakHoursChartData.datasets[0].data = peakHours.map(ph => ph.count);
@@ -521,9 +595,19 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   
   calculateProfitMargins(): void {
     if (!this.salesStats.sales || this.salesStats.sales.length === 0) {
+      // Reset profit values if no sales data
+      this.grossProfit = 0;
+      this.netProfit = 0;
+      
+      // Update profit margin chart with zeros
+      this.profitMarginChartData.datasets[0].data = [0, 0];
+      if (this.profitMarginChart) {
+        this.profitMarginChart.update();
+      }
       return;
     }
     
+    // Calculate margins based on filtered sales data
     const margins = this.statsService.calculateProfitMargins(this.salesStats.sales);
     
     this.grossProfit = margins.grossProfit;
@@ -546,7 +630,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   
   calculateInventoryTurnover(): void {
-    if (!this.salesStats.sales || !this.products) {
+    if (!this.salesStats.sales || this.salesStats.sales.length === 0 || !this.products) {
+      // Reset inventory turnover if no sales data
+      this.inventoryTurnover = 0;
       return;
     }
     
@@ -559,7 +645,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   calculateReinvestmentSuggestion(): void {
     // Simple reinvestment suggestion based on profit and inventory
     // In a real app, this would be more sophisticated
-    if (this.netProfit <= 0 || !this.lowStockProducts) {
+    if (this.netProfit <= 0 || !this.lowStockProducts || this.lowStockProducts.length === 0) {
       return;
     }
     
@@ -567,13 +653,11 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     const reinvestmentAmount = this.netProfit * 0.4;
     
     // Prioritize low stock products
-    if (this.lowStockProducts.length > 0) {
-      const criticalProducts = this.getCriticalProductsText();
-      
-      if (criticalProducts) {
-        // This would be displayed in the UI
-        console.log(`Sugerencia: Reinvertir ${reinvestmentAmount.toLocaleString('es', {style: 'currency', currency: 'COP'})} en inventario, priorizando: ${criticalProducts}`);
-      }
+    const criticalProducts = this.getCriticalProductsText();
+    
+    if (criticalProducts) {
+      // This would be displayed in the UI
+      console.log(`Sugerencia: Reinvertir ${reinvestmentAmount.toLocaleString('es', {style: 'currency', currency: 'COP'})} en inventario, priorizando: ${criticalProducts}`);
     }
   }
   
