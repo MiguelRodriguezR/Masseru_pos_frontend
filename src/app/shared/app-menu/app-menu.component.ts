@@ -16,10 +16,10 @@ export class AppMenuComponent {
   menuItems: MenuItem[] = [
     { name: 'Dashboard', route: '/dashboard', icon: 'dashboard' },
     { name: 'POS', route: '/pos', icon: 'point_of_sale' },
-    { name: 'Products', route: '/products', icon: 'inventory_2' },
-    { name: 'Receipts', route: '/receipts', icon: 'receipt' },
-    { name: 'Sales', route: '/sales', icon: 'trending_up' },
-    { name: 'Users', route: '/users', icon: 'people' }
+    { name: 'Productos', route: '/products', icon: 'inventory_2' },
+    { name: 'Recivos', route: '/receipts', icon: 'receipt' },
+    { name: 'Ventas', route: '/sales', icon: 'trending_up' },
+    { name: 'Usuarios', route: '/users', icon: 'people' }
   ];
 
   constructor(private router: Router) {}
