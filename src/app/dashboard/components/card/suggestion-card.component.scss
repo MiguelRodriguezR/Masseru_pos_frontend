@@ -1,0 +1,19 @@
+@import '../../../../styles.scss';
+
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+:host ::ng-deep p {
+  margin-bottom: $spacing-sm;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+  
+  strong {
+    font-weight: $font-weight-bold;
+  }
+}

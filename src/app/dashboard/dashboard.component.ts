@@ -18,14 +18,12 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('productSalesChart') productSalesChartRef!: ElementRef;
   @ViewChild('peakHoursChart') peakHoursChartRef!: ElementRef;
   @ViewChild('profitMarginChart') profitMarginChartRef!: ElementRef;
-  @ViewChild('paymentMethodChart') paymentMethodChartRef!: ElementRef;
   
   // Chart instances
   salesChart: Chart | undefined;
   productSalesChart: Chart | undefined;
   peakHoursChart: Chart | undefined;
   profitMarginChart: Chart | undefined;
-  paymentMethodChart: Chart | undefined;
   
   // Loading states
   loading = true;
@@ -147,7 +145,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   
   ngAfterViewInit(): void {
-    // Charts will be initialized after data is loaded
+    // Charts will be initialized after data is loaded in loadAllStats
   }
   
   ngOnDestroy(): void {
@@ -156,7 +154,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.productSalesChart) this.productSalesChart.destroy();
     if (this.peakHoursChart) this.peakHoursChart.destroy();
     if (this.profitMarginChart) this.profitMarginChart.destroy();
-    if (this.paymentMethodChart) this.paymentMethodChart.destroy();
     
     this.destroy$.next();
     this.destroy$.complete();
@@ -255,25 +252,33 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   
   initializeCharts(): void {
-    // Only initialize charts if the elements exist
-    if (this.salesChartRef && this.salesChartRef.nativeElement) {
-      this.initSalesChart();
+    // The chart components will handle their own initialization
+    // We just need to make sure the chart data is updated
+    
+    // Update sales chart data
+    if (this.salesChartData) {
+      // Create a new object to trigger change detection
+      this.salesChartData = { ...this.salesChartData };
     }
     
-    if (this.productSalesChartRef && this.productSalesChartRef.nativeElement) {
-      this.initProductSalesChart();
+    // Update product sales chart data
+    if (this.productSalesChartData) {
+      this.productSalesChartData = { ...this.productSalesChartData };
     }
     
-    if (this.peakHoursChartRef && this.peakHoursChartRef.nativeElement) {
-      this.initPeakHoursChart();
+    // Update peak hours chart data
+    if (this.peakHoursChartData) {
+      this.peakHoursChartData = { ...this.peakHoursChartData };
     }
     
-    if (this.profitMarginChartRef && this.profitMarginChartRef.nativeElement) {
-      this.initProfitMarginChart();
+    // Update profit margin chart data
+    if (this.profitMarginChartData) {
+      this.profitMarginChartData = { ...this.profitMarginChartData };
     }
     
-    if (this.paymentMethodChartRef && this.paymentMethodChartRef.nativeElement) {
-      this.initPaymentMethodChart();
+    // Update payment method chart data
+    if (this.paymentMethodChartData) {
+      this.paymentMethodChartData = { ...this.paymentMethodChartData };
     }
   }
   
@@ -375,28 +380,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
   
-  initPaymentMethodChart(): void {
-    const ctx = this.paymentMethodChartRef.nativeElement.getContext('2d');
-    
-    // Destroy previous chart instance if it exists
-    if (this.paymentMethodChart) {
-      this.paymentMethodChart.destroy();
-    }
-    
-    this.paymentMethodChart = new Chart(ctx, {
-      type: 'pie',
-      data: this.paymentMethodChartData,
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'bottom'
-          }
-        }
-      }
-    });
-  }
+  // Payment method chart is now handled by the PaymentChartComponent
   
   applyFilter(): void {
     this.loading = true;
@@ -504,10 +488,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       data.totalCardSales || 0
     ];
     
-    // Update chart if it exists
-    if (this.paymentMethodChart) {
-      this.paymentMethodChart.update();
-    }
+    // The PaymentChartComponent will handle the chart update
+    // when the paymentMethodChartData changes
   }
   
   processSalesChartData(sales: any[]): void {

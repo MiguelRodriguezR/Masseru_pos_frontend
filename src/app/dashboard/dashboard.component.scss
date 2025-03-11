@@ -44,7 +44,7 @@
     
     .filter-actions {
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       gap: $spacing-sm;
       
       @media (max-width: $breakpoint-sm) {
@@ -56,108 +56,34 @@
 }
 
 .dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: $spacing-md;
   margin-bottom: $spacing-lg;
+  width: 100%;
   
-  @media (max-width: $breakpoint-lg) {
-    grid-template-columns: repeat(6, 1fr);
+  > * {
+    flex: 1 1 0;
+    min-width: 250px;
   }
   
   @media (max-width: $breakpoint-sm) {
-    grid-template-columns: 1fr;
-  }
-}
-
-.dashboard-card {
-  @include card-shadow;
-  border-radius: $border-radius-md;
-  background-color: $white;
-  overflow: hidden;
-  
-  &.full-width {
-    grid-column: span 12;
+    gap: $spacing-sm;
+    flex-direction: column;
     
-    @media (max-width: $breakpoint-lg) {
-      grid-column: span 6;
-    }
-    
-    @media (max-width: $breakpoint-sm) {
-      grid-column: span 1;
-    }
-  }
-  
-  &.half-width {
-    grid-column: span 6;
-    
-    @media (max-width: $breakpoint-lg) {
-      grid-column: span 3;
-    }
-    
-    @media (max-width: $breakpoint-sm) {
-      grid-column: span 1;
-    }
-  }
-  
-  &.third-width {
-    grid-column: span 4;
-    
-    @media (max-width: $breakpoint-lg) {
-      grid-column: span 2;
-    }
-    
-    @media (max-width: $breakpoint-sm) {
-      grid-column: span 1;
-    }
-  }
-  
-  &.quarter-width {
-    grid-column: span 3;
-    
-    @media (max-width: $breakpoint-lg) {
-      grid-column: span 2;
-    }
-    
-    @media (max-width: $breakpoint-sm) {
-      grid-column: span 1;
-    }
-  }
-  
-  .card-header {
-    padding: $spacing-md;
-    border-bottom: 1px solid $gray-200;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    
-    h2 {
-      margin: 0;
-      font-size: $font-size-lg;
-      font-weight: $font-weight-medium;
-      color: $gray-900;
-    }
-    
-    .card-actions {
-      display: flex;
-      gap: $spacing-xs;
-    }
-  }
-  
-  .card-content {
-    padding: $spacing-md;
-    
-    &.chart-container {
-      height: 300px;
-      position: relative;
-      
-      @media (max-width: $breakpoint-md) {
-        height: 250px;
-      }
+    > * {
+      min-width: 100%;
     }
   }
 }
 
+.loading-container {
+  @include flex-center;
+  min-height: 200px;
+}
+
+// Stat card styles for the dashboard component
+// These are used in the component templates
 .stat-card {
   display: flex;
   flex-direction: column;
@@ -173,63 +99,19 @@
     font-size: $font-size-sm;
     color: $gray-600;
   }
+}
+
+// Chart container styles
+.chart-container {
+  height: 300px;
+  position: relative;
   
-  .stat-change {
-    display: flex;
-    align-items: center;
-    font-size: $font-size-sm;
-    margin-top: $spacing-xs;
-    
-    &.positive {
-      color: $success-color;
-    }
-    
-    &.negative {
-      color: $error-color;
-    }
-    
-    mat-icon {
-      font-size: 16px;
-      height: 16px;
-      width: 16px;
-      margin-right: $spacing-xs;
-    }
+  @media (max-width: $breakpoint-md) {
+    height: 250px;
   }
 }
 
-.table-container {
-  overflow-x: auto;
-  
-  table {
-    width: 100%;
-    
-    th.mat-header-cell {
-      font-weight: $font-weight-medium;
-      color: $gray-700;
-    }
-    
-    .mat-column-actions {
-      width: 100px;
-      text-align: right;
-    }
-  }
-}
-
-.loading-container {
-  @include flex-center;
-  min-height: 200px;
-}
-
-.tab-container {
-  .mat-tab-group {
-    height: 100%;
-  }
-  
-  .mat-tab-body-wrapper {
-    flex-grow: 1;
-  }
-}
-
+// No data message styles
 .no-data-message {
   @include flex-center;
   flex-direction: column;

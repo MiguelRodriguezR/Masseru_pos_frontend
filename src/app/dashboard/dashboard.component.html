@@ -52,221 +52,162 @@
     <!-- Summary Cards -->
     <div class="dashboard-grid">
       <!-- Total Sales -->
-      <div class="dashboard-card quarter-width">
-        <div class="card-header">
-          <h2>Ventas Totales</h2>
-        </div>
-        <div class="card-content">
-          <div class="stat-card">
-            <div class="stat-value">{{ totalSales }}</div>
-            <div class="stat-label">Transacciones</div>
-          </div>
-        </div>
-      </div>
+      <app-summary-stat-card
+        title="Ventas Totales"
+        [value]="totalSales"
+        label="Transacciones">
+      </app-summary-stat-card>
 
       <!-- Average Ticket -->
-      <div class="dashboard-card quarter-width">
-        <div class="card-header">
-          <h2>Ticket Promedio</h2>
-        </div>
-        <div class="card-content">
-          <div class="stat-card">
-            <div class="stat-value">{{ averageTicket.toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</div>
-            <div class="stat-label">Por venta</div>
-          </div>
-        </div>
-      </div>
+      <app-summary-stat-card
+        title="Ticket Promedio"
+        [value]="averageTicket.toLocaleString('es', {style: 'currency', currency: 'COP'})"
+        label="Por venta">
+      </app-summary-stat-card>
 
       <!-- Gross Profit -->
-      <div class="dashboard-card quarter-width">
-        <div class="card-header">
-          <h2>Ganancia Bruta</h2>
-        </div>
-        <div class="card-content">
-          <div class="stat-card">
-            <div class="stat-value">{{ grossProfit.toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</div>
-            <div class="stat-label">Antes de gastos</div>
-          </div>
-        </div>
-      </div>
+      <app-summary-stat-card
+        title="Ganancia Bruta"
+        [value]="grossProfit.toLocaleString('es', {style: 'currency', currency: 'COP'})"
+        label="Antes de gastos">
+      </app-summary-stat-card>
 
       <!-- Net Profit -->
-      <div class="dashboard-card quarter-width">
-        <div class="card-header">
-          <h2>Ganancia Neta</h2>
-        </div>
-        <div class="card-content">
-          <div class="stat-card">
-            <div class="stat-value">{{ netProfit.toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</div>
-            <div class="stat-label">Después de gastos, considerando gastos en {{operativeExpensesPercentage * 100}}%</div>
-          </div>
-        </div>
-      </div>
+      <app-summary-stat-card
+        title="Ganancia Neta"
+        [value]="netProfit.toLocaleString('es', {style: 'currency', currency: 'COP'})"
+        [label]="'Después de gastos, considerando gastos en ' + (operativeExpensesPercentage * 100) + '%'">
+      </app-summary-stat-card>
     </div>
 
     <!-- Charts Section -->
     <div class="dashboard-grid">
       <!-- Sales Trend Chart -->
-      <div class="dashboard-card half-width">
-        <div class="card-header">
-          <h2>Flujo de Ventas</h2>
-        </div>
-        <div class="card-content chart-container">
-          <canvas #salesChart></canvas>
-        </div>
-      </div>
+      <app-chart-card
+        title="Flujo de Ventas"
+        chartType="line"
+        [chartData]="salesChartData">
+        <canvas #salesChart></canvas>
+      </app-chart-card>
 
       <!-- Profit Margin Chart -->
-      <div class="dashboard-card half-width">
-        <div class="card-header">
-          <h2>Margen de Beneficio</h2>
-        </div>
-        <div class="card-content chart-container">
-          <canvas #profitMarginChart></canvas>
-        </div>
-      </div>
+      <app-chart-card
+        title="Margen de Beneficio"
+        chartType="doughnut"
+        [chartData]="profitMarginChartData">
+        <canvas #profitMarginChart></canvas>
+      </app-chart-card>
     </div>
 
     <!-- Product and Customer Section -->
     <div class="dashboard-grid">
       <!-- Top Selling Products -->
-      <div class="dashboard-card half-width">
-        <div class="card-header">
-          <h2>Productos Más Vendidos</h2>
-        </div>
-        <div class="card-content chart-container">
-          <canvas #productSalesChart></canvas>
-        </div>
-      </div>
+      <app-chart-card
+        title="Productos Más Vendidos"
+        chartType="bar"
+        [chartData]="productSalesChartData">
+        <canvas #productSalesChart></canvas>
+      </app-chart-card>
 
       <!-- Peak Hours Chart -->
-      <div class="dashboard-card half-width">
-        <div class="card-header">
-          <h2>Horas Pico</h2>
-        </div>
-        <div class="card-content chart-container">
-          <canvas #peakHoursChart></canvas>
-        </div>
-      </div>
+      <app-chart-card
+        title="Horas Pico"
+        chartType="bar"
+        [chartData]="peakHoursChartData">
+        <canvas #peakHoursChart></canvas>
+      </app-chart-card>
     </div>
 
     <!-- Inventory and POS Section -->
     <div class="dashboard-grid">
       <!-- Inventory Status -->
-      <div class="dashboard-card third-width">
-        <div class="card-header">
-          <h2>Inventario</h2>
+      <app-stat-card title="Inventario">
+        <div class="stat-card">
+          <div class="stat-value">{{ inventoryValue.toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</div>
+          <div class="stat-label">Valor total</div>
         </div>
-        <div class="card-content">
-          <div class="stat-card">
-            <div class="stat-value">{{ inventoryValue.toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</div>
-            <div class="stat-label">Valor total</div>
-          </div>
-          <div class="stat-card" style="margin-top: 1rem;">
-            <div class="stat-value">{{ inventoryTurnover | number:'1.1-2' }}</div>
-            <div class="stat-label">Rotación de stock</div>
-          </div>
+        <div class="stat-card" style="margin-top: 1rem;">
+          <div class="stat-value">{{ inventoryTurnover | number:'1.1-2' }}</div>
+          <div class="stat-label">Rotación de stock</div>
         </div>
-      </div>
+      </app-stat-card>
 
       <!-- Payment Methods -->
-      <div class="dashboard-card third-width">
-        <div class="card-header">
-          <h2>Métodos de Pago</h2>
-        </div>
-        <div class="card-content chart-container">
-          <canvas #paymentMethodChart></canvas>
-        </div>
-      </div>
+      <app-stat-card title="Métodos de Pago">
+        <app-payment-chart [chartData]="paymentMethodChartData"></app-payment-chart>
+      </app-stat-card>
 
       <!-- POS Sessions -->
-      <div class="dashboard-card third-width">
-        <div class="card-header">
-          <h2>Sesiones POS</h2>
+      <app-stat-card title="Sesiones POS">
+        <div class="stat-card">
+          <div class="stat-value">{{ posSessionStats?.totalSessions || 0 }}</div>
+          <div class="stat-label">Total sesiones</div>
         </div>
-        <div class="card-content">
-          <div class="stat-card">
-            <div class="stat-value">{{ posSessionStats?.totalSessions || 0 }}</div>
-            <div class="stat-label">Total sesiones</div>
-          </div>
-          <div class="stat-card" style="margin-top: 1rem;">
-            <div class="stat-value">{{ posSessionStats?.activeSessions || 0 }}</div>
-            <div class="stat-label">Sesiones activas</div>
-          </div>
+        <div class="stat-card" style="margin-top: 1rem;">
+          <div class="stat-value">{{ posSessionStats?.activeSessions || 0 }}</div>
+          <div class="stat-label">Sesiones activas</div>
         </div>
-      </div>
+      </app-stat-card>
     </div>
 
     <!-- Low Stock Products Table -->
     <div class="dashboard-grid">
-      <div class="dashboard-card full-width">
-        <div class="card-header">
-          <h2>Productos con Bajo Stock</h2>
+      <app-table-card title="Productos con Bajo Stock">
+        <table mat-table [dataSource]="lowStockProducts" *ngIf="lowStockProducts.length > 0">
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Producto</th>
+            <td mat-cell *matCellDef="let product">{{ product.name }}</td>
+          </ng-container>
+
+          <!-- Quantity Column -->
+          <ng-container matColumnDef="quantity">
+            <th mat-header-cell *matHeaderCellDef>Stock Actual</th>
+            <td mat-cell *matCellDef="let product">{{ product.quantity }}</td>
+          </ng-container>
+
+          <!-- Sale Price Column -->
+          <ng-container matColumnDef="salePrice">
+            <th mat-header-cell *matHeaderCellDef>Precio de Venta</th>
+            <td mat-cell *matCellDef="let product">{{ product.salePrice.toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</td>
+          </ng-container>
+
+          <!-- Purchase Cost Column -->
+          <ng-container matColumnDef="purchaseCost">
+            <th mat-header-cell *matHeaderCellDef>Costo de Compra</th>
+            <td mat-cell *matCellDef="let product">{{ product.purchaseCost.toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</td>
+          </ng-container>
+
+          <!-- Total Sales Column -->
+          <ng-container matColumnDef="totalSales">
+            <th mat-header-cell *matHeaderCellDef>Ventas Totales</th>
+            <td mat-cell *matCellDef="let product">{{ product.totalSales.toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="['name', 'quantity', 'salePrice', 'purchaseCost', 'totalSales']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['name', 'quantity', 'salePrice', 'purchaseCost', 'totalSales'];"></tr>
+        </table>
+
+        <div *ngIf="lowStockProducts.length === 0" class="no-data-message">
+          <mat-icon>inventory_2</mat-icon>
+          <p>No hay productos con bajo stock</p>
         </div>
-        <div class="card-content">
-          <div class="table-container">
-            <table mat-table [dataSource]="lowStockProducts" *ngIf="lowStockProducts.length > 0">
-              <!-- Name Column -->
-              <ng-container matColumnDef="name">
-                <th mat-header-cell *matHeaderCellDef>Producto</th>
-                <td mat-cell *matCellDef="let product">{{ product.name }}</td>
-              </ng-container>
-
-              <!-- Quantity Column -->
-              <ng-container matColumnDef="quantity">
-                <th mat-header-cell *matHeaderCellDef>Stock Actual</th>
-                <td mat-cell *matCellDef="let product">{{ product.quantity }}</td>
-              </ng-container>
-
-              <!-- Sale Price Column -->
-              <ng-container matColumnDef="salePrice">
-                <th mat-header-cell *matHeaderCellDef>Precio de Venta</th>
-                <td mat-cell *matCellDef="let product">{{ product.salePrice.toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</td>
-              </ng-container>
-
-              <!-- Purchase Cost Column -->
-              <ng-container matColumnDef="purchaseCost">
-                <th mat-header-cell *matHeaderCellDef>Costo de Compra</th>
-                <td mat-cell *matCellDef="let product">{{ product.purchaseCost.toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</td>
-              </ng-container>
-
-              <!-- Total Sales Column -->
-              <ng-container matColumnDef="totalSales">
-                <th mat-header-cell *matHeaderCellDef>Ventas Totales</th>
-                <td mat-cell *matCellDef="let product">{{ product.totalSales.toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</td>
-              </ng-container>
-
-              <tr mat-header-row *matHeaderRowDef="['name', 'quantity', 'salePrice', 'purchaseCost', 'totalSales']"></tr>
-              <tr mat-row *matRowDef="let row; columns: ['name', 'quantity', 'salePrice', 'purchaseCost', 'totalSales'];"></tr>
-            </table>
-
-            <div *ngIf="lowStockProducts.length === 0" class="no-data-message">
-              <mat-icon>inventory_2</mat-icon>
-              <p>No hay productos con bajo stock</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      </app-table-card>
     </div>
 
     <!-- Reinvestment Suggestion -->
     <div class="dashboard-grid" *ngIf="netProfit > 0 && lowStockProducts.length > 0">
-      <div class="dashboard-card full-width">
-        <div class="card-header">
-          <h2>Sugerencia de Reinversión</h2>
-        </div>
-        <div class="card-content">
-          <p>
-            Basado en su ganancia neta actual de <strong>{{ netProfit.toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</strong>, 
-            se recomienda reinvertir aproximadamente <strong>{{ (netProfit * 0.4).toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</strong> 
-            en inventario.
-          </p>
-          <p *ngIf="lowStockProducts.length > 0">
-            <strong>Prioridad de reabastecimiento:</strong> 
-            {{ getCriticalProductsText() }}
-          </p>
-        </div>
-      </div>
+      <app-suggestion-card title="Sugerencia de Reinversión">
+        <p>
+          Basado en su ganancia neta actual de <strong>{{ netProfit.toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</strong>, 
+          se recomienda reinvertir aproximadamente <strong>{{ (netProfit * 0.4).toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</strong> 
+          en inventario.
+        </p>
+        <p *ngIf="lowStockProducts.length > 0">
+          <strong>Prioridad de reabastecimiento:</strong> 
+          {{ getCriticalProductsText() }}
+        </p>
+      </app-suggestion-card>
     </div>
   </div>
 </div>

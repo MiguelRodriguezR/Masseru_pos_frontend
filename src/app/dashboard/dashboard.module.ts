@@ -17,12 +17,32 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SharedModule } from '../shared/shared.module';
 
+// Card Components
+import {
+  BaseCardComponent,
+  SummaryStatCardComponent,
+  ChartCardComponent,
+  StatCardComponent,
+  TableCardComponent,
+  SuggestionCardComponent,
+  PaymentChartComponent
+} from './components/card';
+
 const routes: Routes = [
   { path: '', component: DashboardComponent }
 ];
 
 @NgModule({
-  declarations: [DashboardComponent],
+  declarations: [
+    DashboardComponent,
+    BaseCardComponent,
+    SummaryStatCardComponent,
+    ChartCardComponent,
+    StatCardComponent,
+    TableCardComponent,
+    SuggestionCardComponent,
+    PaymentChartComponent
+  ],
   imports: [
     CommonModule,
     FormsModule,

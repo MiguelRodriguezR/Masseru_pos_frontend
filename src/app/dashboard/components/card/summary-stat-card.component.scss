@@ -1,0 +1,49 @@
+@import '../../../../styles.scss';
+
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  
+  .stat-value {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    color: $primary-color;
+    margin-bottom: $spacing-xs;
+    word-break: break-word;
+  }
+  
+  .stat-label {
+    font-size: $font-size-sm;
+    color: $gray-600;
+  }
+  
+  .stat-change {
+    display: flex;
+    align-items: center;
+    font-size: $font-size-sm;
+    margin-top: $spacing-xs;
+    
+    &.positive {
+      color: $success-color;
+    }
+    
+    &.negative {
+      color: $error-color;
+    }
+    
+    mat-icon {
+      font-size: 16px;
+      height: 16px;
+      width: 16px;
+      margin-right: $spacing-xs;
+    }
+  }
+}

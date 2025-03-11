@@ -1,0 +1,57 @@
+@import '../../../../styles.scss';
+
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  
+  &.full-width {
+    width: 100%;
+  }
+}
+
+.dashboard-card {
+  @include card-shadow;
+  border-radius: $border-radius-md;
+  background-color: $white;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  
+  .card-header {
+    padding: $spacing-md;
+    border-bottom: 1px solid $gray-200;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    h2 {
+      margin: 0;
+      font-size: $font-size-lg;
+      font-weight: $font-weight-medium;
+      color: $gray-900;
+    }
+    
+    .card-actions {
+      display: flex;
+      gap: $spacing-xs;
+    }
+  }
+  
+  .card-content {
+    padding: $spacing-md;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    
+    &.chart-container {
+      height: 300px;
+      position: relative;
+      
+      @media (max-width: $breakpoint-md) {
+        height: 250px;
+      }
+    }
+  }
+}

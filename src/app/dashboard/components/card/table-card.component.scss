@@ -1,0 +1,41 @@
+@import '../../../../styles.scss';
+
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+:host ::ng-deep .table-container {
+  overflow-x: auto;
+  width: 100%;
+  
+  table {
+    width: 100%;
+    
+    th.mat-header-cell {
+      font-weight: $font-weight-medium;
+      color: $gray-700;
+    }
+    
+    .mat-column-actions {
+      width: 100px;
+      text-align: right;
+    }
+  }
+}
+
+:host ::ng-deep .no-data-message {
+  @include flex-center;
+  flex-direction: column;
+  min-height: 200px;
+  color: $gray-600;
+  
+  mat-icon {
+    font-size: 48px;
+    height: 48px;
+    width: 48px;
+    margin-bottom: $spacing-sm;
+    opacity: 0.5;
+  }
+}
