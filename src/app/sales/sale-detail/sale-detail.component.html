@@ -32,7 +32,7 @@
         </div>
         <div class="info-item">
           <div class="info-label">Método de Pago</div>
-          <div class="info-value payment-method" style="background-color: {{sale.paymentMethod.color}};">
+          <div class="info-value payment-method" [style.background-color]="sale.paymentMethod.color">
             {{ sale.paymentMethod.name }}
           </div>
         </div>

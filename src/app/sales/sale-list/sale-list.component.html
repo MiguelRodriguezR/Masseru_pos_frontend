@@ -79,7 +79,7 @@
       <ng-container matColumnDef="paymentMethod">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Método de Pago</th>
         <td mat-cell *matCellDef="let sale">
-          <span class="payment-method-chip" style="background-color: {{sale.paymentMethod.color}};">
+          <span class="payment-method-chip" [style.background-color]="sale.paymentMethod.color">
             {{ sale.paymentMethod.name }}
           </span>
         </td>
