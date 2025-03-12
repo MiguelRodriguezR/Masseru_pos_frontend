@@ -1,22 +1,146 @@
-<div *ngIf="user">
-    <h2>Detalle del Usuario</h2>
-    <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
-      <mat-form-field appearance="fill">
-        <mat-label>Nombre</mat-label>
-        <input matInput formControlName="name">
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label>Email</mat-label>
-        <input matInput formControlName="email">
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label>Rol</mat-label>
-        <mat-select formControlName="role">
-          <mat-option value="admin">Admin</mat-option>
-          <mat-option value="editor">Editor</mat-option>
-          <mat-option value="seller">Seller</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <button mat-raised-button color="primary" type="submit">Actualizar</button>
-    </form>
+<div class="user-detail-container">
+  <!-- Loading Overlay -->
+  <div *ngIf="loading" class="loading-overlay">
+    <mat-spinner></mat-spinner>
   </div>
+
+  <div *ngIf="user">
+    <!-- User Header -->
+    <div class="user-header">
+      <div class="user-title-container">
+        <h1 class="user-title">{{ user.name }}</h1>
+        <span class="status-badge" [ngClass]="getStatusBadgeClass(user.approved)">
+          {{ user.approved ? 'Aprobado' : 'Pendiente' }}
+        </span>
+      </div>
+      <div class="action-buttons">
+        <!-- Approve button for unapproved users -->
+        <button 
+          mat-raised-button 
+          color="accent" 
+          *ngIf="canApproveUser && !user.approved"
+          (click)="approveUser()">
+          <mat-icon>check_circle</mat-icon> Aprobar Usuario
+        </button>
+        
+        <button mat-stroked-button color="primary" (click)="editMode = !editMode">
+          <mat-icon>{{ editMode ? 'visibility' : 'edit' }}</mat-icon> 
+          {{ editMode ? 'Ver Detalles' : 'Editar' }}
+        </button>
+        <button mat-stroked-button color="warn" (click)="deleteUser()">
+          <mat-icon>delete</mat-icon> Eliminar
+        </button>
+      </div>
+    </div>
+
+    <!-- User Content -->
+    <div class="user-content">
+      <!-- User Info -->
+      <div class="user-info" *ngIf="!editMode">
+        <div class="info-card">
+          <h3 class="card-title">Información del Usuario</h3>
+          
+          <div class="info-row">
+            <span class="info-label">Nombre:</span>
+            <span class="info-value">{{ user.name }}</span>
+          </div>
+          
+          <div class="info-row">
+            <span class="info-label">Email:</span>
+            <span class="info-value">{{ user.email }}</span>
+          </div>
+          
+          <div class="info-row">
+            <span class="info-label">Rol:</span>
+            <span class="info-value">
+              <span class="role-badge" [ngClass]="getRoleBadgeClass(user.role)">
+                {{ user.role }}
+              </span>
+            </span>
+          </div>
+          
+          <div class="info-row">
+            <span class="info-label">Estado:</span>
+            <span class="info-value">
+              <span class="status-badge" [ngClass]="getStatusBadgeClass(user.approved)">
+                {{ user.approved ? 'Aprobado' : 'Pendiente de aprobación' }}
+              </span>
+            </span>
+          </div>
+          
+          <div class="info-row" *ngIf="!user.approved">
+            <span class="info-label"></span>
+            <span class="info-value approval-message">
+              Este usuario no puede iniciar sesión hasta que sea aprobado por un administrador.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit Form -->
+      <div class="edit-form" *ngIf="editMode">
+        <div class="form-card">
+          <h3 class="card-title">Editar Usuario</h3>
+          
+          <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Nombre</mat-label>
+                <input matInput formControlName="name">
+                <mat-error *ngIf="userForm.get('name')?.hasError('required')">
+                  El nombre es requerido
+                </mat-error>
+              </mat-form-field>
+            </div>
+            
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="email">
+                <mat-error *ngIf="userForm.get('email')?.hasError('required')">
+                  El email es requerido
+                </mat-error>
+                <mat-error *ngIf="userForm.get('email')?.hasError('email')">
+                  Ingrese un email válido
+                </mat-error>
+              </mat-form-field>
+            </div>
+            
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Rol</mat-label>
+                <mat-select formControlName="role">
+                  <mat-option value="admin">Admin</mat-option>
+                  <mat-option value="editor">Editor</mat-option>
+                  <mat-option value="seller">Seller</mat-option>
+                </mat-select>
+                <mat-error *ngIf="userForm.get('role')?.hasError('required')">
+                  El rol es requerido
+                </mat-error>
+              </mat-form-field>
+            </div>
+            
+            <div class="form-row">
+              <mat-checkbox formControlName="approved" color="primary">
+                Usuario aprobado
+              </mat-checkbox>
+              <div class="checkbox-hint">
+                Si esta opción está desactivada, el usuario no podrá iniciar sesión en el sistema.
+              </div>
+            </div>
+            
+            <div class="form-actions">
+              <button mat-button type="button" (click)="editMode = false">Cancelar</button>
+              <button mat-raised-button color="primary" type="submit" [disabled]="userForm.invalid">Guardar Cambios</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Back Button -->
+    <button mat-stroked-button routerLink="/users" class="back-button">
+      <mat-icon>arrow_back</mat-icon> Volver a la lista
+    </button>
+  </div>
+</div>

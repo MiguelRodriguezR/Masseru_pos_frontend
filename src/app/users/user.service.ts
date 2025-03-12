@@ -28,6 +28,10 @@ export class UserService extends BaseService {
     return this.http.put(`${this.baseUrl}/api/users/${id}`, user);
   }
 
+  approveUser(id: string): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/api/users/${id}/approve`, {});
+  }
+
   deleteUser(id: string): Observable<any> {
     return this.http.delete(`${this.baseUrl}/api/users/${id}`);
   }

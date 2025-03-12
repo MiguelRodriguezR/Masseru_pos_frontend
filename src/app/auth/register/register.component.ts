@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-register',
@@ -12,6 +13,7 @@ export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
   errorMessage: string = '';
   passwordStrength: number = 0;
+  registrationSuccess = false;
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.registerForm = this.fb.group({
@@ -64,7 +66,15 @@ export class RegisterComponent implements OnInit {
       this.authService.register(name, email, password, role)
         .subscribe({
           next: (res) => {
-            this.router.navigate(['/login']);
+            // Show success message with information about approval process
+            Swal.fire({
+              title: '¡Registro exitoso!',
+              text: 'Tu cuenta ha sido creada. Un administrador debe aprobar tu cuenta antes de que puedas iniciar sesión.',
+              icon: 'success',
+              confirmButtonText: 'Entendido'
+            }).then(() => {
+              this.router.navigate(['/login']);
+            });
           },
           error: (err) => {
             this.errorMessage = err.error.msg || 'Error al registrar usuario';

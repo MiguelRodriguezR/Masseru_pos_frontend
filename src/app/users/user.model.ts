@@ -3,7 +3,7 @@ export interface User {
     name: string;
     email: string;
     role: string;
+    approved: boolean;
     createdAt?: string;
     updatedAt?: string;
   }
-  

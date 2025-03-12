@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
 import { UserDataService } from '../../shared/user-data.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -51,7 +52,17 @@ export class LoginComponent implements OnInit {
             }
           },
           error: (err) => {
-            this.errorMessage = err.error.msg || 'Error al iniciar sesión';
+            // Check if the error is due to account not being approved
+            if (err.status === 403 && err.error.msg && err.error.msg.includes('pendiente de aprobación')) {
+              Swal.fire({
+                title: 'Cuenta pendiente de aprobación',
+                text: 'Tu cuenta aún no ha sido aprobada por un administrador. Por favor, intenta más tarde o contacta con un administrador.',
+                icon: 'warning',
+                confirmButtonText: 'Entendido'
+              });
+            } else {
+              this.errorMessage = err.error.msg || 'Error al iniciar sesión';
+            }
           }
         });
     }

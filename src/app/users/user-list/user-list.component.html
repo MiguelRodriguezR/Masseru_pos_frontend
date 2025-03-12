@@ -1,25 +1,122 @@
-<div class="user-list">
-    <h2>Usuarios</h2>
-    <table mat-table [dataSource]="users" class="mat-elevation-z8">
+<div class="user-list-container">
+  <!-- Loading Overlay -->
+  <div *ngIf="loading" class="loading-overlay">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <!-- List Header -->
+  <div class="list-header">
+    <h1 class="list-title">Usuarios</h1>
+    <!-- "Add User" button removed as per requirements -->
+  </div>
+  
+  <!-- Search Bar -->
+  <div class="search-container">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Buscar usuarios</mat-label>
+      <input #searchInput matInput (keyup)="applyFilter($event)" [(ngModel)]="searchTerm" placeholder="Nombre, email...">
+      <mat-icon matPrefix>search</mat-icon>
+      <button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Clear" (click)="searchTerm=''; applyFilter($event)">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+
+  <!-- Users Table -->
+  <div class="table-container" *ngIf="filteredUsers.length > 0; else noUsers">
+    <table mat-table [dataSource]="filteredUsers" matSort>
+      <!-- Name Column -->
       <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>Nombre</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
         <td mat-cell *matCellDef="let user">{{ user.name }}</td>
       </ng-container>
+
+      <!-- Email Column -->
       <ng-container matColumnDef="email">
-        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
         <td mat-cell *matCellDef="let user">{{ user.email }}</td>
       </ng-container>
+
+      <!-- Role Column -->
       <ng-container matColumnDef="role">
-        <th mat-header-cell *matHeaderCellDef>Rol</th>
-        <td mat-cell *matCellDef="let user">{{ user.role }}</td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Rol</th>
+        <td mat-cell *matCellDef="let user">
+          <span class="role-badge" [ngClass]="getRoleBadgeClass(user.role)">
+            {{ user.role }}
+          </span>
+        </td>
       </ng-container>
+      
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+        <td mat-cell *matCellDef="let user">
+          <span class="status-badge" [ngClass]="getStatusBadgeClass(user.approved)">
+            {{ user.approved ? 'Aprobado' : 'Pendiente' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Acciones</th>
         <td mat-cell *matCellDef="let user">
-          <button mat-button color="accent" (click)="viewUser(user._id)">Ver</button>
+          <!-- Approve button for unapproved users -->
+          <button 
+            mat-icon-button 
+            color="accent" 
+            class="action-button" 
+            (click)="approveUser(user._id, $event)" 
+            *ngIf="canApproveUser && !user.approved"
+            matTooltip="Aprobar usuario">
+            <mat-icon>check_circle</mat-icon>
+          </button>
+          
+          <button 
+            mat-icon-button 
+            color="primary" 
+            class="action-button" 
+            (click)="editUser(user._id); $event.stopPropagation()" 
+            *ngIf="canEditUser"
+            matTooltip="Editar usuario">
+            <mat-icon>edit</mat-icon>
+          </button>
+          
+          <button 
+            mat-icon-button 
+            color="warn" 
+            class="action-button" 
+            (click)="deleteUser(user._id, $event)" 
+            *ngIf="canDeleteUser"
+            matTooltip="Eliminar usuario">
+            <mat-icon>delete</mat-icon>
+          </button>
         </td>
       </ng-container>
-      <tr mat-header-row *matHeaderRowDef="['name','email','role','actions']"></tr>
-      <tr mat-row *matRowDef="let row; columns: ['name','email','role','actions']"></tr>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="viewUser(row._id)"></tr>
     </table>
   </div>
+
+  <!-- No Users Template -->
+  <ng-template #noUsers>
+    <div class="no-users">
+      <mat-icon class="no-users-icon">people</mat-icon>
+      <p class="no-users-text">No hay usuarios disponibles</p>
+      <p class="no-users-subtext">Los nuevos usuarios deben registrarse desde la página de registro</p>
+    </div>
+  </ng-template>
+
+  <!-- Paginator -->
+  <div class="paginator-container" *ngIf="totalUsers > 0">
+    <mat-paginator #paginator
+      [length]="totalUsers"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      [pageIndex]="currentPage - 1"
+      (page)="loadUsers($event.pageIndex + 1, $event.pageSize)"
+      showFirstLastButtons>
+    </mat-paginator>
+  </div>
+</div>
