@@ -24,7 +24,7 @@ export interface Sale {
   totalAmount: number;
   paymentAmount: number;
   changeAmount: number;
-  paymentMethod: 'cash' | 'credit_card' | string;
+  paymentMethod: any;
   saleDate: string;
   createdAt?: string;
   updatedAt?: string;

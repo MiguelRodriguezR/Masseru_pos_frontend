@@ -9,6 +9,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { PaymentMethod } from '../../payment-methods/payment-method.model';
+import { PaymentMethodService } from '../../payment-methods/payment-method.service';
 
 @Component({
   selector: 'app-payment',
@@ -29,18 +31,22 @@ export class PaymentComponent implements OnInit, OnDestroy {
   taxes: number = 0;
   
   // Payment data
-  selectedPaymentMethod: string = 'cash'; // Default to cash
+  paymentMethods: PaymentMethod[] = [];
+  selectedPaymentMethod: string = ''; // Will store the payment method ID
+  selectedPaymentMethodObject: PaymentMethod | null = null;
   paymentAmount: number = 0;
   remainingAmount: number = 0;
   changeAmount: number = 0;
   
   // UI state
   isProcessing: boolean = false;
+  loadingPaymentMethods: boolean = true;
   
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private saleService: SaleService,
+    private paymentMethodService: PaymentMethodService,
     private fb: FormBuilder
   ) {}
 
@@ -63,18 +69,55 @@ export class PaymentComponent implements OnInit, OnDestroy {
       
       // Initialize remaining amount
       this.remainingAmount = this.total;
+      
+      // Load payment methods
+      this.loadPaymentMethods();
     } else {
       console.error('No cart items found in state');
       // If no state, redirect back to POS session
       this.router.navigate(['/pos/session', this.sessionId]);
     }
   }
+  
+  /**
+   * Load active payment methods
+   */
+  loadPaymentMethods(): void {
+    this.loadingPaymentMethods = true;
+    
+    const subscription = this.paymentMethodService.getActivePaymentMethods()
+      .subscribe({
+        next: (paymentMethods) => {
+          this.paymentMethods = paymentMethods;
+          this.loadingPaymentMethods = false;
+          
+          // Select first payment method by default if available
+          if (this.paymentMethods.length > 0) {
+            this.selectPaymentMethod(this.paymentMethods[0]._id!);
+          }
+        },
+        error: (error) => {
+          console.error('Error loading payment methods:', error);
+          this.loadingPaymentMethods = false;
+          
+          // Show error message
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error al cargar los métodos de pago'
+          });
+        }
+      });
+    
+    this.subscriptions.push(subscription);
+  }
 
   /**
    * Select payment method
    */
-  selectPaymentMethod(method: string): void {
-    this.selectedPaymentMethod = method;
+  selectPaymentMethod(methodId: string): void {
+    this.selectedPaymentMethod = methodId;
+    this.selectedPaymentMethodObject = this.paymentMethods.find(m => m._id === methodId) || null;
   }
 
   /**

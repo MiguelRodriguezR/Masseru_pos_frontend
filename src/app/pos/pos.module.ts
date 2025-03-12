@@ -9,12 +9,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { FilterPipe } from './filter.pipe';
 import { SharedModule } from '../shared/shared.module';
 import { PosSessionService } from './pos-session.service';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+import { PaymentMethodService } from '../payment-methods/payment-method.service';
 
 const routes: Routes = [
   { path: '', component: PosComponent },
@@ -39,10 +41,11 @@ const routes: Routes = [
     MatBadgeModule,
     MatDialogModule,
     MatTableModule,
+    MatProgressSpinnerModule,
     RouterModule.forChild(routes),
     SharedModule,
     SweetAlert2Module.forRoot()
   ],
-  providers: [PosSessionService]
+  providers: [PosSessionService, PaymentMethodService]
 })
 export class PosModule { }

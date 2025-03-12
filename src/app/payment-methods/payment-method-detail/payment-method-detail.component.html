@@ -1,0 +1,96 @@
+<div class="payment-method-detail-container">
+  <div class="payment-method-detail-header">
+    <h1 class="payment-method-detail-title">Detalle de Método de Pago</h1>
+    <button mat-button color="primary" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+      Volver
+    </button>
+  </div>
+
+  <mat-card class="payment-method-detail-card">
+    <!-- Loading spinner -->
+    <div class="spinner-container" *ngIf="loading">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <mat-card-content *ngIf="!loading && paymentMethod">
+      <div class="payment-method-header">
+        <div class="payment-method-icon-container" [style.background-color]="paymentMethod.color">
+          <mat-icon [style.color]="'white'">{{ paymentMethod.icon }}</mat-icon>
+        </div>
+        <div class="payment-method-title-container">
+          <h2 class="payment-method-name">{{ paymentMethod.name }}</h2>
+          <div class="payment-method-status">
+            <mat-chip-option [selected]="paymentMethod.isActive" [color]="paymentMethod.isActive ? 'primary' : 'warn'" [disabled]="true">
+              {{ paymentMethod.isActive ? 'Activo' : 'Inactivo' }}
+            </mat-chip-option>
+          </div>
+        </div>
+      </div>
+
+      <div class="payment-method-details">
+        <div class="detail-row">
+          <div class="detail-label">Código:</div>
+          <div class="detail-value">{{ paymentMethod.code }}</div>
+        </div>
+
+        <div class="detail-row" *ngIf="paymentMethod.description">
+          <div class="detail-label">Descripción:</div>
+          <div class="detail-value">{{ paymentMethod.description }}</div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-label">Color:</div>
+          <div class="detail-value color-value">
+            <div class="color-preview" [style.background-color]="paymentMethod.color"></div>
+            <span>{{ paymentMethod.color }}</span>
+          </div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-label">Icono:</div>
+          <div class="detail-value icon-value">
+            <mat-icon>{{ paymentMethod.icon }}</mat-icon>
+            <span>{{ paymentMethod.icon }}</span>
+          </div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-label">Fecha de creación:</div>
+          <div class="detail-value">{{ paymentMethod.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
+        </div>
+
+        <div class="detail-row" *ngIf="paymentMethod.updatedAt">
+          <div class="detail-label">Última actualización:</div>
+          <div class="detail-value">{{ paymentMethod.updatedAt | date:'dd/MM/yyyy HH:mm' }}</div>
+        </div>
+      </div>
+
+      <div class="payment-method-actions">
+        <button mat-raised-button color="primary" (click)="editPaymentMethod()">
+          <mat-icon>edit</mat-icon>
+          Editar
+        </button>
+        <button mat-raised-button [color]="paymentMethod.isActive ? 'warn' : 'primary'" (click)="toggleStatus()">
+          <mat-icon>{{ paymentMethod.isActive ? 'toggle_off' : 'toggle_on' }}</mat-icon>
+          {{ paymentMethod.isActive ? 'Desactivar' : 'Activar' }}
+        </button>
+        <button mat-raised-button color="warn" (click)="deletePaymentMethod()">
+          <mat-icon>delete</mat-icon>
+          Eliminar
+        </button>
+      </div>
+    </mat-card-content>
+
+    <!-- Error message if payment method not found -->
+    <mat-card-content *ngIf="!loading && !paymentMethod">
+      <div class="error-message">
+        <mat-icon color="warn">error</mat-icon>
+        <p>No se encontró el método de pago solicitado.</p>
+        <button mat-raised-button color="primary" (click)="goBack()">
+          Volver a la lista
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

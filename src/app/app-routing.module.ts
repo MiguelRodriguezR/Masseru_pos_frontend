@@ -13,7 +13,8 @@ const routes: Routes = [
   { path: 'sales', loadChildren: () => import('./sales/sales.module').then(m => m.SalesModule), canActivate: [AuthGuard] },
   { path: 'pos', loadChildren: () => import('./pos/pos.module').then(m => m.PosModule), canActivate: [AuthGuard] },
   { path: 'receipts', loadChildren: () => import('./receipts/receipts.module').then(m => m.ReceiptsModule), canActivate: [AuthGuard] },
-  { path: 'users', loadChildren: () => import('./users/users.module').then(m => m.UsersModule), canActivate: [AuthGuard] }
+  { path: 'users', loadChildren: () => import('./users/users.module').then(m => m.UsersModule), canActivate: [AuthGuard] },
+  { path: 'payment-methods', loadChildren: () => import('./payment-methods/payment-methods.module').then(m => m.PaymentMethodsModule), canActivate: [AuthGuard] }
 ];
 
 @NgModule({

@@ -1,0 +1,118 @@
+<div class="payment-method-form-container">
+  <div class="payment-method-form-header">
+    <h1 class="payment-method-form-title">
+      {{ isEditMode ? 'Editar' : 'Nuevo' }} Método de Pago
+    </h1>
+    <button mat-button color="primary" (click)="cancel()">
+      <mat-icon>arrow_back</mat-icon>
+      Volver
+    </button>
+  </div>
+
+  <mat-card class="payment-method-form-card">
+    <!-- Loading spinner -->
+    <div class="spinner-container" *ngIf="loading">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <mat-card-content *ngIf="!loading">
+      <form [formGroup]="paymentMethodForm" (ngSubmit)="onSubmit()">
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Nombre</mat-label>
+            <input matInput formControlName="name" placeholder="Ej: Efectivo">
+            <mat-error *ngIf="paymentMethodForm.get('name')?.hasError('required')">
+              El nombre es obligatorio
+            </mat-error>
+            <mat-error *ngIf="paymentMethodForm.get('name')?.hasError('maxlength')">
+              El nombre no puede exceder 50 caracteres
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Código</mat-label>
+            <input matInput formControlName="code" placeholder="Ej: CASH">
+            <mat-error *ngIf="paymentMethodForm.get('code')?.hasError('required')">
+              El código es obligatorio
+            </mat-error>
+            <mat-error *ngIf="paymentMethodForm.get('code')?.hasError('maxlength')">
+              El código no puede exceder 20 caracteres
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field full-width">
+            <mat-label>Descripción</mat-label>
+            <textarea matInput formControlName="description" rows="3" placeholder="Descripción del método de pago"></textarea>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label class="section-label">Color</label>
+            <div class="color-selector">
+              <div 
+                *ngFor="let color of defaultColors" 
+                class="color-option" 
+                [style.background-color]="color"
+                [class.selected]="paymentMethodForm.get('color')?.value === color"
+                (click)="selectColor(color)">
+              </div>
+              
+              <div class="color-input-container">
+                <input 
+                  type="text" 
+                  formControlName="color" 
+                  class="color-input"
+                  placeholder="rgba(138, 107, 206, 0.8)">
+                <div 
+                  class="color-preview" 
+                  [style.background-color]="paymentMethodForm.get('color')?.value">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label class="section-label">Icono</label>
+            <div class="icon-selector">
+              <div 
+                *ngFor="let icon of materialIcons" 
+                class="icon-option" 
+                [class.selected]="paymentMethodForm.get('icon')?.value === icon"
+                (click)="selectIcon(icon)">
+                <mat-icon>{{ icon }}</mat-icon>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <mat-slide-toggle formControlName="isActive" color="primary">
+            {{ paymentMethodForm.get('isActive')?.value ? 'Activo' : 'Inactivo' }}
+          </mat-slide-toggle>
+        </div>
+
+        <div class="form-actions">
+          <button 
+            mat-button 
+            type="button" 
+            (click)="cancel()">
+            Cancelar
+          </button>
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="submit"
+            [disabled]="paymentMethodForm.invalid || submitting">
+            <mat-icon>save</mat-icon>
+            {{ isEditMode ? 'Actualizar' : 'Guardar' }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

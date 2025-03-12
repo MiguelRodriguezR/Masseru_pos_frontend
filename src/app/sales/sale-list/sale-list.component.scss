@@ -157,16 +157,7 @@
           padding: 4px 12px;
           font-size: $font-size-xs;
           font-weight: $font-weight-medium;
-          
-          &.cash {
-            background-color: $success-color;
-            color: $white;
-          }
-          
-          &.credit_card {
-            background-color: $info-color;
-            color: $white;
-          }
+          color: $white;
         }
       }
       

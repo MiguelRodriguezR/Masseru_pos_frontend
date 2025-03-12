@@ -20,6 +20,7 @@ export class AppMenuComponent {
     { name: 'Productos', route: '/products', icon: 'inventory_2' },
     { name: 'Recibos', route: '/receipts', icon: 'receipt' },
     { name: 'Ventas', route: '/sales', icon: 'trending_up' },
+    { name: 'Métodos de Pago', route: '/payment-methods', icon: 'payments' },
     { name: 'Usuarios', route: '/users', icon: 'people' },
   ];
 

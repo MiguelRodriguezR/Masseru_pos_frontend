@@ -14,32 +14,43 @@
     <div class="left-section">
       <!-- Payment method selection -->
       <div class="payment-method-section">
-        <h2 class="section-title">METODO DE PAGO</h2>
-        <div class="payment-methods">
+        <h2 class="section-title">MÉTODO DE PAGO</h2>
+        
+        <!-- Loading spinner -->
+        <div class="spinner-container" *ngIf="loadingPaymentMethods">
+          <mat-spinner diameter="30"></mat-spinner>
+        </div>
+        
+        <!-- Payment methods list -->
+        <div class="payment-methods" *ngIf="!loadingPaymentMethods">
           <div class="payment-method-option" 
-               [class.selected]="selectedPaymentMethod === 'cash'"
-               (click)="selectPaymentMethod('cash')">
-            Efectivo
+               *ngFor="let method of paymentMethods"
+               [class.selected]="selectedPaymentMethod === method._id"
+               [style.background-color]="selectedPaymentMethod === method._id ? method.color : 'transparent'"
+               (click)="selectPaymentMethod(method._id!)">
+            <mat-icon [style.color]="selectedPaymentMethod === method._id ? 'white' : 'inherit'">
+              {{ method.icon }}
+            </mat-icon>
+            <span [style.color]="selectedPaymentMethod === method._id ? 'white' : 'inherit'">
+              {{ method.name }}
+            </span>
           </div>
-          <div class="payment-method-option" 
-               [class.selected]="selectedPaymentMethod === 'credit_card'"
-               (click)="selectPaymentMethod('credit_card')">
-            Tarjeta de Credito
+          
+          <!-- No payment methods message -->
+          <div class="no-payment-methods" *ngIf="paymentMethods.length === 0">
+            No hay métodos de pago disponibles
           </div>
-          <div class="payment-method-option disabled">
-            Banco/Nequi
-          </div>
-          <!-- <div class="payment-method-option disabled">
-            
-          </div> -->
         </div>
       </div>
 
       <!-- Payment summary -->
       <div class="payment-summary">
         <h2 class="section-title">RESUMEN</h2>
-        <div class="summary-item" *ngIf="paymentAmount > 0">
-          <span class="summary-label">{{ selectedPaymentMethod === 'cash' ? 'Efectivo' : 'Credito' }}</span>
+        <div class="summary-item" *ngIf="paymentAmount > 0 && selectedPaymentMethodObject">
+          <div class="summary-method" [style.background-color]="selectedPaymentMethodObject.color">
+            <mat-icon [style.color]="'white'">{{ selectedPaymentMethodObject.icon }}</mat-icon>
+          </div>
+          <span class="summary-label">{{ selectedPaymentMethodObject.name }}</span>
           <span class="summary-amount">{{ paymentAmount | currency:'$ ':'symbol':'1.0-0' }}</span>
           <button mat-icon-button class="remove-button" (click)="clearAmount()">
             <mat-icon>close</mat-icon>
@@ -51,7 +62,7 @@
       <div class="validate-button-container">
         <button mat-raised-button 
                 class="validate-button" 
-                [disabled]="paymentAmount < total || isProcessing"
+                [disabled]="paymentAmount < total || isProcessing || !selectedPaymentMethod"
                 (click)="validatePayment()">
           <mat-icon>arrow_forward</mat-icon>
           Validar
