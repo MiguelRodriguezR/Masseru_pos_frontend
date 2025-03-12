@@ -108,11 +108,11 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   };
   
   paymentMethodChartData: any = {
-    labels: ['Efectivo', 'Tarjeta'],
+    labels: [] as string[],
     datasets: [
       {
-        data: [0, 0] as number[],
-        backgroundColor: ['#ff9800', '#2196f3'],
+        data: [] as number[],
+        backgroundColor: [] as string[],
         borderWidth: 1
       }
     ]
@@ -482,15 +482,27 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     
     this.posSessionStats = data;
     
-    // Update payment method chart data with zeros if no data
-    this.paymentMethodChartData.datasets[0].data = [
-      data.totalCashSales || 0,
-      data.totalCardSales || 0
-    ];
+    // Process payment method data
+    if (data.paymentMethods && data.paymentMethods.length > 0) {
+      // Sort payment methods by total amount (descending)
+      const sortedMethods = [...data.paymentMethods]
+        .sort((a, b) => b.totalAmount - a.totalAmount);
+      
+      // Update payment method chart data
+      this.paymentMethodChartData.labels = sortedMethods.map(method => method.name);
+      this.paymentMethodChartData.datasets[0].data = sortedMethods.map(method => method.totalAmount);
+      this.paymentMethodChartData.datasets[0].backgroundColor = sortedMethods.map(method => method.color);
+    } else {
+      // Reset chart data if no payment methods
+      this.paymentMethodChartData.labels = [];
+      this.paymentMethodChartData.datasets[0].data = [];
+      this.paymentMethodChartData.datasets[0].backgroundColor = [];
+    }
     
     // The PaymentChartComponent will handle the chart update
     // when the paymentMethodChartData changes
   }
+  
   
   processSalesChartData(sales: any[]): void {
     if (!sales || sales.length === 0) {
