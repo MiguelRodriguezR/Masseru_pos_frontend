@@ -30,6 +30,7 @@
   padding: 20px;
   
   .illustration {
+    @include flex-center;
     width: 100%;
     max-width: 350px;
     

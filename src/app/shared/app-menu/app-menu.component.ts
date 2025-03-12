@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '../../auth/auth.service';
 
 interface MenuItem {
   name: string;
@@ -19,12 +20,17 @@ export class AppMenuComponent {
     { name: 'Productos', route: '/products', icon: 'inventory_2' },
     { name: 'Recibos', route: '/receipts', icon: 'receipt' },
     { name: 'Ventas', route: '/sales', icon: 'trending_up' },
-    { name: 'Usuarios', route: '/users', icon: 'people' }
+    { name: 'Usuarios', route: '/users', icon: 'people' },
   ];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
   navigateTo(route: string): void {
     this.router.navigate([route]);
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

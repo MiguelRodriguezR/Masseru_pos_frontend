@@ -1,11 +1,19 @@
 <div class="app-menu-container">
-  <h1 class="app-menu-title">Masseru POS</h1>
+  <h1 class="app-menu-title">
+    <img src="assets/title.png" alt="Descripción de la imagen" style="width: 250px;">
+  </h1>
   <div class="app-menu-grid">
     <div class="menu-item" *ngFor="let item of menuItems" (click)="navigateTo(item.route)">
       <div class="menu-icon-container">
         <mat-icon>{{ item.icon }}</mat-icon>
       </div>
       <div class="menu-item-name">{{ item.name }}</div>
+    </div>
+    <div class="menu-item" (click)="logout()">
+      <div class="menu-icon-container">
+        <mat-icon>logout</mat-icon>
+      </div>
+      <div class="menu-item-name">Cerrar Session</div>
     </div>
   </div>
 </div>
