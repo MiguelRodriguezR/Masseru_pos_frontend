@@ -1,17 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent implements OnInit, OnDestroy {
   registerForm: FormGroup;
   errorMessage: string = '';
+  isLoading: boolean = false;
+  private authSubscription: Subscription | null = null;
   passwordStrength: number = 0;
   registrationSuccess = false;
 
@@ -60,12 +63,21 @@ export class RegisterComponent implements OnInit {
     this.passwordStrength = strength;
   }
 
+  ngOnDestroy(): void {
+    // Unsubscribe to prevent memory leaks
+    if (this.authSubscription) {
+      this.authSubscription.unsubscribe();
+    }
+  }
+
   onSubmit() {
     if (this.registerForm.valid) {
       const { name, email, password, role } = this.registerForm.value;
-      this.authService.register(name, email, password, role)
+      this.isLoading = true;
+      this.authSubscription =  this.authService.register(name, email, password, role)
         .subscribe({
           next: (res) => {
+            this.isLoading = false;
             // Show success message with information about approval process
             Swal.fire({
               title: '¡Registro exitoso!',
@@ -77,6 +89,7 @@ export class RegisterComponent implements OnInit {
             });
           },
           error: (err) => {
+            this.isLoading = false;
             this.errorMessage = err.error.msg || 'Error al registrar usuario';
           }
         });

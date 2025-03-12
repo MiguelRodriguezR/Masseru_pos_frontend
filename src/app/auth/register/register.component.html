@@ -67,7 +67,12 @@
         </div>
         <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
         <div class="auth-actions">
-          <button type="submit" class="create-account-btn" [disabled]="registerForm.invalid">Crear cuenta</button>
+          <button type="submit" class="create-account-btn" [disabled]="registerForm.invalid || isLoading">
+            <span *ngIf="!isLoading">Crear cuenta</span>
+            <span *ngIf="isLoading" class="spinner">
+              <i class="material-icons rotating">autorenew</i>
+            </span>
+          </button>
           <a routerLink="/login" class="sign-in-btn">Ya tengo una cuenta</a>
         </div>
       </form>

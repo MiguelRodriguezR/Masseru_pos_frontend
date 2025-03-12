@@ -35,7 +35,12 @@
         </div>
         <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
         <div class="auth-actions">
-          <button type="submit" class="sign-in-btn" [disabled]="loginForm.invalid">Iniciar sesión</button>
+          <button type="submit" class="sign-in-btn" [disabled]="loginForm.invalid || isLoading">
+            <span *ngIf="!isLoading">Iniciar sesión</span>
+            <span *ngIf="isLoading" class="spinner">
+              <i class="material-icons rotating">autorenew</i>
+            </span>
+          </button>
           <a routerLink="/login/register" class="create-account-btn">Crear cuenta</a>
         </div>
       </form>

@@ -245,6 +245,25 @@
     &:hover:not(:disabled) {
       background-color: $primary-dark;
     }
+
+    .spinner {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      
+      .rotating {
+        animation: rotate 1.5s linear infinite;
+      }
+    }
+  }
+  
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
   }
   
   .sign-in-btn {

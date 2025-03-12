@@ -75,7 +75,7 @@
 /* Responsive styles */
 @media (max-width: $breakpoint-md) {
   .app-menu-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
   
   .menu-icon-container {
@@ -105,8 +105,8 @@
   }
   
   .menu-icon-container {
-    width: 60px;
-    height: 60px;
+    width: 90px;
+    height: 90px;
     
     mat-icon {
       font-size: 24px;

@@ -1,18 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
 import { UserDataService } from '../../shared/user-data.service';
 import Swal from 'sweetalert2';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
   loginForm: FormGroup;
   errorMessage: string = '';
+  isLoading: boolean = false;
+  private authSubscription: Subscription | null = null;
 
   constructor(
     private fb: FormBuilder, 
@@ -27,12 +30,21 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {}
+  
+  ngOnDestroy(): void {
+    // Unsubscribe to prevent memory leaks
+    if (this.authSubscription) {
+      this.authSubscription.unsubscribe();
+    }
+  }
 
   onSubmit() {
     if (this.loginForm.valid) {
-      this.authService.login(this.loginForm.value.email, this.loginForm.value.password)
+      this.isLoading = true;
+      this.authSubscription = this.authService.login(this.loginForm.value.email, this.loginForm.value.password)
         .subscribe({
           next: (res) => {
+            this.isLoading = false;
             this.authService.setToken(res.token);
             
             // Load user data after successful login
@@ -42,7 +54,8 @@ export class LoginComponent implements OnInit {
                 next: () => {
                   this.router.navigate(['/dashboard']);
                 },
-                error: (err) => {
+          error: (err) => {
+            this.isLoading = false;
                   console.error('Error loading user data:', err);
                   this.router.navigate(['/dashboard']);
                 }
