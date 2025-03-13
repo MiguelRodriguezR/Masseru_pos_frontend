@@ -1,0 +1,301 @@
+@import '../../../styles.scss';
+
+.pos-session-detail-container {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+
+    h2 {
+      margin: 0;
+      color: $primary-color;
+    }
+  }
+
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    
+    p {
+      margin-top: 16px;
+      color: $primary-color;
+    }
+  }
+
+  .error-container {
+    padding: 16px;
+    background-color: #ffebee;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    
+    .error-message {
+      color: #d32f2f;
+      margin: 0;
+    }
+  }
+
+  .session-details {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    
+    .session-info-card {
+      width: 100%;
+      
+      mat-card-header {
+        margin-bottom: 16px;
+        
+        mat-card-title {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          
+          .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            
+            &.status-open {
+              background-color: #e6f7ed;
+              color: #00a854;
+            }
+            
+            &.status-closed {
+              background-color: #f5f5f5;
+              color: #595959;
+            }
+          }
+        }
+      }
+      
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 16px;
+        
+        .info-item {
+          display: flex;
+          flex-direction: column;
+          
+          .label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            
+            mat-icon {
+              font-size: 18px;
+              height: 18px;
+              width: 18px;
+              margin-right: 6px;
+            }
+          }
+          
+          .value {
+            font-size: 16px;
+            font-weight: 500;
+            
+            &.total-value {
+              font-size: 18px;
+              font-weight: 600;
+              color: $primary-color;
+            }
+            
+            &.positive-difference {
+              color: #00a854;
+            }
+            
+            &.negative-difference {
+              color: #f5222d;
+            }
+            
+            &.payment-total {
+              display: flex;
+              align-items: center;
+              
+              &::before {
+                content: '';
+                display: inline-block;
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                margin-right: 8px;
+                background-color: currentColor;
+                opacity: 0.7;
+              }
+            }
+          }
+        }
+      }
+      
+      .notes-section {
+        margin-top: 24px;
+        padding-top: 16px;
+        border-top: 1px solid #eee;
+        
+        h3 {
+          font-size: 16px;
+          margin-bottom: 8px;
+          color: #333;
+        }
+        
+        p {
+          margin: 0;
+          white-space: pre-line;
+          color: #666;
+        }
+      }
+    }
+    
+    .sales-section {
+      h3 {
+        margin-top: 0;
+        margin-bottom: 16px;
+        color: $primary-color;
+      }
+      
+      .no-sales {
+        padding: 24px;
+        text-align: center;
+        background-color: #f5f5f5;
+        border-radius: 4px;
+        color: #666;
+      }
+      
+      .sales-table-container {
+        overflow-x: auto;
+        
+        table {
+          width: 100%;
+          
+          .mat-column-id {
+            max-width: 100px;
+          }
+          
+          .mat-column-actions {
+            width: 80px;
+            text-align: center;
+          }
+          
+          .items-summary {
+            position: relative;
+            
+            .item-count {
+              cursor: pointer;
+              
+              &:hover + .items-tooltip {
+                display: block;
+              }
+            }
+            
+            .items-tooltip {
+              display: none;
+              position: absolute;
+              top: 100%;
+              left: 0;
+              z-index: 10;
+              background-color: white;
+              border: 1px solid #ddd;
+              border-radius: 4px;
+              padding: 8px;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+              min-width: 200px;
+              
+              ul {
+                margin: 0;
+                padding-left: 16px;
+                
+                li {
+                  margin-bottom: 4px;
+                  
+                  &:last-child {
+                    margin-bottom: 0;
+                  }
+                }
+              }
+              
+              &:hover {
+                display: block;
+              }
+            }
+          }
+          
+          .payment-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            width: fit-content;
+            
+            &.payment-cash {
+              background-color: #e6f7ed;
+              color: #00a854;
+            }
+            
+            &.payment-card, &.payment-credit, &.payment-debit {
+              background-color: #e6f7ff;
+              color: #1890ff;
+            }
+            
+            &.payment-bank {
+              background-color: #fff7e6;
+              color: #fa8c16;
+            }
+            
+            &.payment-nequi {
+              background-color: #fff0f6;
+              color: #eb2f96;
+            }
+            
+            &.payment-daviplata {
+              background-color: #fff1f0;
+              color: #f5222d;
+            }
+            
+            &.payment-unknown {
+              background-color: #f5f5f5;
+              color: #595959;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .pos-session-detail-container {
+    padding: 16px;
+    
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+      
+      button {
+        align-self: flex-start;
+      }
+    }
+    
+    .session-details {
+      .session-info-card {
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    }
+  }
+}

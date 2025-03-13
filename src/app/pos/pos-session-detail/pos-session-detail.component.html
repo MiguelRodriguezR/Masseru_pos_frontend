@@ -1,0 +1,194 @@
+<div class="pos-session-detail-container">
+  <div class="header">
+    <h2>Detalle de Sesión POS</h2>
+    <button mat-raised-button color="primary" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+      Volver a la lista
+    </button>
+  </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Cargando información de la sesión...</p>
+  </div>
+
+  <!-- Error message -->
+  <div *ngIf="errorMessage" class="error-container">
+    <p class="error-message">{{ errorMessage }}</p>
+  </div>
+
+  <!-- Session details -->
+  <div *ngIf="!isLoading && !errorMessage && sessionData" class="session-details">
+    <!-- Session info card -->
+    <mat-card class="session-info-card">
+      <mat-card-header>
+        <mat-card-title>
+          Información de la Sesión
+          <span class="status-badge" [ngClass]="getStatusBadgeClass(sessionData.status)">
+            {{ sessionData.status === 'open' ? 'Abierta' : 'Cerrada' }}
+          </span>
+        </mat-card-title>
+        <mat-card-subtitle>ID: {{ sessionData._id }}</mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="label">Usuario:</span>
+            <span class="value">{{ sessionData.user?.name || 'N/A' }}</span>
+          </div>
+          
+          <div class="info-item">
+            <span class="label">Fecha de apertura:</span>
+            <span class="value">{{ sessionData.openingDate | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+          
+          <div class="info-item">
+            <span class="label">Fecha de cierre:</span>
+            <span class="value">
+              {{ sessionData.closingDate ? (sessionData.closingDate | date:'dd/MM/yyyy HH:mm') : 'En curso' }}
+            </span>
+          </div>
+          
+          <div class="info-item">
+            <span class="label">Caja inicial:</span>
+            <span class="value">{{ formatCurrency(sessionData.initialCash) }}</span>
+          </div>
+          
+          <!-- Payment method totals -->
+          <ng-container *ngIf="sessionData.paymentTotals && sessionData.paymentTotals.length > 0">
+            <div class="info-item" *ngFor="let paymentTotal of sessionData.paymentTotals">
+              <span class="label">
+                <mat-icon *ngIf="paymentTotal.paymentMethod?.icon" [ngStyle]="{'color': paymentTotal.paymentMethod?.color || '#333'}">
+                  {{ paymentTotal.paymentMethod?.icon }}
+                </mat-icon>
+                Ventas con {{ paymentTotal.paymentMethod?.name || 'Método desconocido' }}:
+              </span>
+              <span class="value payment-total" [ngStyle]="{'color': paymentTotal.paymentMethod?.color || '#333'}">
+                {{ formatCurrency(paymentTotal.total) }}
+              </span>
+            </div>
+          </ng-container>
+          
+          <!-- Fallback for old sessions without paymentTotals -->
+          <ng-container *ngIf="!sessionData.paymentTotals || sessionData.paymentTotals.length === 0">
+            <div class="info-item" *ngIf="sessionData.cashSalesTotal !== undefined">
+              <span class="label">Ventas en efectivo:</span>
+              <span class="value">{{ formatCurrency(sessionData.cashSalesTotal) }}</span>
+            </div>
+            
+            <div class="info-item" *ngIf="sessionData.cardSalesTotal !== undefined">
+              <span class="label">Ventas con tarjeta:</span>
+              <span class="value">{{ formatCurrency(sessionData.cardSalesTotal) }}</span>
+            </div>
+          </ng-container>
+          
+          <div class="info-item">
+            <span class="label">Total ventas:</span>
+            <span class="value total-value">{{ formatCurrency(sessionData.totalSales) }}</span>
+          </div>
+          
+          <div class="info-item">
+            <span class="label">Caja esperada (Efectivo):</span>
+            <span class="value">{{ formatCurrency(sessionData.expectedCash) }}</span>
+          </div>
+          
+          <div class="info-item">
+            <span class="label">Caja esperada (Otros métodos):</span>
+            <span class="value">{{ formatCurrency(sessionData.expectedNonCash) }}</span>
+          </div>
+          
+          <div class="info-item" *ngIf="sessionData.status === 'closed'">
+            <span class="label">Caja final:</span>
+            <span class="value">{{ formatCurrency(sessionData.actualCash) }}</span>
+          </div>
+          
+          <div class="info-item" *ngIf="sessionData.status === 'closed'">
+            <span class="label">Diferencia:</span>
+            <span class="value" [ngClass]="getCashDifferenceClass(sessionData.cashDifference)">
+              {{ formatCurrency(sessionData.cashDifference) }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="notes-section" *ngIf="sessionData.notes">
+          <h3>Notas:</h3>
+          <p>{{ sessionData.notes }}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Sales list -->
+    <div class="sales-section">
+      <h3>Ventas de la Sesión</h3>
+      
+      <div *ngIf="!sessionData.sales || sessionData.sales.length === 0" class="no-sales">
+        <p>No hay ventas registradas en esta sesión.</p>
+      </div>
+      
+      <div *ngIf="sessionData.sales && sessionData.sales.length > 0" class="sales-table-container">
+        <table mat-table [dataSource]="sessionData.sales" class="mat-elevation-z8">
+          <!-- ID Column -->
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>ID</th>
+            <td mat-cell *matCellDef="let sale">{{ sale._id | slice:0:8 }}...</td>
+          </ng-container>
+
+          <!-- Date Column -->
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef>Fecha</th>
+            <td mat-cell *matCellDef="let sale">{{ sale.saleDate | date:'dd/MM/yyyy HH:mm' }}</td>
+          </ng-container>
+
+          <!-- Items Column -->
+          <ng-container matColumnDef="items">
+            <th mat-header-cell *matHeaderCellDef>Productos</th>
+            <td mat-cell *matCellDef="let sale">
+              <div class="items-summary">
+                <span class="item-count">{{ sale.items.length }} producto(s)</span>
+                <div class="items-tooltip">
+                  <ul>
+                    <li *ngFor="let item of sale.items">
+                      {{ item.quantity }}x {{ item.product?.name || 'Producto' }} 
+                      ({{ formatCurrency(item.salePrice) }})
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Payment Method Column -->
+          <ng-container matColumnDef="paymentMethod">
+            <th mat-header-cell *matHeaderCellDef>Método de Pago</th>
+            <td mat-cell *matCellDef="let sale">
+              <span class="payment-badge" [ngClass]="getPaymentMethodClass(sale.paymentMethod)">
+                {{ getPaymentMethodName(sale.paymentMethod) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Total Amount Column -->
+          <ng-container matColumnDef="totalAmount">
+            <th mat-header-cell *matHeaderCellDef>Total</th>
+            <td mat-cell *matCellDef="let sale">{{ formatCurrency(sale.totalAmount) }}</td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let sale">
+              <button mat-icon-button color="primary" (click)="viewSaleDetail(sale._id)" matTooltip="Ver detalle de venta">
+                <mat-icon>visibility</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

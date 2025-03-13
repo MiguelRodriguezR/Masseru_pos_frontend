@@ -1,7 +1,27 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+
+export interface PaginatedSessions {
+  sessions: any[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    pages: number;
+  };
+}
+
+export interface SessionFilters {
+  startDate?: string;
+  endDate?: string;
+  search?: string;
+  status?: string;
+  userId?: string;
+  page?: number;
+  limit?: number;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -21,11 +41,38 @@ export class PosSessionService {
   }
 
   /**
-   * Get all POS sessions
-   * @returns Observable with all sessions data
+   * Get all POS sessions with pagination and filtering
+   * @param filters Optional filters for the sessions
+   * @returns Observable with paginated sessions data
    */
-  getAllSessions(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/api/pos-sessions`);
+  getAllSessions(filters?: SessionFilters): Observable<PaginatedSessions> {
+    let params = new HttpParams();
+    
+    if (filters) {
+      if (filters.startDate) {
+        params = params.set('startDate', filters.startDate);
+      }
+      if (filters.endDate) {
+        params = params.set('endDate', filters.endDate);
+      }
+      if (filters.search) {
+        params = params.set('search', filters.search);
+      }
+      if (filters.status) {
+        params = params.set('status', filters.status);
+      }
+      if (filters.userId) {
+        params = params.set('userId', filters.userId);
+      }
+      if (filters.page) {
+        params = params.set('page', filters.page.toString());
+      }
+      if (filters.limit) {
+        params = params.set('limit', filters.limit.toString());
+      }
+    }
+    
+    return this.http.get<PaginatedSessions>(`${this.baseUrl}/api/pos-sessions`, { params });
   }
 
   /**

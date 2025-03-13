@@ -139,11 +139,11 @@ export class PosComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * View POS session details
+   * View POS sessions list
    */
-  viewPosSessionDetails(): void {
-    // Navigate to POS session details page (to be implemented)
-    console.log('Ver detalles de sesiones POS');
+  viewPosSessionsList(): void {
+    console.log("e")
+    this.router.navigate(['/pos/sessions']);
   }
   
   /**
