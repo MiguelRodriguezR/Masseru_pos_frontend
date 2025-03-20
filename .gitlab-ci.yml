@@ -47,13 +47,10 @@ deploy:
   stage: deploy
   image: node:16
   script:
-    # Configuración de usuario para git (personaliza estos valores)
     - git config --global user.email "miguel.a.rodriguez.r@gmail.com"
     - git config --global user.name "Mig Rod"
-    # Agrega el remote de GitHub utilizando una variable secreta para la autenticación
-    - git remote add github 'https://$GITHUB_TOKEN@github.com/MiguelRodriguezR/Masseru_pos_frontend.git'
-    # Realiza el push de la rama main actualizada
-    - git push github main
+    - git remote add github "https://$GITHUB_TOKEN@github.com/MiguelRodriguezR/Masseru_pos_frontend.git"
+    - git push github HEAD:main
   only:
     - main
   when: manual
