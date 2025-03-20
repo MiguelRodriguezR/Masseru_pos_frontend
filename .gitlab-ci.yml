@@ -40,7 +40,6 @@ test_components:
       junit:
         - cypress/results/junit/test-results.xml
   only:
-    - merge_requests
     - main
 
 deploy:
@@ -50,7 +49,7 @@ deploy:
     - git config --global user.email "miguel.a.rodriguez.r@gmail.com"
     - git config --global user.name "Mig Rod"
     - git remote add github "https://$GITHUB_TOKEN@github.com/MiguelRodriguezR/Masseru_pos_frontend.git"
-    - git push github HEAD:main
+    - git push github HEAD:main --force
   only:
     - main
   when: manual
