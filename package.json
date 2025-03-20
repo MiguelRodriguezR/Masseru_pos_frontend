@@ -6,7 +6,10 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "cy:run": "start-server-and-test start http://localhost:4200 \"cypress run\"",
+    "cy:run:component": "start-server-and-test start http://localhost:4200 \"cypress run --component\"",
+    "cy:open": "start-server-and-test start http://localhost:4200 \"cypress open\""
   },
   "private": true,
   "dependencies": {
@@ -22,6 +25,7 @@
     "@angular/router": "^17.3.0",
     "@sweetalert2/ngx-sweetalert2": "^13.0.0",
     "chart.js": "^4.4.8",
+    "cypress-real-events": "^1.14.0",
     "ng2-charts": "^8.0.0",
     "rxjs": "~7.8.0",
     "sweetalert2": "^11.17.2",
@@ -33,12 +37,16 @@
     "@angular/cli": "^17.3.9",
     "@angular/compiler-cli": "^17.3.0",
     "@types/jasmine": "~5.1.0",
+    "cypress": "^14.2.0",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "mocha-junit-reporter": "^2.2.1",
+    "mocha-multi-reporters": "^1.5.1",
+    "start-server-and-test": "^2.0.11",
     "typescript": "~5.4.2"
   }
 }
