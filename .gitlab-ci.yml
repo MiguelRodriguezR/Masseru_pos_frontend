@@ -1,0 +1,62 @@
+stages:
+  - test_e2e
+  - test_components
+  - deploy
+
+variables:
+  # Se fuerza a clonar el repositorio para tener el historial completo
+  GIT_STRATEGY: clone
+
+test_e2e:
+  stage: test_e2e
+  image: cypress/browsers:node-22.12.0-chrome-131.0.6778.108-1-ff-133.0-edge-131.0.2903.70-1
+  script:
+    - npm install --legacy-peer-deps
+    - npm run cy:run
+    - sed -i 's/<?xml version="1.1"/<?xml version="1.0"/' cypress/results/junit/test-results.xml
+  artifacts:
+    when: always
+    paths:
+      - cypress/results/junit/test-results.xml
+    reports:
+      junit:
+        - cypress/results/junit/test-results.xml
+  only:
+    - merge_requests
+    - main
+
+test_components:
+  stage: test_components
+  image: cypress/browsers:node-22.12.0-chrome-131.0.6778.108-1-ff-133.0-edge-131.0.2903.70-1
+  script:
+    - npm install --legacy-peer-deps
+    - npm run cy:run:component
+    - sed -i 's/<?xml version="1.1"/<?xml version="1.0"/' cypress/results/junit/test-results.xml
+  artifacts:
+    when: always
+    paths:
+      - cypress/results/junit/test-results.xml
+    reports:
+      junit:
+        - cypress/results/junit/test-results.xml
+  only:
+    - merge_requests
+    - main
+
+deploy:
+  stage: deploy
+  image: node:16
+  script:
+    # Configuración de usuario para git (personaliza estos valores)
+    - git config --global user.email "miguel.a.rodriguez.r@gmail.com"
+    - git config --global user.name "Mig Rod"
+    # Agrega el remote de GitHub utilizando una variable secreta para la autenticación
+    - git remote add github 'https://$GITHUB_TOKEN@github.com/MiguelRodriguezR/Masseru_pos_frontend.git'
+    # Realiza el push de la rama main actualizada
+    - git push github main
+  only:
+    - main
+  when: manual
+  dependencies:
+    - test_components
+    - test_e2e
