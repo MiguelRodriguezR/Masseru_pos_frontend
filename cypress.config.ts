@@ -1,6 +1,8 @@
 import { defineConfig } from "cypress";
 
 export default defineConfig({
+  defaultCommandTimeout: 10000,
+  video: true,
   reporter: "mocha-multi-reporters",
   reporterOptions: {
     reporterEnabled: "spec, mocha-junit-reporter",

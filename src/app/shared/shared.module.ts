@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppMenuComponent } from './app-menu/app-menu.component';
 import { HeaderComponent } from './header/header.component';
 import { EnvironmentSelectorComponent } from './environment-selector/environment-selector.component';
+import { CypressLogsService } from './cypress-logs.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,6 +20,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     AppMenuComponent,
     HeaderComponent,
     EnvironmentSelectorComponent
+  ],
+  providers: [
+    CypressLogsService
   ],
   imports: [
     CommonModule,

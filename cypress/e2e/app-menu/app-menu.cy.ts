@@ -7,6 +7,10 @@ describe('App Menu', () => {
     // Use our custom command to login and visit the dashboard
     // This handles authentication and prevents redirects
     cy.loginAndVisit('/app-menu');
+
+    cy.intercept('GET', '**/api/*', {
+      statusCode: 200,}
+    ).as('getProducts');
   });
 
   it('should display the app menu title with logo', () => {

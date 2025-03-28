@@ -18,6 +18,8 @@ test_e2e:
     when: always
     paths:
       - cypress/results/junit/test-results.xml
+      - cypress/screenshots
+      - cypress/videos
     reports:
       junit:
         - cypress/results/junit/test-results.xml
