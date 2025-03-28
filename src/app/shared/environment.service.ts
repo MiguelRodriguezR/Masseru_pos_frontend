@@ -12,7 +12,7 @@ export interface EnvironmentConfig {
   providedIn: 'root'
 })
 export class EnvironmentService {
-  private remoteEnvURL = 'http://100.73.149.127:3000'
+  private remoteEnvURL = 'http://masseru:3000'
 
   private availableEnvironments: EnvironmentConfig[] = [
     { baseUrl: this.remoteEnvURL , name: 'Remote' },
