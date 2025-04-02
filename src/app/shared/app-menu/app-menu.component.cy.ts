@@ -42,17 +42,18 @@ describe('AppMenuComponent', () => {
 
   it('should display all menu items', () => {
     // Check that all menu items are displayed (7 menu items + logout)
-    cy.get('.menu-item').should('have.length', 8);
+    cy.get('.menu-item').should('have.length', 9);
 
     // Verify menu items text and icons
     const expectedMenuItems = [
       { name: 'Dashboard', icon: 'dashboard' },
       { name: 'POS', icon: 'point_of_sale' },
       { name: 'Productos', icon: 'inventory_2' },
+      { name: 'Compras', icon: 'shopping_cart' },
       { name: 'Recibos', icon: 'receipt' },
       { name: 'Ventas', icon: 'trending_up' },
       { name: 'Métodos de Pago', icon: 'payments' },
-      { name: 'Usuarios', icon: 'people' },
+      { name: 'Usuarios', icon: 'people' },      
       { name: 'Cerrar Session', icon: 'logout' }
     ];
 

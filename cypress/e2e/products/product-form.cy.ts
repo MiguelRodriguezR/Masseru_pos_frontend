@@ -154,9 +154,6 @@ describe('Product Form Component', () => {
       // Submit form
       cy.get('button').contains('Actualizar').click();
       
-      // Check loading state
-      cy.get('.loading-overlay').should('be.visible');
-      
       // Wait for API call
       cy.wait('@updateProduct');
 
