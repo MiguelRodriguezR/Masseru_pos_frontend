@@ -201,6 +201,7 @@
   display: flex;
   justify-content: space-between;
   padding: 0.75rem;
+  position: relative;
   border-bottom: 1px solid $gray-300;
   cursor: pointer;
   
@@ -210,6 +211,21 @@
   
   &.selected {
     background-color: $gray-200;
+  }
+
+  .delete-button{
+    position: absolute;
+    top: 50px;
+    right: 20px;
+    color: white;
+    background-color: rgba($error-color, 0.8);
+    border-radius: 10px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: -15px;
   }
   
   .item-details {
@@ -406,6 +422,23 @@
   &:hover {
     transform: translateY(-3px);
     box-shadow: $shadow-md;
+  }
+
+  .product-stock{
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba($gray-700, 0.8);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-bottom-right-radius: $border-radius-md;
+    font-size: 0.85rem;
+    font-weight: bold;
+    
+    @include respond-to(xs) {
+      font-size: 0.7rem;
+      padding: 0.15rem 0.35rem;
+    }
   }
   
   .product-price {

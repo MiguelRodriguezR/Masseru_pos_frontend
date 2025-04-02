@@ -19,13 +19,13 @@
     <div class="left-section">
       <!-- Cart items list -->
       <div class="cart-items">
-        <div *ngFor="let item of cartItems" 
-             class="cart-item"
-             [class.selected]="selectedCartItem === item"
-             (click)="selectCartItem(item)">
+        <div *ngFor="let item of cartItems" class="cart-item" [class.selected]="selectedCartItem === item"
+          (click)="selectCartItem(item)">
+          <div class="delete-button" (click)="removeFromCart(item)"><mat-icon>delete</mat-icon></div>
           <div class="item-details">
             <span class="item-name">{{ item.name }}</span>
-            <span class="item-quantity">{{ item.quantity }} {{ item.unitOfMeasure }} a {{ item.unitPrice | currency:'$ ':'symbol':'1.0-0' }} / {{ item.unitOfMeasure }}</span>
+            <span class="item-quantity">{{ item.quantity }} {{ item.unitOfMeasure }} a {{ item.unitPrice | currency:'$
+              ':'symbol':'1.0-0' }} / {{ item.unitOfMeasure }}</span>
           </div>
           <div class="item-price">{{ item.totalPrice | currency:'$ ':'symbol':'1.0-0' }}</div>
         </div>
@@ -51,9 +51,8 @@
         <button mat-raised-button class="action-button disc-btn">
           <span>Descuento</span>
         </button>
-        <button mat-raised-button class="action-button qty-btn" 
-                [class.selected]="isQuantityButtonSelected"
-                (click)="toggleQuantityButton()">
+        <button mat-raised-button class="action-button qty-btn" [class.selected]="isQuantityButtonSelected"
+          (click)="toggleQuantityButton()">
           <span>Cantidad</span>
         </button>
         <button mat-raised-button class="action-button price-btn">
@@ -79,21 +78,19 @@
           <button mat-raised-button class="numpad-btn" (click)="addDigit(9)">9</button>
         </div>
         <div class="numpad-row">
-          <button mat-raised-button class="numpad-btn" 
-                  *ngIf="selectedCartItem && isQuantityButtonSelected"
-                  (click)="removeFromCart(selectedCartItem)" 
-                  class="remove-btn">
+          <button mat-raised-button class="numpad-btn" *ngIf="selectedCartItem && isQuantityButtonSelected"
+            (click)="removeFromCart(selectedCartItem)" class="remove-btn">
             <mat-icon>delete</mat-icon>
           </button>
-          <button mat-raised-button class="numpad-btn" *ngIf="!(selectedCartItem && isQuantityButtonSelected)">+/-</button>
+          <button mat-raised-button class="numpad-btn"
+            *ngIf="!(selectedCartItem && isQuantityButtonSelected)">+/-</button>
           <button mat-raised-button class="numpad-btn" (click)="addDigit(0)">0</button>
-          <button mat-raised-button class="numpad-btn" 
-                  *ngIf="selectedCartItem && isQuantityButtonSelected"
-                  (click)="deleteDigit()" 
-                  class="backspace-btn">
+          <button mat-raised-button class="numpad-btn" *ngIf="selectedCartItem && isQuantityButtonSelected"
+            (click)="deleteDigit()" class="backspace-btn">
             <mat-icon>backspace</mat-icon>
           </button>
-          <button mat-raised-button class="numpad-btn" *ngIf="!(selectedCartItem && isQuantityButtonSelected)">.</button>
+          <button mat-raised-button class="numpad-btn"
+            *ngIf="!(selectedCartItem && isQuantityButtonSelected)">.</button>
         </div>
       </div>
 
@@ -117,22 +114,26 @@
           Productos de belleza
         </div>
         <div class="search-box">
-          <input #searchInput type="text" placeholder="Buscar productos" [(ngModel)]="searchTerm" (keyup)="onSearchInputChange($event)">
+          <input #searchInput type="text" placeholder="Buscar productos" [(ngModel)]="searchTerm"
+            (keyup)="onSearchInputChange($event)">
           <mat-icon (click)="searchProducts()">search</mat-icon>
         </div>
       </div>
 
       <!-- Products grid -->
       <div class="products-grid">
-        <div *ngFor="let product of products" 
-             class="product-card"
-             (click)="addToCart(product)">
-          <div class="product-price">{{ product.salePrice | currency:'$ ':'symbol':'1.0-0' }}</div>
-          <div class="product-image">
-            <img *ngIf="product.images && product.images.length" [src]="getProductImage(product)" alt="{{ product.name }}">
-            <div *ngIf="!product.images || !product.images.length" class="no-image">Sin imagen</div>
-          </div>
-          <div class="product-name">{{ product.name }}</div>
+        <div *ngFor="let product of products" class="product-card" (click)="addToCart(product)">
+          
+            <div class="product-price">{{ product.salePrice | currency:'$ ':'symbol':'1.0-0' }}</div>
+            <div class="product-stock" *ngIf="product.quantity">{{product.quantity}}</div>
+            <div class="product-stock" *ngIf="!product.quantity">Sin Stock</div>
+            <div class="product-image">
+              <img *ngIf="product.images && product.images.length" [src]="getProductImage(product)"
+                alt="{{ product.name }}">
+              <div *ngIf="!product.images || !product.images.length" class="no-image">Sin imagen</div>
+            </div>
+            <div class="product-name">{{ product.name }} </div>
+            
         </div>
       </div>
     </div>
