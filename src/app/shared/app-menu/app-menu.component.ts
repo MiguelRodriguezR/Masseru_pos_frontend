@@ -18,6 +18,7 @@ export class AppMenuComponent {
     { name: 'Dashboard', route: '/dashboard', icon: 'dashboard' },
     { name: 'POS', route: '/pos', icon: 'point_of_sale' },
     { name: 'Productos', route: '/products', icon: 'inventory_2' },
+    { name: 'Compras', route: '/purchases', icon: 'shopping_cart' },
     { name: 'Recibos', route: '/receipts', icon: 'receipt' },
     { name: 'Ventas', route: '/sales', icon: 'trending_up' },
     { name: 'Métodos de Pago', route: '/payment-methods', icon: 'payments' },

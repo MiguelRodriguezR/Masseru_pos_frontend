@@ -1,0 +1,93 @@
+<div class="purchase-list-container">
+  <!-- Loading Overlay -->
+  <div *ngIf="loading" class="loading-overlay">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <!-- List Header -->
+  <div class="list-header">
+    <h1 class="list-title">Compras</h1>
+    <button mat-raised-button color="primary" routerLink="/purchases/new">
+      <mat-icon>add</mat-icon> Agregar Compra
+    </button>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="search-container">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Buscar compras</mat-label>
+      <input #searchInput matInput (keyup)="applyFilter($event)" [(ngModel)]="searchTerm" placeholder="Proveedor, número de factura...">
+      <mat-icon matPrefix>search</mat-icon>
+      <button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Clear" (click)="searchTerm=''; applyFilter($event)">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+
+  <!-- Purchases Table -->
+  <div class="table-container" *ngIf="purchases.length > 0; else noPurchases">
+    <table mat-table [dataSource]="purchases" matSort>
+      <!-- Invoice Number Column -->
+      <ng-container matColumnDef="invoiceNumber">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Número de Factura</th>
+        <td mat-cell *matCellDef="let purchase">{{ purchase.invoiceNumber || 'N/A' }}</td>
+      </ng-container>
+
+      <!-- Supplier Column -->
+      <ng-container matColumnDef="supplier">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Proveedor</th>
+        <td mat-cell *matCellDef="let purchase">{{ purchase.supplier || 'N/A' }}</td>
+      </ng-container>
+
+      <!-- Total Column -->
+      <ng-container matColumnDef="total">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Total</th>
+        <td mat-cell *matCellDef="let purchase">${{ purchase.total.toFixed(2) }}</td>
+      </ng-container>
+
+      <!-- Date Column -->
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha</th>
+        <td mat-cell *matCellDef="let purchase">{{ formatDate(purchase.createdAt || '') }}</td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let purchase">
+          <button mat-icon-button color="primary" class="action-button" (click)="editPurchase(purchase._id || '', $event)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" class="action-button" (click)="deletePurchase(purchase._id || '', $event)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="viewPurchase(row._id || '')"></tr>
+    </table>
+  </div>
+
+  <!-- No Purchases Template -->
+  <ng-template #noPurchases>
+    <div class="no-purchases">
+      <mat-icon class="no-purchases-icon">shopping_cart</mat-icon>
+      <p class="no-purchases-text">No hay compras disponibles</p>
+      <button mat-raised-button color="primary" routerLink="/purchases/new">
+        <mat-icon>add</mat-icon> Agregar Compra
+      </button>
+    </div>
+  </ng-template>
+
+  <!-- Paginator -->
+  <div class="paginator-container" *ngIf="totalPurchases > 0">
+    <mat-paginator #paginator
+      [length]="totalPurchases"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      [pageIndex]="currentPage - 1"
+      showFirstLastButtons>
+    </mat-paginator>
+  </div>
+</div>

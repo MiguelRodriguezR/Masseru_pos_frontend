@@ -1,0 +1,131 @@
+<div class="purchase-form-container">
+  <!-- Loading Overlay -->
+  <div *ngIf="loading" class="loading-overlay">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <!-- Form Header -->
+  <div class="form-header">
+    <div class="header-left">
+      <button mat-icon-button color="primary" (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1 class="form-title">{{ isEdit ? 'Editar Compra' : 'Nueva Compra' }}</h1>
+    </div>
+  </div>
+
+  <!-- Purchase Form -->
+  <form [formGroup]="purchaseForm" (ngSubmit)="onSubmit()">
+    <!-- Basic Info Card -->
+    <mat-card class="info-card">
+      <mat-card-header>
+        <mat-card-title>Información General</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Proveedor</mat-label>
+            <input matInput formControlName="supplier" placeholder="Nombre del proveedor">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Número de Factura</mat-label>
+            <input matInput formControlName="invoiceNumber" placeholder="Número de factura">
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Notas</mat-label>
+          <textarea matInput formControlName="notes" placeholder="Notas adicionales" rows="3"></textarea>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Items Card -->
+    <mat-card class="items-card">
+      <mat-card-header>
+        <mat-card-title>Productos</mat-card-title>
+        <button mat-mini-fab color="primary" type="button" (click)="addItem()" class="add-item-button">
+          <mat-icon>add</mat-icon>
+        </button>
+      </mat-card-header>
+      <mat-card-content>
+        <div formArrayName="items">
+          <div *ngFor="let item of items.controls; let i = index" [formGroupName]="i" class="item-row">
+            <div class="item-fields">
+              <!-- Product Autocomplete -->
+              <mat-form-field appearance="outline" class="product-field">
+                <mat-label>Producto</mat-label>
+                <input type="text" matInput formControlName="product" [matAutocomplete]="auto" placeholder="Buscar producto">
+                <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayProduct" (optionSelected)="onProductSelected($event, i)">
+                  <mat-option *ngFor="let product of filteredProducts[i] | async" [value]="product">
+                    <div class="product-option">
+                      <span class="product-name">{{ product.name }}</span>
+                      <span class="product-barcode">{{ product.barcode }}</span>
+                    </div>
+                  </mat-option>
+                </mat-autocomplete>
+                <mat-error *ngIf="items.at(i).get('product')?.hasError('required')">
+                  Producto es requerido
+                </mat-error>
+              </mat-form-field>
+
+              <!-- Quantity Field -->
+              <mat-form-field appearance="outline" class="quantity-field">
+                <mat-label>Cantidad</mat-label>
+                <input type="number" matInput formControlName="quantity" min="1">
+                <mat-error *ngIf="items.at(i).get('quantity')?.hasError('required')">
+                  Cantidad es requerida
+                </mat-error>
+                <mat-error *ngIf="items.at(i).get('quantity')?.hasError('min')">
+                  Cantidad debe ser mayor a 0
+                </mat-error>
+              </mat-form-field>
+
+              <!-- Purchase Price Field -->
+              <mat-form-field appearance="outline" class="price-field">
+                <mat-label>Precio de Compra</mat-label>
+                <input type="number" matInput formControlName="purchasePrice" min="0">
+                <span matPrefix>$&nbsp;</span>
+                <mat-error *ngIf="items.at(i).get('purchasePrice')?.hasError('required')">
+                  Precio es requerido
+                </mat-error>
+                <mat-error *ngIf="items.at(i).get('purchasePrice')?.hasError('min')">
+                  Precio debe ser mayor o igual a 0
+                </mat-error>
+              </mat-form-field>
+
+              <!-- Subtotal (calculated) -->
+              <div class="subtotal-field">
+                <span class="subtotal-label">Subtotal:</span>
+                <span class="subtotal-value">${{ 
+                  (items.at(i).get('quantity')?.value * items.at(i).get('purchasePrice')?.value || 0).toFixed(2) 
+                }}</span>
+              </div>
+            </div>
+
+            <!-- Remove Item Button -->
+            <button mat-icon-button color="warn" type="button" (click)="removeItem(i)" class="remove-item-button"
+                    [disabled]="items.length <= 1">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Total -->
+        <div class="total-container">
+          <span class="total-label">Total:</span>
+          <span class="total-value">${{ calculateTotal().toFixed(2) }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button mat-button type="button" (click)="goBack()">Cancelar</button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="loading">
+        {{ isEdit ? 'Actualizar' : 'Crear' }} Compra
+      </button>
+    </div>
+  </form>
+</div>
