@@ -47,7 +47,36 @@ export class AuthService extends BaseService {
     return localStorage.getItem('token');
   }
 
+  private decodeToken(token: string): any {
+    try {
+      const payload = token.split('.')[1];
+      const decoded = JSON.parse(atob(payload));
+      return decoded;
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return null;
+    }
+  }
+
   isAuthenticated(): boolean {
-    return !!this.getToken();
+    const token = this.getToken();
+    if (!token) {
+      return false;
+    }
+
+    const decodedToken = this.decodeToken(token);
+    if (!decodedToken || !decodedToken.exp) {
+      this.logout();
+      return false;
+    }
+
+    // Check if token is expired (exp is in seconds, Date.now() is in milliseconds)
+    const isExpired = decodedToken.exp * 1000 < Date.now();
+    if (isExpired) {
+      this.logout();
+      return false;
+    }
+
+    return true;
   }
 }
