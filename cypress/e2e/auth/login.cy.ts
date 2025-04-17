@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+import { generateToken } from '../../support/commands';
 
 describe('Login Component', () => {
   beforeEach(() => {
@@ -90,22 +91,26 @@ describe('Login Component', () => {
     cy.get('input[formControlName="email"]').type('valid@email.com');
     cy.get('input[formControlName="password"]').type('password');
     
-    // Mock successful login and user data responses
-    cy.intercept('POST', '**/login', {
-      statusCode: 200,
-      body: { token: 'fake-jwt-token' }
-    }).as('loginRequest');
-
-    cy.intercept('GET', '**/user/data', {
-      statusCode: 200,
-      body: { user: 'test-user' }
-    }).as('userDataRequest');
-
-    // Submit form
-    cy.get('.sign-in-btn').click();
     
-    // Verify navigation to dashboard
-    cy.url().should('include', '/dashboard');
+    // Mock successful login and user data responses
+    cy.getValidToken().then(token => {
+      cy.intercept('POST', '**/login', {
+        statusCode: 200,
+        body: { token: token }
+      }).as('loginRequest');
+  
+      cy.intercept('GET', '**/user/data', {
+        statusCode: 200,
+        body: { user: 'test-user' }
+      }).as('userDataRequest');
+  
+      // Submit form
+      cy.get('.sign-in-btn').click();
+      
+      // Verify navigation to dashboard
+      cy.url().should('include', '/dashboard');
+    })
+    
   });
 
   it('should show error message on invalid credentials', () => {

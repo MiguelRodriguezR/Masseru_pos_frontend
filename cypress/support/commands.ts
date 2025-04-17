@@ -4,6 +4,71 @@
 // Custom commands for MasseruPOS testing
 // ***********************************************
 
+// Declare the functions before declaring types
+// Standalone function to generate a valid token
+export function generateToken(): string {
+  const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+  const futureDate = new Date('2090-01-01').getTime() / 1000; // Convert to seconds
+  const payload = btoa(JSON.stringify({
+    sub: 'test-user-id',
+    name: 'Test User',
+    email: 'test@example.com',
+    role: 'admin',
+    exp: futureDate,
+    iat: Math.floor(Date.now() / 1000)
+  }));
+  const signature = btoa('signature'); // Just a placeholder, auth service only checks expiration
+  return `${header}.${payload}.${signature}`;
+}
+
+// Add to Cypress types
+declare global {
+  namespace Cypress {
+    interface Chainable<Subject = any> {
+      /**
+       * Enable console logs display in the DOM
+       * This is useful for debugging and seeing logs in screenshots/videos
+       */
+      enableConsoleLogs(): Chainable<void>
+
+      /**
+       * Disable console logs display in the DOM
+       */
+      disableConsoleLogs(): Chainable<void>
+
+      /**
+       * Get a valid JWT token for testing
+       * @returns A Chainable that resolves to a JWT token string
+       */
+      getValidToken(): Chainable<string>
+
+      /**
+       * Login and visit a protected route
+       * @param route - The route to visit
+       */
+      loginAndVisit(route: string): Chainable<void>
+
+      /**
+       * Visit a public route without authentication
+       * @param route - The route to visit
+       */
+      visitPublicRoute(route: string): Chainable<void>
+
+      /**
+       * Visit a product detail page with mocked data
+       * @param productId - The product ID to visit
+       * @param productData - Optional product data to override defaults
+       */
+      visitProductDetail(productId: string, productData?: any): Chainable<void>
+
+      /**
+       * Visit a product list page with mocked data
+       */
+      loginAndVisitProducts(): Chainable<void>
+    }
+  }
+}
+
 /**
  * Custom command to enable console logs display in the DOM
  * This makes application console logs visible in screenshots and videos
@@ -13,11 +78,11 @@ Cypress.Commands.add('enableConsoleLogs', () => {
   cy.on('window:before:load', (win) => {
     win.localStorage.setItem('cypress_show_logs', 'true');
   });
-  
+
   // Also set it on the current window if already loaded
   cy.window().then((win) => {
     win.localStorage.setItem('cypress_show_logs', 'true');
-    
+
     // If the CypressLogsService is already initialized, trigger a check
     if (win.document.getElementById('cypress-logs') === null) {
       // Inject a script to trigger the service
@@ -42,6 +107,15 @@ Cypress.Commands.add('disableConsoleLogs', () => {
 });
 
 /**
+ * Custom command to get a valid JWT token
+ * Returns a Chainable that resolves to the token string
+ */
+Cypress.Commands.add('getValidToken', () => {
+  const token = generateToken();
+  return cy.wrap(token);
+});
+
+/**
  * Custom command to bypass authentication and visit a protected route
  * This prevents redirects to login and handles API requests
  */
@@ -50,16 +124,19 @@ Cypress.Commands.add('loginAndVisit', (route) => {
   cy.intercept('GET', '**/login*', (req) => {
     req.reply(200, {});
   }).as('loginRedirect');
-  
+
   // Visita la ruta con el token de autenticación
   cy.visit(route, {
     onBeforeLoad: (win) => {
+      // Use our token generator function
+      const token = generateToken();
+
       // Establece el token de autenticación
-      win.localStorage.setItem('token', 'fake-jwt-token');
-      
+      win.localStorage.setItem('token', token);
+
       // Evita redirecciones a /login
       const originalPushState = win.history.pushState;
-      win.history.pushState = function(state, title, url) {
+      win.history.pushState = function (state, title, url) {
         if (url && url.toString().includes('/login')) {
           return;
         }
@@ -67,7 +144,7 @@ Cypress.Commands.add('loginAndVisit', (route) => {
       };
     }
   });
-  
+
   // Espera a que la página se estabilice
   cy.wait(100);
 });
@@ -79,10 +156,10 @@ Cypress.Commands.add('loginAndVisit', (route) => {
 Cypress.Commands.add('visitPublicRoute', (route) => {
   // Intercept API requests
   cy.intercept('GET', '**/api/**', { statusCode: 200, body: {} }).as('apiRequests');
-  
+
   // Visit without authentication
   cy.visit(route);
-  
+
   // Wait for page to stabilize
   cy.wait(50);
 });
@@ -106,22 +183,22 @@ Cypress.Commands.add('visitProductDetail', (productId: string, productData: any 
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };
-  
+
   // Merge default with provided data
   const product = { ...defaultProduct, ...productData };
-  
+
   // Intercept product detail API request
   cy.intercept('GET', `**/api/products/${productId}`, {
     statusCode: 200,
     body: product
   }).as('getProductDetail');
-  
+
   // Visit product detail page with authentication
   cy.loginAndVisit(`/products/${productId}`);
-  
+
   // Wait for API request to complete
   cy.wait('@getProductDetail');
-  
+
   // Wait for loading spinner to disappear
   // cy.get('.loading-overlay').should('not.exist', { timeout: 500 });
 });
@@ -198,43 +275,3 @@ Cypress.Commands.add('loginAndVisitProducts', () => {
   // Espera a que se intercepte la petición
   cy.wait('@getProducts', { timeout: 30000 });
 });
-
-// Add to Cypress types
-declare namespace Cypress {
-  interface Chainable {
-    /**
-     * Enable console logs display in the DOM
-     * This is useful for debugging and seeing logs in screenshots/videos
-     */
-    enableConsoleLogs(): Chainable<any>
-    
-    /**
-     * Disable console logs display in the DOM
-     */
-    disableConsoleLogs(): Chainable<any>
-
-    /**
-     * Login and visit a protected route
-     * @param route - The route to visit
-     */
-    loginAndVisit(route: string): Chainable<any>
-
-    /**
-     * Visit a public route without authentication
-     * @param route - The route to visit
-     */
-    visitPublicRoute(route: string): Chainable<any>
-    
-    /**
-     * Visit a product detail page with mocked data
-     * @param productId - The product ID to visit
-     * @param productData - Optional product data to override defaults
-     */
-    visitProductDetail(productId: string, productData?: any): Chainable<any>
-
-    /**
-     * Visit a product list page with mocked data
-     */
-    loginAndVisitProducts(): Chainable<any>
-  }
-}
