@@ -7,9 +7,14 @@
   <!-- List Header -->
   <div class="list-header">
     <h1 class="list-title">Compras</h1>
-    <button mat-raised-button color="primary" routerLink="/purchases/new">
-      <mat-icon>add</mat-icon> Agregar Compra
-    </button>
+    <div>
+      <button mat-raised-button color="primary" routerLink="/purchases/new" style="margin-right: 8px;">
+        <mat-icon>add</mat-icon> Agregar Compra
+      </button>
+      <button mat-raised-button color="accent" (click)="openCsvUploadModal()">
+        <mat-icon>upload_file</mat-icon> Subir CSV
+      </button>
+    </div>
   </div>
 
   <!-- Search Bar -->

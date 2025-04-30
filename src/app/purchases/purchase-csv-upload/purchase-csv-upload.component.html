@@ -1,0 +1,18 @@
+<div class="csv-upload-container">
+  <div class="file-selection">
+    <label for="csvFile">Seleccionar archivo CSV:</label>
+    <input 
+      type="file" 
+      id="csvFile" 
+      (change)="onFileSelected($event)" 
+      accept=".csv"
+      [disabled]="isProcessing"
+    >
+    <p *ngIf="selectedFileName">Archivo seleccionado: {{ selectedFileName }}</p>
+  </div>
+  
+  <div *ngIf="isProcessing" class="processing-status">
+    <p>Procesando archivo... ({{ processedRows }} de {{ totalRows }} filas)</p>
+    <mat-progress-bar mode="determinate" [value]="progress"></mat-progress-bar>
+  </div>
+</div>

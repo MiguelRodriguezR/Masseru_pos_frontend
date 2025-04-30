@@ -1,0 +1,29 @@
+.csv-upload-container {
+  padding: 15px;
+  
+  .file-selection {
+    margin-bottom: 15px;
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    
+    input[type="file"] {
+      margin-bottom: 10px;
+    }
+  }
+  
+  .processing-status {
+    margin-top: 20px;
+    
+    p {
+      margin-bottom: 8px;
+    }
+    
+    mat-progress-bar {
+      height: 8px;
+    }
+  }
+}
