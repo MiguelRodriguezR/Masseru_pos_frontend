@@ -1,3 +1,8 @@
+export interface Discount {
+  type: 'percentage' | 'fixed';
+  value: number;
+}
+
 export interface CartItem {
   productId: string;
   name: string;
@@ -5,4 +10,5 @@ export interface CartItem {
   unitPrice: number;
   totalPrice: number;
   unitOfMeasure?: string;
+  discounts?: Discount[];
 }

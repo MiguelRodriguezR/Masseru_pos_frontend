@@ -43,9 +43,24 @@
         </div>
       </div>
 
+      <!-- Cart items summary -->
+      <div class="cart-items-summary">
+        <h2 class="section-title">PRODUCTOS</h2>
+        <div class="cart-item" *ngFor="let item of cartItems">
+          <div class="item-details">
+            <span class="item-name">{{ item.name }}</span>
+            <span class="item-quantity">{{ item.quantity }} x {{ item.unitPrice | currency:'$ ':'symbol':'1.0-0' }}</span>
+            <span *ngIf="hasDiscount(item)" class="item-discount">
+              {{ getDiscountText(item) }}
+            </span>
+          </div>
+          <div class="item-price">{{ item.totalPrice | currency:'$ ':'symbol':'1.0-0' }}</div>
+        </div>
+      </div>
+
       <!-- Payment summary -->
       <div class="payment-summary">
-        <h2 class="section-title">RESUMEN</h2>
+        <h2 class="section-title">RESUMEN DE PAGO</h2>
         <div class="summary-item" *ngIf="paymentAmount > 0 && selectedPaymentMethodObject">
           <div class="summary-method" [style.background-color]="selectedPaymentMethodObject.color">
             <mat-icon [style.color]="'white'">{{ selectedPaymentMethodObject.icon }}</mat-icon>

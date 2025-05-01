@@ -24,8 +24,10 @@
           <div class="delete-button" (click)="removeFromCart(item)"><mat-icon>delete</mat-icon></div>
           <div class="item-details">
             <span class="item-name">{{ item.name }}</span>
-            <span class="item-quantity">{{ item.quantity }} {{ item.unitOfMeasure }} a {{ item.unitPrice | currency:'$
-              ':'symbol':'1.0-0' }} / {{ item.unitOfMeasure }}</span>
+            <span class="item-quantity">{{ item.quantity }} {{ item.unitOfMeasure }} a {{ item.unitPrice | currency:'$ ':'symbol':'1.0-0' }} / {{ item.unitOfMeasure }}</span>
+            <span *ngIf="hasDiscount(item)" class="item-discount">
+              {{ getDiscountText(item) }}
+            </span>
           </div>
           <div class="item-price">{{ item.totalPrice | currency:'$ ':'symbol':'1.0-0' }}</div>
         </div>
@@ -48,14 +50,14 @@
         <button mat-raised-button class="action-button customer-btn">
           <span>Cliente</span>
         </button>
-        <button mat-raised-button class="action-button disc-btn">
+        <button mat-raised-button class="action-button disc-btn" (click)="applyDiscount()">
           <span>Descuento</span>
         </button>
         <button mat-raised-button class="action-button qty-btn" [class.selected]="isQuantityButtonSelected"
           (click)="toggleQuantityButton()">
           <span>Cantidad</span>
         </button>
-        <button mat-raised-button class="action-button price-btn">
+        <button mat-raised-button class="action-button price-btn" (click)="applyPriceDiscount()">
           <span>Precio</span>
         </button>
       </div>

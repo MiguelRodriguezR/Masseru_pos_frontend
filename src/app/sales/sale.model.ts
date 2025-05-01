@@ -1,4 +1,5 @@
 import { Product } from '../products/product.model';
+import { Discount } from '../pos/models/cart-item.model';
 
 export interface SaleItem {
   product: Product;
@@ -9,6 +10,7 @@ export interface SaleItem {
     [key: string]: any;
   };
   salePrice: number;
+  discounts?: Discount[];
 }
 
 export interface User {

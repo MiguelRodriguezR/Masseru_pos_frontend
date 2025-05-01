@@ -8,6 +8,7 @@ import { Subscription, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { Product } from '../../products/product.model';
+import { DiscountUtils } from '../utils/discount-utils';
 
 @Component({
   selector: 'app-pos-session',
@@ -41,6 +42,11 @@ export class PosSessionComponent implements OnInit, OnDestroy {
   // Totals
   total: number = 0;
   taxes: number = 0;
+
+  // Discounts and original prices
+  discounts: {[productId: string]: number} = {};
+  priceDiscounts: {[productId: string]: number} = {};
+  originalPrices: {[productId: string]: number} = {};
   
   constructor(
     private route: ActivatedRoute,
@@ -48,6 +54,155 @@ export class PosSessionComponent implements OnInit, OnDestroy {
     private posSessionService: PosSessionService,
     private productService: ProductService
   ) {}
+
+  /**
+   * Apply percentage discount to selected cart item
+   */
+  applyDiscount(): void {
+    if (!this.selectedCartItem) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Ningún ítem seleccionado',
+        text: 'Por favor seleccione un ítem del carrito para aplicar descuento'
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: 'Aplicar Descuento',
+      html: `
+        <div class="swal-discount">
+          <div class="swal-input-group">
+            <label for="swal-discount-percent">Porcentaje de descuento (0-100)</label>
+            <input id="swal-discount-percent" type="number" class="swal2-input" 
+                   min="0" max="100" value="0">
+          </div>
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: 'Aplicar',
+      cancelButtonText: 'Cancelar',
+      focusConfirm: false,
+      preConfirm: () => {
+        const discountInput = document.getElementById('swal-discount-percent') as HTMLInputElement;
+        const discountPercent = Number(discountInput.value);
+
+        if (isNaN(discountPercent) || discountPercent < 0 || discountPercent > 100) {
+          Swal.showValidationMessage('Por favor ingrese un porcentaje válido entre 0 y 100');
+          return false;
+        }
+
+        return discountPercent;
+      }
+    }).then((result) => {
+      if (result.isConfirmed && this.selectedCartItem) {
+        const discountPercent = result.value;
+        const productId = this.selectedCartItem.productId;
+        
+        // Store discount percentage for display purposes
+        this.discounts[productId] = discountPercent;
+        
+        // Apply percentage discount using utility method
+        DiscountUtils.applyPercentageDiscount(
+          this.selectedCartItem,
+          discountPercent,
+          this.originalPrices
+        );
+
+        // console.log({cartItem : this.selectedCartItem})
+        
+        this.updateTotals();
+        
+        Swal.fire({
+          icon: 'success',
+          title: 'Descuento aplicado',
+          text: `Se aplicó un ${discountPercent}% de descuento al producto`,
+          timer: 1500,
+          showConfirmButton: false
+        });
+      }
+    });
+  }
+
+  /**
+   * Apply fixed price discount to selected cart item
+   */
+  applyPriceDiscount(): void {
+    if (!this.selectedCartItem) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Ningún ítem seleccionado',
+        text: 'Por favor seleccione un ítem del carrito para modificar el precio'
+      });
+      return;
+    }
+
+    // Store original price if not already stored
+    const productId = this.selectedCartItem.productId;
+    if (!this.originalPrices[productId]) {
+      this.originalPrices[productId] = this.selectedCartItem.unitPrice;
+    }
+    
+    const originalPrice = this.originalPrices[productId];
+
+    Swal.fire({
+      title: 'Modificar Precio',
+      html: `
+        <div class="swal-price">
+          <div class="swal-input-group">
+            <label for="swal-new-price">Nuevo precio unitario</label>
+            <input id="swal-new-price" type="number" class="swal2-input" 
+                   min="0" value="${this.selectedCartItem.unitPrice}">
+          </div>
+          <p class="swal-price-info">Precio original: ${originalPrice.toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</p>
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: 'Aplicar',
+      cancelButtonText: 'Cancelar',
+      focusConfirm: false,
+      preConfirm: () => {
+        const priceInput = document.getElementById('swal-new-price') as HTMLInputElement;
+        const newPrice = Number(priceInput.value);
+
+        if (isNaN(newPrice) || newPrice < 0) {
+          Swal.showValidationMessage('Por favor ingrese un precio válido mayor o igual a 0');
+          return false;
+        }
+
+        return newPrice;
+      }
+    }).then((result) => {
+      if (result.isConfirmed && this.selectedCartItem) {
+        const newPrice = result.value;
+        
+        this.priceDiscounts[productId] = newPrice;
+
+        // Apply fixed price discount using utility method
+        DiscountUtils.applyFixedPriceDiscount(
+          this.selectedCartItem,
+          newPrice,
+          this.originalPrices
+        );
+        
+        this.updateTotals();
+        
+        // Calculate the discount amount
+        const discountAmount = originalPrice - newPrice;
+        const discountType = discountAmount > 0 ? 'descuento' : 'aumento';
+        const absDiscountAmount = Math.abs(discountAmount);
+        
+        
+        Swal.fire({
+          icon: 'success',
+          title: 'Precio modificado',
+          text: `Se aplicó un ${absDiscountAmount.toLocaleString('es-CO', { style: 'currency', currency: 'COP' })} de ${discountType} al producto`,
+          timer: 1500,
+          showConfirmButton: false
+        });
+      }
+    });
+  }
 
   ngOnInit(): void {
     // Get session ID from route params
@@ -61,6 +216,12 @@ export class PosSessionComponent implements OnInit, OnDestroy {
       if (state && state.preserveCart && state.cartItems && state.cartItems.length > 0) {
         console.log('Restoring cart items from state:', state.cartItems);
         this.cartItems = state.cartItems;
+        
+        // Restore original prices if available
+        if (state.originalPrices) {
+          this.originalPrices = state.originalPrices;
+        }
+        
         this.updateTotals();
       }
     });
@@ -168,9 +329,39 @@ export class PosSessionComponent implements OnInit, OnDestroy {
     if (existingItem) {
       // Increment quantity if already in cart
       existingItem.quantity += 1;
-      existingItem.totalPrice = existingItem.quantity * existingItem.unitPrice;
+      
+      // Store original price if not already stored
+      if (!this.originalPrices[product._id]) {
+        this.originalPrices[product._id] = product.salePrice;
+      }
+      
+      // Reset to original price
+      existingItem.unitPrice = this.originalPrices[product._id];
+      
+      // Reapply any percentage discount if it exists
+      if (this.discounts[product._id]) {
+        const discountPercent = this.discounts[product._id];
+        DiscountUtils.applyPercentageDiscount(
+          existingItem,
+          discountPercent,
+          this.originalPrices
+        );
+      } else if (this.priceDiscounts[product._id]){
+        const discountPrice = this.priceDiscounts[product._id]
+        DiscountUtils.applyFixedPriceDiscount(
+          existingItem,
+          discountPrice,
+          this.originalPrices
+        );
+      }else {
+        // Recalculate total price if no discount
+        existingItem.totalPrice = existingItem.quantity * existingItem.unitPrice;
+      }
     } else {
-      // Add new item to cart
+      // Store original price
+      this.originalPrices[product._id] = product.salePrice;
+      
+      // Add new item to cart with original price
       const newItem: CartItem = {
         productId: product._id,
         name: product.name,
@@ -182,6 +373,8 @@ export class PosSessionComponent implements OnInit, OnDestroy {
       
       this.cartItems.push(newItem);
     }
+
+    // console.log({product, originalPrices : this.originalPrices, discounts: this.discounts, existingItem})
     
     this.updateTotals();
   }
@@ -190,7 +383,10 @@ export class PosSessionComponent implements OnInit, OnDestroy {
    * Remove item from cart
    */
   removeFromCart(item: CartItem): void {
+    this.selectedCartItem = null;
     this.cartItems = this.cartItems.filter(cartItem => cartItem.productId !== item.productId);
+    delete this.discounts[item.productId];
+    delete this.priceDiscounts[item.productId];
     this.updateTotals();
   }
 
@@ -282,6 +478,31 @@ export class PosSessionComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Get discount percentage for a product
+   */
+  getDiscountPercent(productId: string): number {
+    return this.discounts[productId] || 0;
+  }
+
+  /**
+   * Format discount text for display
+   */
+  getDiscountText(item: CartItem): string {
+    if (!item.discounts || item.discounts.length === 0) {
+      return '';
+    }
+
+    return DiscountUtils.formatDiscountText(item, this.originalPrices);
+  }
+
+  /**
+   * Check if an item has any discount
+   */
+  hasDiscount(item: CartItem): boolean {
+    return DiscountUtils.hasDiscount(item);
+  }
+
+  /**
    * Proceed to payment
    */
   proceedToPayment(): void {
@@ -294,17 +515,34 @@ export class PosSessionComponent implements OnInit, OnDestroy {
       return;
     }
     
+    // Ensure all cart items have discount information if applicable
+    this.cartItems.forEach(item => {
+      const productId = item.productId;
+      
+      // If there's a discount for this product but no discount info in the cart item
+      if (this.discounts[productId] && (!item.discounts || item.discounts.length === 0)) {
+        item.discounts = [{
+          type: 'percentage',
+          value: this.discounts[productId]
+        }];
+      }
+    });
+    
     console.log('Proceeding to payment with items:', this.cartItems);
     
     // Create a deep copy of the cart items to avoid reference issues
     const cartItemsCopy = JSON.parse(JSON.stringify(this.cartItems));
+    
+    // Create a deep copy of the original prices to avoid reference issues
+    const originalPricesCopy = JSON.parse(JSON.stringify(this.originalPrices));
     
     // Navigate to payment component with session ID
     this.router.navigate(['/pos/payment', this.sessionId], {
       state: {
         cartItems: cartItemsCopy,
         total: this.total,
-        taxes: this.taxes
+        taxes: this.taxes,
+        originalPrices: originalPricesCopy
       }
     });
   }

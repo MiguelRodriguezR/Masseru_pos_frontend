@@ -108,3 +108,32 @@ body {
 * {
   box-sizing: border-box;
 }
+
+// SweetAlert2 custom styles
+.swal-discount, .swal-price {
+  text-align: left;
+  margin-top: 1rem;
+  
+  .swal-input-group {
+    margin-bottom: 1rem;
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: $gray-700;
+    }
+  }
+  
+  .swal2-input {
+    width: 100%;
+    margin: 0;
+  }
+}
+
+.swal-price-info {
+  font-size: $font-size-sm;
+  color: $gray-700;
+  margin-top: 0.5rem;
+  font-style: italic;
+}

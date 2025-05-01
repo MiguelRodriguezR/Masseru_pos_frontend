@@ -11,6 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { PaymentMethod } from '../../payment-methods/payment-method.model';
 import { PaymentMethodService } from '../../payment-methods/payment-method.service';
+import { DiscountUtils } from '../utils/discount-utils';
 
 @Component({
   selector: 'app-payment',
@@ -69,6 +70,32 @@ export class PaymentComponent implements OnInit, OnDestroy {
       
       // Initialize remaining amount
       this.remainingAmount = this.total;
+      
+      // Get original prices from state if available
+      if (state.originalPrices) {
+        this.originalPrices = state.originalPrices;
+      } else {
+        // Initialize original prices for discount display if not provided
+        this.cartItems.forEach(item => {
+          // For each item with a discount, we need to store the original price
+          if (item.discounts && item.discounts.length > 0) {
+            // For percentage discounts, calculate the original price
+            const percentageDiscount = item.discounts.find(d => d.type === 'percentage');
+            if (percentageDiscount) {
+              const discountFactor = 1 - (percentageDiscount.value / 100);
+              if (discountFactor > 0) {
+                this.originalPrices[item.productId] = item.unitPrice / discountFactor;
+              }
+            }
+            
+            // For fixed discounts, add the discount amount to the current price
+            const fixedDiscount = item.discounts.find(d => d.type === 'fixed');
+            if (fixedDiscount) {
+              this.originalPrices[item.productId] = item.unitPrice + fixedDiscount.value;
+            }
+          }
+        });
+      }
       
       // Load payment methods
       this.loadPaymentMethods();
@@ -183,10 +210,19 @@ export class PaymentComponent implements OnInit, OnDestroy {
     
     // Prepare sale data
     const saleData = {
-      items: this.cartItems.map(item => ({
-        productId: item.productId,
-        quantity: item.quantity
-      })),
+      items: this.cartItems.map(item => {
+        const itemData: any = {
+          productId: item.productId,
+          quantity: item.quantity
+        };
+        
+        // Include discounts if present
+        if (item.discounts && item.discounts.length > 0) {
+          itemData.discounts = item.discounts;
+        }
+        
+        return itemData;
+      }),
       paymentMethod: this.selectedPaymentMethod,
       paymentAmount: this.paymentAmount
     };
@@ -249,15 +285,47 @@ export class PaymentComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Original prices for displaying discount information
+  originalPrices: {[productId: string]: number} = {};
+
+  /**
+   * Get discount percentage for a product
+   */
+  getDiscountPercent(item: CartItem): number {
+    return DiscountUtils.getDiscountPercent(item);
+  }
+
+  /**
+   * Get fixed discount amount for a product
+   */
+  getFixedDiscountAmount(item: CartItem): number {
+    return DiscountUtils.getFixedDiscountAmount(item);
+  }
+
+  /**
+   * Check if an item has any discount
+   */
+  hasDiscount(item: CartItem): boolean {
+    return DiscountUtils.hasDiscount(item);
+  }
+
+  /**
+   * Format discount text for display
+   */
+  getDiscountText(item: CartItem): string {
+    return DiscountUtils.formatDiscountText(item, this.originalPrices);
+  }
+
   /**
    * Go back to POS session
    */
   goBack(): void {
-    // Navigate back to POS session with the cart items
+    // Navigate back to POS session with the cart items and original prices
     this.router.navigate(['/pos/session', this.sessionId], {
       state: {
         preserveCart: true,
-        cartItems: this.cartItems
+        cartItems: this.cartItems,
+        originalPrices: this.originalPrices
       }
     });
   }

@@ -65,7 +65,11 @@ export class SaleService {
   }
 
   createSale(saleData: { 
-    items: any[], 
+    items: { 
+      productId: string, 
+      quantity: number, 
+      discounts?: { type: 'percentage' | 'fixed', value: number }[] 
+    }[], 
     paymentMethod: string, 
     paymentAmount: number 
   }): Observable<any> {

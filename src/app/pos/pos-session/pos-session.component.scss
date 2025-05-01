@@ -204,6 +204,13 @@
   position: relative;
   border-bottom: 1px solid $gray-300;
   cursor: pointer;
+
+  .item-discount {
+    font-size: 0.85rem;
+    color: $warning-color;
+    font-weight: bold;
+    margin-left: 0.5rem;
+  }
   
   @include respond-to(xs) {
     padding: 0.4rem;
@@ -250,6 +257,17 @@
     .item-quantity {
       font-size: 0.85rem;
       color: $gray-700;
+      
+      @include respond-to(xs) {
+        font-size: 0.75rem;
+      }
+    }
+
+    .item-discount {
+      font-size: 0.85rem;
+      color: $warning-color;
+      font-weight: bold;
+      margin-left: 0.5rem;
       
       @include respond-to(xs) {
         font-size: 0.75rem;
