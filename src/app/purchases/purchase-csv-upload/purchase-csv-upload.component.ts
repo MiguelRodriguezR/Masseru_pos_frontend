@@ -13,6 +13,9 @@ interface CsvRow {
   quantity: number;
   cost: number;
   salePrice: number;
+  provider: string;
+  notes: string;
+  imageUrl?: string;
 }
 
 @Component({
@@ -178,6 +181,9 @@ export class PurchaseCsvUploadComponent {
       const quantity = parseInt(quantityStr, 10);
       const cost = parseFloat(costStr);
       const salePrice = parseFloat(salePriceStr);
+      const provider = columns[5];
+      const notes = columns[6];
+      const imageUrl = columns[7] || undefined;
       
       if (isNaN(quantity) || isNaN(cost) || isNaN(salePrice)) {
         console.warn('Invalid numeric values in row:', i + 1);
@@ -189,48 +195,90 @@ export class PurchaseCsvUploadComponent {
         barcode,
         quantity,
         cost,
-        salePrice
+        salePrice,
+        provider,
+        notes,
+        imageUrl
       });
     }
     
     return result;
   }
 
+  private async downloadImage(url: string): Promise<File | null> {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        console.warn(`Failed to download image from ${url}: ${response.statusText}`);
+        return null;
+      }
+      
+      const blob = await response.blob();
+      const fileName = `image-${Date.now()}.png`;
+      return new File([blob], fileName, { type: blob.type });
+    } catch (error) {
+      console.error(`Error downloading image from ${url}:`, error);
+      return null;
+    }
+  }
+
   private processRow(row: CsvRow) {
-    const productData = {
-      name: row.productName,
-      barcode: row.barcode,
-      purchaseCost: row.cost,
-      salePrice: row.salePrice,
-      quantity: 0,
-      description: '',
-      images: [],
-      variants: []
-    };
+    return from(this.processRowAsync(row));
+  }
 
-    const purchaseData = {
-      supplier: 'Importación CSV',
-      invoiceNumber: `CSV-${new Date().getTime()}`,
-      notes: 'Compra creada desde importación CSV',
-      items: [{
-        product: {
-          _id: '',
-          name: row.productName,
-          barcode: row.barcode,
-          salePrice: row.salePrice,
-          purchaseCost: row.cost
-        },
-        quantity: row.quantity,
-        purchasePrice: row.cost
-      }],
-      total: row.quantity * row.cost
-    };
+  private async processRowAsync(row: CsvRow) {
+    try {
+      let imageFiles: File[] = [];
+      
+      if (row.imageUrl) {
+        const imageFile = await this.downloadImage(row.imageUrl);
+        if (imageFile) {
+          imageFiles.push(imageFile);
+        }
+      }
 
-    return this.productService.createProductWithJSON(productData, []).pipe(
-      mergeMap(response => {
-        purchaseData.items[0].product._id = response.product._id;
-        return this.purchaseService.createPurchase(purchaseData);
-      })
-    );
+      console.log({imageFiles})
+
+      const productData = {
+        name: row.productName,
+        barcode: row.barcode,
+        purchaseCost: row.cost,
+        salePrice: row.salePrice,
+        quantity: 0,
+        description: '',
+        images: [],
+        variants: []
+      };
+
+      const purchaseData = {
+        supplier: row.provider,
+        invoiceNumber: `${row.productName}-${row.barcode}-CSV-${new Date().getTime()}`,
+        notes: row.notes,
+        items: [{
+          product: {
+            _id: '',
+            name: row.productName,
+            barcode: row.barcode,
+            salePrice: row.salePrice,
+            purchaseCost: row.cost
+          },
+          quantity: row.quantity,
+          purchasePrice: row.cost
+        }],
+        total: row.quantity * row.cost
+      };
+
+      const productResponse = await this.productService.createProductWithJSON(productData, imageFiles).toPromise();
+      if (!productResponse) {
+        throw new Error('Failed to create product');
+      }
+
+      purchaseData.items[0].product._id = productResponse.product._id;
+
+      await this.purchaseService.createPurchase(purchaseData).toPromise();
+    } catch (error) {
+      console.error('Error processing row:', row, error);
+      throw error; // Re-throw to ensure the Observable chain gets the error
+    }
   }
 }
