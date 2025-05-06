@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  baseUrl: 'http://masseru:3000'
+  baseUrl: 'http://masseru.kamori-hake.ts.net:3000'
 };
