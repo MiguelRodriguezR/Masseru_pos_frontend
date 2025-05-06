@@ -1,0 +1,97 @@
+<div class="container">
+  <div class="header">
+    <button mat-icon-button color="primary" (click)="goBack()" aria-label="Volver">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1>Detalle de Gasto Operativo</h1>
+  </div>
+
+  <!-- Loading spinner -->
+  <div class="spinner-container" *ngIf="loading">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <!-- Error message -->
+  <div class="error-container" *ngIf="error">
+    <mat-card>
+      <mat-card-content>
+        <div class="error-message">
+          <mat-icon color="warn">error</mat-icon>
+          <span>{{ error }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Operational Expense Details -->
+  <div *ngIf="operationalExpense && !loading && !error">
+    <mat-card>
+      <mat-card-content>
+        <div class="detail-header">
+          <div class="detail-title">
+            <h2>{{ operationalExpense.reason }}</h2>
+            <div class="detail-subtitle">
+              <span class="amount">{{ formatCurrency(operationalExpense.totalAmount) }}</span>
+              <span class="date">{{ formatDate(operationalExpense.date) }}</span>
+            </div>
+          </div>
+          <div class="detail-actions">
+            <button mat-raised-button color="primary" (click)="editOperationalExpense()">
+              <mat-icon>edit</mat-icon> Editar
+            </button>
+            <button mat-raised-button color="warn" (click)="deleteOperationalExpense()">
+              <mat-icon>delete</mat-icon> Eliminar
+            </button>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="detail-content">
+          <div class="detail-section">
+            <h3>Información General</h3>
+            
+            <div class="detail-row">
+              <div class="detail-label">Razón:</div>
+              <div class="detail-value">{{ operationalExpense.reason }}</div>
+            </div>
+            
+            <div class="detail-row">
+              <div class="detail-label">Monto Total:</div>
+              <div class="detail-value">{{ formatCurrency(operationalExpense.totalAmount) }}</div>
+            </div>
+            
+            <div class="detail-row">
+              <div class="detail-label">Fecha:</div>
+              <div class="detail-value">{{ formatDate(operationalExpense.date) }}</div>
+            </div>
+            
+            <div class="detail-row" *ngIf="operationalExpense.notes">
+              <div class="detail-label">Notas:</div>
+              <div class="detail-value">{{ operationalExpense.notes }}</div>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h3>Información de Registro</h3>
+            
+            <div class="detail-row" *ngIf="operationalExpense.createdBy">
+              <div class="detail-label">Creado por:</div>
+              <div class="detail-value">{{ operationalExpense.createdBy.name }}</div>
+            </div>
+            
+            <div class="detail-row" *ngIf="operationalExpense.createdAt">
+              <div class="detail-label">Fecha de creación:</div>
+              <div class="detail-value">{{ formatDate(operationalExpense.createdAt) }}</div>
+            </div>
+            
+            <div class="detail-row" *ngIf="operationalExpense.updatedAt">
+              <div class="detail-label">Última actualización:</div>
+              <div class="detail-value">{{ formatDate(operationalExpense.updatedAt) }}</div>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

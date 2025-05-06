@@ -21,6 +21,7 @@ export class AppMenuComponent {
     { name: 'Compras', route: '/purchases', icon: 'shopping_cart' },
     { name: 'Recibos', route: '/receipts', icon: 'receipt' },
     { name: 'Ventas', route: '/sales', icon: 'trending_up' },
+    { name: 'Gastos Operativos', route: '/operational-expenses', icon: 'account_balance_wallet' },
     { name: 'Métodos de Pago', route: '/payment-methods', icon: 'payments' },
     { name: 'Usuarios', route: '/users', icon: 'people' },
   ];

@@ -23,7 +23,7 @@ describe('App Menu', () => {
 
   it('should display all menu items', () => {
     // Check that all menu items are displayed
-    cy.get('.menu-item').should('have.length', 9); // 8 menu items + logout
+    cy.get('.menu-item').should('have.length', 10); // 9 menu items + logout
 
     // Check specific menu items
     const menuItems = [
@@ -33,6 +33,7 @@ describe('App Menu', () => {
       { name: 'Compras', icon: 'shopping_cart' },
       { name: 'Recibos', icon: 'receipt' },
       { name: 'Ventas', icon: 'trending_up' },
+      { name: 'Gastos Operativos', icon: 'account_balance_wallet' },
       { name: 'Métodos de Pago', icon: 'payments' },
       { name: 'Usuarios', icon: 'people' },
       { name: 'Cerrar Session', icon: 'logout' }

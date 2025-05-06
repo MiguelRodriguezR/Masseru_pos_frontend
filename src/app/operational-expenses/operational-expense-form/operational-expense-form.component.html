@@ -1,0 +1,72 @@
+<div class="container">
+  <div class="header">
+    <button mat-icon-button color="primary" (click)="cancel()" aria-label="Volver">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1>{{ isEditMode ? 'Editar' : 'Nuevo' }} Gasto Operativo</h1>
+  </div>
+
+  <!-- Loading spinner -->
+  <div class="spinner-container" *ngIf="loading">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <div *ngIf="!loading">
+    <mat-card>
+      <mat-card-content>
+        <form [formGroup]="operationalExpenseForm" (ngSubmit)="onSubmit()">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Razón</mat-label>
+              <input matInput formControlName="reason" placeholder="Ingrese la razón del gasto">
+              <mat-error *ngIf="operationalExpenseForm.get('reason')?.hasError('required')">
+                La razón es requerida
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Monto Total</mat-label>
+              <input matInput type="number" formControlName="totalAmount" placeholder="Ingrese el monto total">
+              <span matPrefix>$&nbsp;</span>
+              <mat-error *ngIf="operationalExpenseForm.get('totalAmount')?.hasError('required')">
+                El monto total es requerido
+              </mat-error>
+              <mat-error *ngIf="operationalExpenseForm.get('totalAmount')?.hasError('min')">
+                El monto total debe ser mayor o igual a 0
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Fecha</mat-label>
+              <input matInput [matDatepicker]="picker" formControlName="date">
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+              <mat-error *ngIf="operationalExpenseForm.get('date')?.hasError('required')">
+                La fecha es requerida
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Notas</mat-label>
+              <textarea matInput formControlName="notes" placeholder="Ingrese notas adicionales" rows="4"></textarea>
+            </mat-form-field>
+          </div>
+
+          <div class="form-actions">
+            <button mat-button type="button" (click)="cancel()" [disabled]="submitting">Cancelar</button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="submitting">
+              <mat-icon>save</mat-icon>
+              {{ isEditMode ? 'Actualizar' : 'Guardar' }}
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
