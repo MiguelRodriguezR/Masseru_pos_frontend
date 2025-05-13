@@ -26,7 +26,7 @@ export class PosSessionDetailComponent implements OnInit, OnDestroy {
     'id', 
     'date', 
     'items', 
-    'paymentMethod', 
+    'paymentMethods', 
     'totalAmount', 
     'actions'
   ];
@@ -100,42 +100,6 @@ export class PosSessionDetailComponent implements OnInit, OnDestroy {
    */
   getStatusBadgeClass(status: string): string {
     return status === 'open' ? 'status-open' : 'status-closed';
-  }
-
-  /**
-   * Get payment method badge class
-   * @param method Payment method
-   * @returns CSS class for the badge
-   */
-  getPaymentMethodClass(method: any): string {
-    if (!method) return 'payment-unknown';
-    
-    if (typeof method === 'string') {
-      return method === 'cash' ? 'payment-cash' : 'payment-card';
-    } else if (method.code) {
-      return `payment-${method.code.toLowerCase()}`;
-    } else if (method.name) {
-      return method.name.toLowerCase().includes('efectivo') ? 'payment-cash' : 'payment-card';
-    }
-    
-    return 'payment-unknown';
-  }
-
-  /**
-   * Get payment method display name
-   * @param method Payment method
-   * @returns Display name
-   */
-  getPaymentMethodName(method: any): string {
-    if (!method) return 'Desconocido';
-    
-    if (typeof method === 'string') {
-      return method === 'cash' ? 'Efectivo' : 'Tarjeta';
-    } else if (method.name) {
-      return method.name;
-    }
-    
-    return 'Desconocido';
   }
 
 

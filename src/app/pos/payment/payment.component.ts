@@ -35,7 +35,8 @@ export class PaymentComponent implements OnInit, OnDestroy {
   paymentMethods: PaymentMethod[] = [];
   selectedPaymentMethod: string = ''; // Will store the payment method ID
   selectedPaymentMethodObject: PaymentMethod | null = null;
-  paymentAmount: number = 0;
+  paymentDetails: Array<{paymentMethod: string, amount: number}> = [];
+  totalPaid: number = 0;
   remainingAmount: number = 0;
   changeAmount: number = 0;
   
@@ -145,49 +146,93 @@ export class PaymentComponent implements OnInit, OnDestroy {
   selectPaymentMethod(methodId: string): void {
     this.selectedPaymentMethod = methodId;
     this.selectedPaymentMethodObject = this.paymentMethods.find(m => m._id === methodId) || null;
+    
+    // Initialize amount for this payment method if not already present
+    const existingPayment = this.paymentDetails.find(p => p.paymentMethod === methodId);
+    if (!existingPayment) {
+      this.paymentDetails.push({
+        paymentMethod: methodId,
+        amount: 0
+      });
+    }
   }
 
   /**
-   * Add amount to payment
+   * Get current payment amount for selected method
+   */
+  getCurrentAmount(): number {
+    const payment = this.paymentDetails.find(p => p.paymentMethod === this.selectedPaymentMethod);
+    return payment ? payment.amount : 0;
+  }
+
+  /**
+   * Set current payment amount for selected method
+   */
+  setCurrentAmount(amount: number): void {
+    const payment = this.paymentDetails.find(p => p.paymentMethod === this.selectedPaymentMethod);
+    if (payment) {
+      payment.amount = amount;
+      this.updateAmounts();
+    }
+  }
+
+  /**
+   * Add amount to current payment method
    */
   addAmount(amount: number): void {
-    this.paymentAmount += amount;
-    this.updateAmounts();
+    const current = this.getCurrentAmount();
+    this.setCurrentAmount(current + amount);
   }
 
   /**
-   * Add specific digit to payment amount
+   * Add specific digit to current payment amount
    */
   addDigit(digit: number): void {
-    this.paymentAmount = this.paymentAmount * 10 + digit;
-    this.updateAmounts();
+    const current = this.getCurrentAmount();
+    this.setCurrentAmount(current * 10 + digit);
   }
 
   /**
-   * Clear payment amount
+   * Clear current payment amount
    */
   clearAmount(): void {
-    this.paymentAmount = 0;
+    this.setCurrentAmount(0);
+  }
+
+  /**
+   * Delete last digit from current payment amount
+   */
+  deleteLastDigit(): void {
+    const current = this.getCurrentAmount();
+    this.setCurrentAmount(Math.floor(current / 10));
+  }
+
+  /**
+   * Remove payment method
+   */
+  removePaymentMethod(methodId: string): void {
+    this.paymentDetails = this.paymentDetails.filter(p => p.paymentMethod !== methodId);
     this.updateAmounts();
   }
 
   /**
-   * Delete last digit from payment amount
+   * Calculate total paid amount from all payment methods
    */
-  deleteLastDigit(): void {
-    this.paymentAmount = Math.floor(this.paymentAmount / 10);
-    this.updateAmounts();
+  calculateTotalPaid(): number {
+    return this.paymentDetails.reduce((sum, payment) => sum + payment.amount, 0);
   }
 
   /**
    * Update remaining and change amounts
    */
   updateAmounts(): void {
-    if (this.paymentAmount >= this.total) {
+    this.totalPaid = this.calculateTotalPaid();
+    
+    if (this.totalPaid >= this.total) {
       this.remainingAmount = 0;
-      this.changeAmount = this.paymentAmount - this.total;
+      this.changeAmount = this.totalPaid - this.total;
     } else {
-      this.remainingAmount = this.total - this.paymentAmount;
+      this.remainingAmount = this.total - this.totalPaid;
       this.changeAmount = 0;
     }
   }
@@ -197,7 +242,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
    */
   validatePayment(): void {
     // Check if payment amount is sufficient
-    if (this.paymentAmount < this.total) {
+    if (this.totalPaid < this.total) {
       Swal.fire({
         icon: 'warning',
         title: 'Pago insuficiente',
@@ -223,8 +268,12 @@ export class PaymentComponent implements OnInit, OnDestroy {
         
         return itemData;
       }),
-      paymentMethod: this.selectedPaymentMethod,
-      paymentAmount: this.paymentAmount
+      paymentDetails: this.paymentDetails
+        .filter(p => p.amount > 0) // Only include payment methods with amount > 0
+        .map(p => ({
+          paymentMethod: p.paymentMethod,
+          amount: p.amount
+        }))
     };
     
     // Create sale
@@ -279,7 +328,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
       event.preventDefault();
     }
     // Handle enter key to validate payment
-    else if (event.key === 'Enter' && this.paymentAmount >= this.total && !this.isProcessing) {
+    else if (event.key === 'Enter' && this.totalPaid >= this.total && !this.isProcessing) {
       this.validatePayment();
       event.preventDefault();
     }
@@ -314,6 +363,37 @@ export class PaymentComponent implements OnInit, OnDestroy {
    */
   getDiscountText(item: CartItem): string {
     return DiscountUtils.formatDiscountText(item, this.originalPrices);
+  }
+
+  /**
+   * Get payment method details by ID
+   */
+  getPaymentMethod(methodId: string): PaymentMethod | undefined {
+    return this.paymentMethods.find(m => m._id === methodId);
+  }
+
+  /**
+   * Get payment method name
+   */
+  getPaymentMethodName(methodId: string): string {
+    const method = this.getPaymentMethod(methodId);
+    return method?.name || 'Desconocido';
+  }
+
+  /**
+   * Get payment method icon
+   */
+  getPaymentMethodIcon(methodId: string): string {
+    const method = this.getPaymentMethod(methodId);
+    return method?.icon || 'credit_card';
+  }
+
+  /**
+   * Get payment method color
+   */
+  getPaymentMethodColor(methodId: string): string {
+    const method = this.getPaymentMethod(methodId);
+    return method?.color || '#666';
   }
 
   /**

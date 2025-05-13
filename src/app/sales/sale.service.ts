@@ -70,8 +70,10 @@ export class SaleService {
       quantity: number, 
       discounts?: { type: 'percentage' | 'fixed', value: number }[] 
     }[], 
-    paymentMethod: string, 
-    paymentAmount: number 
+    paymentDetails: { 
+      paymentMethod: string, 
+      amount: number 
+    }[] 
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/api/sales`, saleData);
   }

@@ -61,15 +61,23 @@
       <!-- Payment summary -->
       <div class="payment-summary">
         <h2 class="section-title">RESUMEN DE PAGO</h2>
-        <div class="summary-item" *ngIf="paymentAmount > 0 && selectedPaymentMethodObject">
-          <div class="summary-method" [style.background-color]="selectedPaymentMethodObject.color">
-            <mat-icon [style.color]="'white'">{{ selectedPaymentMethodObject.icon }}</mat-icon>
+        <div class="summary-items">
+          <div *ngFor="let payment of paymentDetails">
+            <div class="summary-item" *ngIf="payment.amount > 0">
+              <div class="summary-method" 
+                   [style.background-color]="getPaymentMethodColor(payment.paymentMethod)">
+                <mat-icon [style.color]="'white'">
+                  {{ getPaymentMethodIcon(payment.paymentMethod) }}
+                </mat-icon>
+              </div>
+              <span class="summary-label">{{ getPaymentMethodName(payment.paymentMethod) }}</span>
+              <span class="summary-amount">{{ payment.amount | currency:'$ ':'symbol':'1.0-0' }}</span>
+              <button mat-icon-button class="remove-button" 
+                      (click)="removePaymentMethod(payment.paymentMethod)">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
           </div>
-          <span class="summary-label">{{ selectedPaymentMethodObject.name }}</span>
-          <span class="summary-amount">{{ paymentAmount | currency:'$ ':'symbol':'1.0-0' }}</span>
-          <button mat-icon-button class="remove-button" (click)="clearAmount()">
-            <mat-icon>close</mat-icon>
-          </button>
         </div>
       </div>
 
@@ -77,7 +85,7 @@
       <div class="validate-button-container">
         <button mat-raised-button 
                 class="validate-button" 
-                [disabled]="paymentAmount < total || isProcessing || !selectedPaymentMethod"
+                [disabled]="totalPaid < total || isProcessing || paymentDetails.length === 0"
                 (click)="validatePayment()">
           <mat-icon>arrow_forward</mat-icon>
           Validar

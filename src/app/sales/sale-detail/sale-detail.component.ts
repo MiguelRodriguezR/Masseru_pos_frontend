@@ -68,15 +68,11 @@ export class SaleDetailComponent implements OnInit, OnDestroy {
       .subscribe();
   }
 
-  getPaymentMethodLabel(method: string): string {
-    switch (method) {
-      case 'cash':
-        return 'Efectivo';
-      case 'credit_card':
-        return 'Tarjeta de crédito';
-      default:
-        return method;
+  getPaymentMethodName(paymentMethod: any): string {
+    if (paymentMethod && paymentMethod.name) {
+      return paymentMethod.name;
     }
+    return 'Desconocido';
   }
 
   formatCurrency(amount: number): string {

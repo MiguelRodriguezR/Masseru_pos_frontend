@@ -149,15 +149,34 @@
         min-width: 120px;
       }
       
-      .mat-column-paymentMethod {
+      .mat-column-paymentDetails {
         min-width: 140px;
         
-        .payment-method-chip {
-          border-radius: $border-radius-pill;
-          padding: 4px 12px;
-          font-size: $font-size-xs;
-          font-weight: $font-weight-medium;
-          color: $white;
+        .payment-methods-container {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          
+          .payment-method-chip {
+            border-radius: $border-radius-pill;
+            padding: 4px 12px;
+            font-size: $font-size-xs;
+            font-weight: $font-weight-medium;
+            color: $white;
+          }
+          
+          .multiple-methods-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: $gray-600;
+            color: $white;
+            font-size: 12px;
+            font-weight: $font-weight-bold;
+          }
         }
       }
       

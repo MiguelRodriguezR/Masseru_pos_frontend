@@ -75,13 +75,16 @@
         <td mat-cell *matCellDef="let sale">{{ formatCurrency(sale.totalAmount) }}</td>
       </ng-container>
 
-      <!-- Payment Method Column -->
-      <ng-container matColumnDef="paymentMethod">
+      <!-- Payment Methods Column -->
+      <ng-container matColumnDef="paymentDetails">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Método de Pago</th>
         <td mat-cell *matCellDef="let sale">
-          <span class="payment-method-chip" [style.background-color]="sale.paymentMethod.color">
-            {{ sale.paymentMethod.name }}
-          </span>
+          <div class="payment-methods-container">
+            <span class="payment-method-chip" [style.background-color]="getPrimaryPaymentMethod(sale)?.color">
+              {{ getPaymentMethodName(getPrimaryPaymentMethod(sale)) }}
+            </span>
+            <span *ngIf="hasMultiplePaymentMethods(sale)" class="multiple-methods-badge" matTooltip="Múltiples métodos de pago">+</span>
+          </div>
         </td>
       </ng-container>
 

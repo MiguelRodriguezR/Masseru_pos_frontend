@@ -19,14 +19,19 @@ export interface User {
   email: string;
 }
 
+export interface PaymentDetail {
+  paymentMethod: any;
+  amount: number;
+}
+
 export interface Sale {
   _id?: string;
   user: User | string;
   items: SaleItem[];
   totalAmount: number;
-  paymentAmount: number;
+  paymentDetails: PaymentDetail[];
+  totalPaymentAmount: number;
   changeAmount: number;
-  paymentMethod: any;
   saleDate: string;
   createdAt?: string;
   updatedAt?: string;

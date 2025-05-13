@@ -31,14 +31,16 @@
           <div class="info-value">{{ formatCurrency(sale.totalAmount) }}</div>
         </div>
         <div class="info-item">
-          <div class="info-label">Método de Pago</div>
-          <div class="info-value payment-method" [style.background-color]="sale.paymentMethod.color">
-            {{ sale.paymentMethod.name }}
+          <div class="info-label">Métodos de Pago</div>
+          <div class="info-value payment-methods">
+            <div *ngFor="let payment of sale.paymentDetails" class="payment-method" [style.background-color]="payment.paymentMethod.color">
+              {{ getPaymentMethodName(payment.paymentMethod) }}: {{ formatCurrency(payment.amount) }}
+            </div>
           </div>
         </div>
         <div class="info-item">
           <div class="info-label">Monto Pagado</div>
-          <div class="info-value">{{ formatCurrency(sale.paymentAmount) }}</div>
+          <div class="info-value">{{ formatCurrency(sale.totalPaymentAmount) }}</div>
         </div>
         <div class="info-item">
           <div class="info-label">Cambio</div>

@@ -159,13 +159,21 @@
             </td>
           </ng-container>
 
-          <!-- Payment Method Column -->
-          <ng-container matColumnDef="paymentMethod">
-            <th mat-header-cell *matHeaderCellDef>Método de Pago</th>
+          <!-- Payment Methods Column -->
+          <ng-container matColumnDef="paymentMethods">
+            <th mat-header-cell *matHeaderCellDef>Métodos de Pago</th>
             <td mat-cell *matCellDef="let sale">
-              <span class="payment-badge" [ngClass]="getPaymentMethodClass(sale.paymentMethod)">
-                {{ getPaymentMethodName(sale.paymentMethod) }}
-              </span>
+              <div class="payment-methods-container">
+                <div *ngFor="let payment of sale.paymentDetails" class="payment-method">
+                  <mat-icon *ngIf="payment.paymentMethod?.icon" 
+                    [ngStyle]="{'color': payment.paymentMethod?.color || '#333'}">
+                    {{ payment.paymentMethod?.icon }}
+                  </mat-icon>
+                  <span class="payment-amount">
+                    {{payment.paymentMethod?.name}} - {{ formatCurrency(payment.amount) }}
+                  </span>
+                </div>
+              </div>
             </td>
           </ng-container>
 

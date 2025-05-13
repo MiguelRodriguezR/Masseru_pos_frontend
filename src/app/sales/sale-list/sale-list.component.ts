@@ -20,7 +20,7 @@ import { ReceiptService } from '../../receipts/receipt.service';
 export class SaleListComponent implements OnInit, OnDestroy {
   sales: Sale[] = [];
   dataSource = new MatTableDataSource<Sale>([]);
-  displayedColumns: string[] = ['saleDate', 'totalAmount', 'paymentMethod', 'user', 'actions'];
+  displayedColumns: string[] = ['saleDate', 'totalAmount', 'paymentDetails', 'user', 'actions'];
   loading: boolean = false;
   filterForm: FormGroup;
   
@@ -257,15 +257,22 @@ export class SaleListComponent implements OnInit, OnDestroy {
       .subscribe();
   }
 
-  getPaymentMethodLabel(method: string): string {
-    switch (method) {
-      case 'cash':
-        return 'Efectivo';
-      case 'credit_card':
-        return 'Tarjeta de crédito';
-      default:
-        return method;
+  getPaymentMethodName(paymentMethod: any): string {
+    if (paymentMethod && paymentMethod.name) {
+      return paymentMethod.name;
     }
+    return 'Desconocido';
+  }
+  
+  getPrimaryPaymentMethod(sale: Sale): any {
+    if (sale.paymentDetails && sale.paymentDetails.length > 0) {
+      return sale.paymentDetails[0].paymentMethod;
+    }
+    return null;
+  }
+  
+  hasMultiplePaymentMethods(sale: Sale): boolean {
+    return sale.paymentDetails && sale.paymentDetails.length > 1;
   }
 
   formatCurrency(amount: number): string {

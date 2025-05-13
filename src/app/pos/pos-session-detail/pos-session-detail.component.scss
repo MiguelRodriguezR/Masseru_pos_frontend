@@ -230,43 +230,25 @@
             }
           }
           
-          .payment-badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 500;
+          .payment-methods-container {
             display: flex;
-            align-items: center;
-            width: fit-content;
+            flex-direction: column;
+            gap: 4px;
             
-            &.payment-cash {
-              background-color: #e6f7ed;
-              color: #00a854;
-            }
-            
-            &.payment-card, &.payment-credit, &.payment-debit {
-              background-color: #e6f7ff;
-              color: #1890ff;
-            }
-            
-            &.payment-bank {
-              background-color: #fff7e6;
-              color: #fa8c16;
-            }
-            
-            &.payment-nequi {
-              background-color: #fff0f6;
-              color: #eb2f96;
-            }
-            
-            &.payment-daviplata {
-              background-color: #fff1f0;
-              color: #f5222d;
-            }
-            
-            &.payment-unknown {
-              background-color: #f5f5f5;
-              color: #595959;
+            .payment-method {
+              display: flex;
+              align-items: center;
+              gap: 6px;
+              
+              mat-icon {
+                font-size: 18px;
+                height: 18px;
+                width: 18px;
+              }
+              
+              .payment-amount {
+                font-weight: 500;
+              }
             }
           }
         }

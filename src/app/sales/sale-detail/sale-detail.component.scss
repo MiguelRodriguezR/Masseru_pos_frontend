@@ -92,14 +92,20 @@
           font-weight: $font-weight-medium;
           color: $gray-900;
 
-          &.payment-method {
-            display: inline-block;
-            border-radius: $border-radius-pill;
-            padding: 4px 12px;
-            font-size: $font-size-xs;
-            font-weight: $font-weight-medium;
-            color: $white;
-          
+          &.payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: $spacing-xs;
+            
+            .payment-method {
+              display: inline-block;
+              border-radius: $border-radius-pill;
+              padding: 4px 12px;
+              font-size: $font-size-xs;
+              font-weight: $font-weight-medium;
+              color: $white;
+              margin-bottom: 4px;
+            }
           }
         }
       }
