@@ -63,7 +63,7 @@
                 <mat-icon *ngIf="paymentTotal.paymentMethod?.icon" [ngStyle]="{'color': paymentTotal.paymentMethod?.color || '#333'}">
                   {{ paymentTotal.paymentMethod?.icon }}
                 </mat-icon>
-                Ventas con {{ paymentTotal.paymentMethod?.name || 'Método desconocido' }}:
+                Total ingresado con {{ paymentTotal.paymentMethod?.name || 'Método desconocido' }}:
               </span>
               <span class="value payment-total" [ngStyle]="{'color': paymentTotal.paymentMethod?.color || '#333'}">
                 {{ formatCurrency(paymentTotal.total) }}

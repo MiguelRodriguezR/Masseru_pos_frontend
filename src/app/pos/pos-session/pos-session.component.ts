@@ -555,12 +555,16 @@ export class PosSessionComponent implements OnInit, OnDestroy {
   closeSession(): void {
     // Get initial cash amount from session data
     const initialCash = this.sessionData?.initialCash || 0;
+    const expectedCash = this.sessionData?.expectedCash || 0;
+    const expectedNonCash = this.sessionData?.expectedNonCash || 0;
     
     Swal.fire({
       title: 'Cerrar Caja',
       html: `
         <div class="swal-cash-close">
           <p>Cantidad inicial: ${initialCash.toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</p>
+          <p>Cantidad esperada en efectivo: ${expectedCash.toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</p>
+          <p>Cantidad esperada en otros medios: ${expectedNonCash.toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</p>
           <div class="swal-input-group">
             <label for="swal-actual-cash">Cantidad final de dinero en caja</label>
             <input id="swal-actual-cash" type="number" class="swal2-input" value="${initialCash}" min="0" step="1000">
