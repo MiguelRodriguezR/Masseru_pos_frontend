@@ -76,7 +76,7 @@
       <app-summary-stat-card
         title="Ganancia Neta"
         [value]="netProfit.toLocaleString('es', {style: 'currency', currency: 'COP'})"
-        [label]="'Después de gastos, considerando gastos en ' + (operativeExpensesPercentage * 100) + '%'">
+        [label]="'Después de gastos, considerando gastos en $' + (totalOperativeExpenses) ">
       </app-summary-stat-card>
     </div>
 
@@ -150,6 +150,21 @@
       </app-stat-card>
     </div>
 
+    <!-- Reinvestment Suggestion -->
+    <div class="dashboard-grid" *ngIf="netProfit > 0 && lowStockProducts.length > 0">
+      <app-suggestion-card title="Sugerencia de Reinversión">
+        <p>
+          Basado en su ganancia neta actual de <strong>{{ netProfit.toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</strong>, 
+          se recomienda reinvertir aproximadamente <strong>{{ (netProfit * 0.4).toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</strong> 
+          en inventario.
+        </p>
+        <p *ngIf="lowStockProducts.length > 0">
+          <strong>Prioridad de reabastecimiento:</strong> 
+          {{ getCriticalProductsText() }}
+        </p>
+      </app-suggestion-card>
+    </div>
+
     <!-- Low Stock Products Table -->
     <div class="dashboard-grid">
       <app-table-card title="Productos con Bajo Stock">
@@ -195,19 +210,6 @@
       </app-table-card>
     </div>
 
-    <!-- Reinvestment Suggestion -->
-    <div class="dashboard-grid" *ngIf="netProfit > 0 && lowStockProducts.length > 0">
-      <app-suggestion-card title="Sugerencia de Reinversión">
-        <p>
-          Basado en su ganancia neta actual de <strong>{{ netProfit.toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</strong>, 
-          se recomienda reinvertir aproximadamente <strong>{{ (netProfit * 0.4).toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</strong> 
-          en inventario.
-        </p>
-        <p *ngIf="lowStockProducts.length > 0">
-          <strong>Prioridad de reabastecimiento:</strong> 
-          {{ getCriticalProductsText() }}
-        </p>
-      </app-suggestion-card>
-    </div>
+    
   </div>
 </div>

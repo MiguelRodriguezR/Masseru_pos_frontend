@@ -40,11 +40,13 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   productStats: any = {};
   customerStats: any = {};
   posSessionStats: any = {};
+  expenseStats: any = {};
   
   // Summary metrics
   totalSales = 0;
   totalProfit = 0;
   grossProfit = 0;
+  totalOperativeExpenses = 0;
   netProfit = 0;
   averageTicket = 0;
   inventoryValue = 0;
@@ -190,6 +192,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         next: (data) => {
           // Process all stats data
           this.processSalesStats(data.salesStats);
+          this.processExpenseStats(data.operationalExpenseStats);
           this.processProductStats(data.productStats);
           this.processCustomerStats(data.customerStats);
           this.processPosSessionStats(data.posSessionStats);
@@ -502,6 +505,14 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     // The PaymentChartComponent will handle the chart update
     // when the paymentMethodChartData changes
   }
+
+  processExpenseStats(data: any): void {
+    if (!data) return;
+
+    this.expenseStats = data;
+    this.totalOperativeExpenses = data.totalAmount || 0;
+
+  }
   
   
   processSalesChartData(sales: any[]): void {
@@ -609,8 +620,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     
     // Estimate net profit (simplified - in a real app you'd include more expenses)
     // Assuming operating expenses are about 30% of gross profit
-    const operatingExpenses = this.grossProfit * this.operativeExpensesPercentage;
-    this.netProfit = this.grossProfit - operatingExpenses;
+    //const operatingExpenses = this.grossProfit * this.operativeExpensesPercentage;
+    this.netProfit = this.grossProfit - this.totalOperativeExpenses;
     
     // Update profit margin chart data
     this.profitMarginChartData.datasets[0].data = [

@@ -37,6 +37,22 @@ export class StatsService {
 
   constructor(private http: HttpClient) { }
 
+   /**
+   * Get Operational Expense statistics
+   */
+  getOperationalExpenseStats(filter: StatsFilter = {}): Observable<SalesStats> {
+    let params = new HttpParams();
+    
+    if (filter.startDate) {
+      params = params.set('startDate', filter.startDate);
+    }
+    if (filter.endDate) {
+      params = params.set('endDate', filter.endDate);
+    }
+    
+    return this.http.get<SalesStats>(`${this.baseUrl}/api/stats/operational-expenses`, { params });
+  }
+
   /**
    * Get sales statistics
    */
@@ -130,7 +146,8 @@ export class StatsService {
             salesStats: this.getSalesStats(filter),
             productStats: this.getProductStats(filter),
             customerStats: this.getCustomerStats(filter),
-            posSessionStats: this.getPosSessionStats(filter)
+            posSessionStats: this.getPosSessionStats(filter),
+            operationalExpenseStats: this.getOperationalExpenseStats(filter)
           });
         })
       );
