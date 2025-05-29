@@ -76,7 +76,7 @@
       <app-summary-stat-card
         title="Ganancia Neta"
         [value]="netProfit.toLocaleString('es', {style: 'currency', currency: 'COP'})"
-        [label]="'Después de gastos, considerando gastos en $' + (totalOperativeExpenses) ">
+        [label]="'Después de gastos, considerando gastos en $' + (totalOperativeExpenses.toLocaleString('es', {style: 'currency', currency: 'COP'})) ">
       </app-summary-stat-card>
     </div>
 

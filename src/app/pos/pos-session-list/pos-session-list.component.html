@@ -98,7 +98,7 @@
       <!-- Total Sales Column -->
       <ng-container matColumnDef="totalSales">
         <th mat-header-cell *matHeaderCellDef>Total Ventas</th>
-        <td mat-cell *matCellDef="let session">
+        <td mat-cell *matCellDef="let session" style="overflow: visible;">
           <div class="total-sales">
             <span>{{ formatCurrency(session.totalSales) }}</span>
             <div class="payment-totals-tooltip" *ngIf="session.paymentTotals && session.paymentTotals.length > 0">
