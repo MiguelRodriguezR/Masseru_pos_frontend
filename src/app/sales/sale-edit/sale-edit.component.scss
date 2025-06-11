@@ -1,0 +1,371 @@
+@import '../../../styles.scss';
+
+.sale-edit-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+    @include flex-center;
+    z-index: 1000;
+  }
+
+  .edit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-lg;
+    flex-wrap: wrap;
+    gap: $spacing-md;
+
+    .header-title {
+      margin: 0;
+      color: $gray-900;
+      font-weight: $font-weight-medium;
+      font-size: $font-size-xl;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: $spacing-sm;
+    }
+
+    @media (max-width: $breakpoint-sm) {
+      flex-direction: column;
+      align-items: flex-start;
+      
+      .header-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+  }
+
+  .sale-info-card {
+    background-color: $white;
+    border-radius: $border-radius-md;
+    padding: $spacing-md;
+    margin-bottom: $spacing-lg;
+    @include card-shadow;
+
+    .sale-info-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: $spacing-md;
+
+      .sale-date {
+        font-size: $font-size-md;
+        color: $gray-700;
+        font-weight: $font-weight-medium;
+      }
+
+      .sale-id {
+        font-size: $font-size-sm;
+        color: $gray-600;
+        font-family: monospace;
+        background-color: $gray-100;
+        padding: 4px 8px;
+        border-radius: $border-radius-sm;
+      }
+    }
+  }
+
+  .form-section {
+    background-color: $white;
+    border-radius: $border-radius-md;
+    padding: $spacing-lg;
+    margin-bottom: $spacing-lg;
+    @include card-shadow;
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: $spacing-md;
+      padding-bottom: $spacing-sm;
+      border-bottom: 1px solid $gray-200;
+
+      .section-title {
+        margin: 0;
+        font-size: $font-size-lg;
+        font-weight: $font-weight-medium;
+        color: $gray-900;
+      }
+    }
+
+    .items-container, .payments-container {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-md;
+    }
+
+    .item-card, .payment-card {
+      border: 1px solid $gray-200;
+      border-radius: $border-radius-md;
+      padding: $spacing-md;
+      background-color: $white;
+
+      .item-header, .payment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: $spacing-md;
+
+        .item-number, .payment-number {
+          font-weight: $font-weight-medium;
+          color: $gray-700;
+          font-size: $font-size-sm;
+        }
+      }
+
+      .item-form, .payment-form {
+        .form-row {
+          display: flex;
+          gap: $spacing-md;
+          margin-bottom: $spacing-md;
+
+          .product-field {
+            flex: 2;
+          }
+
+          .quantity-field {
+            flex: 1;
+            min-width: 120px;
+          }
+
+          .payment-method-field {
+            flex: 2;
+          }
+
+          .amount-field {
+            flex: 1;
+            min-width: 150px;
+          }
+
+          @media (max-width: $breakpoint-sm) {
+            flex-direction: column;
+            
+            .product-field,
+            .quantity-field,
+            .payment-method-field,
+            .amount-field {
+              flex: 1;
+              width: 100%;
+            }
+          }
+        }
+
+        .payment-method-option {
+          display: flex;
+          align-items: center;
+          gap: $spacing-xs;
+
+          mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+          }
+        }
+      }
+
+      .item-summary {
+        background-color: $white;
+        border-radius: $border-radius-sm;
+        padding: $spacing-sm;
+        margin-top: $spacing-sm;
+
+        .summary-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: $spacing-xs;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+
+          .label {
+            font-size: $font-size-sm;
+            color: $gray-700;
+          }
+
+          .value {
+            font-weight: $font-weight-medium;
+            color: $gray-900;
+
+            &.total {
+              color: $primary-color;
+              font-weight: $font-weight-bold;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .summary-section {
+    margin-bottom: $spacing-lg;
+
+    .summary-card {
+      background-color: $white;
+      border-radius: $border-radius-md;
+      padding: $spacing-lg;
+      @include card-shadow;
+
+      .summary-title {
+        margin: 0 0 $spacing-md 0;
+        font-size: $font-size-lg;
+        font-weight: $font-weight-medium;
+        color: $gray-900;
+      }
+
+      .summary-details {
+        .summary-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: $spacing-sm 0;
+          border-bottom: 1px solid $gray-200;
+
+          &:last-child {
+            border-bottom: none;
+          }
+
+          &.total-row {
+            margin-top: $spacing-sm;
+            padding-top: $spacing-md;
+            border-top: 2px solid $gray-300;
+            font-size: $font-size-lg;
+            font-weight: $font-weight-bold;
+          }
+
+          .summary-label {
+            color: $gray-700;
+            font-weight: $font-weight-medium;
+          }
+
+          .summary-value {
+            font-weight: $font-weight-bold;
+            color: $gray-900;
+
+            &.positive {
+              color: $success-color;
+            }
+
+            &.negative {
+              color: $error-color;
+            }
+          }
+        }
+      }
+
+      .validation-messages {
+        display: flex;
+        align-items: center;
+        gap: $spacing-xs;
+        margin-top: $spacing-md;
+        padding: $spacing-sm;
+        background-color: $warning-color;
+        border-radius: $border-radius-sm;
+        color: $white;
+        font-size: $font-size-sm;
+
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+      }
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: $spacing-md;
+    padding: $spacing-lg;
+    background-color: $white;
+    border-radius: $border-radius-md;
+    @include card-shadow;
+
+    @media (max-width: $breakpoint-sm) {
+      flex-direction: column-reverse;
+      
+      button {
+        width: 100%;
+      }
+    }
+  }
+
+  // Form field customizations
+  .mat-mdc-form-field {
+    width: 100%;
+
+    &.product-field,
+    &.payment-method-field {
+      .mat-mdc-select-panel {
+        max-height: 300px;
+      }
+    }
+  }
+
+  // Loading states
+  button[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  // Responsive adjustments
+  @media (max-width: $breakpoint-md) {
+    padding: $spacing-md;
+
+    .form-section {
+      padding: $spacing-md;
+    }
+
+    .summary-section .summary-card {
+      padding: $spacing-md;
+    }
+  }
+
+  @media (max-width: $breakpoint-sm) {
+    padding: $spacing-sm;
+
+    .edit-header {
+      .header-title {
+        font-size: $font-size-lg;
+      }
+    }
+
+    .form-section {
+      padding: $spacing-sm;
+
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: $spacing-sm;
+      }
+
+      .item-card,
+      .payment-card {
+        padding: $spacing-sm;
+      }
+    }
+
+    .summary-section .summary-card {
+      padding: $spacing-sm;
+    }
+
+    .form-actions {
+      padding: $spacing-sm;
+    }
+  }
+}

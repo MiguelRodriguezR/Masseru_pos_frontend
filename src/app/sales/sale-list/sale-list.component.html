@@ -101,10 +101,13 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Acciones</th>
         <td mat-cell *matCellDef="let sale">
-          <button mat-icon-button color="primary" class="action-button" (click)="viewSale(sale._id); $event.stopPropagation()">
+          <button mat-icon-button color="primary" class="action-button" (click)="viewSale(sale._id); $event.stopPropagation()" matTooltip="Ver detalles">
             <mat-icon>visibility</mat-icon>
           </button>
-          <button mat-icon-button color="accent" class="action-button" (click)="generateReceipt(sale._id, $event)">
+          <button mat-icon-button color="warn" class="action-button" (click)="editSale(sale._id, $event)" matTooltip="Editar venta">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="accent" class="action-button" (click)="generateReceipt(sale._id, $event)" matTooltip="Generar recibo">
             <mat-icon>receipt</mat-icon>
           </button>
         </td>

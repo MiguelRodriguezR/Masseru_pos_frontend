@@ -78,6 +78,21 @@ export class SaleService {
     return this.http.post(`${this.baseUrl}/api/sales`, saleData);
   }
 
+  updateSale(id: string, saleData: { 
+    items?: { 
+      productId: string, 
+      quantity: number, 
+      variant?: any,
+      discounts?: { type: 'percentage' | 'fixed', value: number }[] 
+    }[], 
+    paymentDetails?: { 
+      paymentMethod: string, 
+      amount: number 
+    }[] 
+  }): Observable<any> {
+    return this.http.put(`${this.baseUrl}/api/sales/${id}`, saleData);
+  }
+
   getStats(filter: { startDate: string, endDate: string, productId?: string }): Observable<any> {
     let params = new HttpParams()
       .set('startDate', filter.startDate)

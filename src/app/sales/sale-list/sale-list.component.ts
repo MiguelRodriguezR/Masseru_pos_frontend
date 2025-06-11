@@ -249,6 +249,11 @@ export class SaleListComponent implements OnInit, OnDestroy {
     this.router.navigate(['/sales', id]);
   }
 
+  editSale(id: string, event: Event) {
+    event.stopPropagation();
+    this.router.navigate(['/sales', id, 'edit']);
+  }
+
   generateReceipt(id: string, event: Event) {
     event.stopPropagation();
     

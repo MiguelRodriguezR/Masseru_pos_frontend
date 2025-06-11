@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { SaleListComponent } from './sale-list/sale-list.component';
 import { SaleDetailComponent } from './sale-detail/sale-detail.component';
+import { SaleEditComponent } from './sale-edit/sale-edit.component';
 import { RouterModule, Routes } from '@angular/router';
 import { SharedModule } from '../shared/shared.module';
 
@@ -23,16 +24,19 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSelectModule } from '@angular/material/select';
 
 const routes: Routes = [
   { path: '', component: SaleListComponent },
+  { path: ':id/edit', component: SaleEditComponent },
   { path: ':id', component: SaleDetailComponent }
 ];
 
 @NgModule({
   declarations: [
     SaleListComponent,
-    SaleDetailComponent
+    SaleDetailComponent,
+    SaleEditComponent
   ],
   imports: [
     CommonModule,
@@ -57,7 +61,8 @@ const routes: Routes = [
     MatSnackBarModule,
     MatDividerModule,
     MatTooltipModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatSelectModule
   ]
 })
 export class SalesModule { }

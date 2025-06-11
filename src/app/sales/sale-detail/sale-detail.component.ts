@@ -60,6 +60,11 @@ export class SaleDetailComponent implements OnInit, OnDestroy {
     this.router.navigate(['/sales']);
   }
 
+  editSale(): void {
+    if (!this.sale || !this.sale._id) return;
+    this.router.navigate(['/sales', this.sale._id, 'edit']);
+  }
+
   generateReceipt(): void {
     if (!this.sale || !this.sale._id) return;
     

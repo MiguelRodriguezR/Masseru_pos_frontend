@@ -1,0 +1,195 @@
+<div class="sale-edit-container">
+  <!-- Loading Overlay -->
+  <div *ngIf="loading" class="loading-overlay">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <!-- Header -->
+  <div class="edit-header">
+    <h1 class="header-title">Editar Venta</h1>
+    <div class="header-actions">
+      <button mat-stroked-button color="primary" (click)="goBack()" [disabled]="saving">
+        <mat-icon>arrow_back</mat-icon> Cancelar
+      </button>
+      <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="saving || saleForm.invalid">
+        <mat-icon>save</mat-icon> 
+        <span *ngIf="!saving">Guardar Cambios</span>
+        <span *ngIf="saving">Guardando...</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Sale Info -->
+  <div class="sale-info-card" *ngIf="sale">
+    <div class="sale-info-header">
+      <div class="sale-date">{{ sale.saleDate | date:'dd/MM/yyyy HH:mm' }}</div>
+      <div class="sale-id">ID: {{ sale._id }}</div>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <form [formGroup]="saleForm" *ngIf="!loading">
+    
+    <!-- Items Section -->
+    <div class="form-section">
+      <div class="section-header">
+        <h2 class="section-title">Productos</h2>
+        <button mat-icon-button color="primary" type="button" (click)="addItem()" [disabled]="saving">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+
+      <div class="items-container" formArrayName="items">
+        <div *ngFor="let item of itemsArray.controls; let i = index" 
+             class="item-card" 
+             [formGroupName]="i">
+          
+          <div class="item-header">
+            <span class="item-number">Producto {{ i + 1 }}</span>
+            <button mat-icon-button color="warn" type="button" (click)="removeItem(i)" [disabled]="saving">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+
+          <div class="item-form">
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="product-field">
+                <mat-label>Producto</mat-label>
+                <mat-select formControlName="productId" required>
+                  <mat-option *ngFor="let product of products" [value]="product._id">
+                    {{ product.name }} - {{ formatCurrency(product.salePrice) }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="item.get('productId')?.hasError('required')">
+                  Seleccione un producto
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="quantity-field">
+                <mat-label>Cantidad</mat-label>
+                <input matInput type="number" formControlName="quantity" min="1" required>
+                <mat-error *ngIf="item.get('quantity')?.hasError('required')">
+                  La cantidad es requerida
+                </mat-error>
+                <mat-error *ngIf="item.get('quantity')?.hasError('min')">
+                  La cantidad debe ser mayor a 0
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="item-summary" *ngIf="item.get('productId')?.value">
+              <div class="summary-item">
+                <span class="label">Precio unitario:</span>
+                <span class="value">{{ formatCurrency(getProductPrice(item.get('productId')?.value)) }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="label">Subtotal:</span>
+                <span class="value total">{{ formatCurrency(calculateItemSubtotal(item.value)) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Details Section -->
+    <div class="form-section">
+      <div class="section-header">
+        <h2 class="section-title">Métodos de Pago</h2>
+        <button mat-icon-button color="primary" type="button" (click)="addPayment()" [disabled]="saving">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+
+      <div class="payments-container" formArrayName="paymentDetails">
+        <div *ngFor="let payment of paymentsArray.controls; let i = index" 
+             class="payment-card" 
+             [formGroupName]="i">
+          
+          <div class="payment-header">
+            <span class="payment-number">Pago {{ i + 1 }}</span>
+            <button mat-icon-button color="warn" type="button" (click)="removePayment(i)" [disabled]="saving">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+
+          <div class="payment-form">
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="payment-method-field">
+                <mat-label>Método de Pago</mat-label>
+                <mat-select formControlName="paymentMethod" required>
+                  <mat-option *ngFor="let method of paymentMethods" [value]="method._id">
+                    <div class="payment-method-option">
+                      <mat-icon [style.color]="method.color">{{ method.icon }}</mat-icon>
+                      {{ method.name }}
+                    </div>
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="payment.get('paymentMethod')?.hasError('required')">
+                  Seleccione un método de pago
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="amount-field">
+                <mat-label>Monto</mat-label>
+                <input matInput type="number" formControlName="amount" min="0.01" step="0.01" required>
+                <span matPrefix>$</span>
+                <mat-error *ngIf="payment.get('amount')?.hasError('required')">
+                  El monto es requerido
+                </mat-error>
+                <mat-error *ngIf="payment.get('amount')?.hasError('min')">
+                  El monto debe ser mayor a 0
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Section -->
+    <div class="summary-section">
+      <div class="summary-card">
+        <h3 class="summary-title">Resumen de la Venta</h3>
+        
+        <div class="summary-details">
+          <div class="summary-row">
+            <span class="summary-label">Total de productos:</span>
+            <span class="summary-value">{{ formatCurrency(calculateTotal()) }}</span>
+          </div>
+          
+          <div class="summary-row">
+            <span class="summary-label">Total pagado:</span>
+            <span class="summary-value">{{ formatCurrency(calculateTotalPayment()) }}</span>
+          </div>
+          
+          <div class="summary-row total-row">
+            <span class="summary-label">Cambio:</span>
+            <span class="summary-value" 
+                  [class.positive]="calculateChange() >= 0" 
+                  [class.negative]="calculateChange() < 0">
+              {{ formatCurrency(calculateChange()) }}
+            </span>
+          </div>
+        </div>
+
+        <div class="validation-messages" *ngIf="calculateChange() < 0">
+          <mat-icon color="warn">warning</mat-icon>
+          <span>El monto total de pago debe cubrir el total de la venta</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="form-actions">
+      <button mat-stroked-button type="button" (click)="goBack()" [disabled]="saving">
+        <mat-icon>cancel</mat-icon> Cancelar
+      </button>
+      <button mat-raised-button color="primary" (click)="onSubmit()" type="submit" [disabled]="saving || saleForm.invalid || calculateChange() < 0">
+        <mat-icon>save</mat-icon> 
+        <span *ngIf="!saving">Guardar Cambios</span>
+        <span *ngIf="saving">Guardando...</span>
+      </button>
+    </div>
+  </form>
+</div>
