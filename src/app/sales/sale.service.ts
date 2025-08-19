@@ -93,6 +93,10 @@ export class SaleService {
     return this.http.put(`${this.baseUrl}/api/sales/${id}`, saleData);
   }
 
+  deleteSale(id: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/api/sales/${id}`);
+  }
+
   getStats(filter: { startDate: string, endDate: string, productId?: string }): Observable<any> {
     let params = new HttpParams()
       .set('startDate', filter.startDate)

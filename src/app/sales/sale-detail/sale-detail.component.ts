@@ -6,6 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ReceiptService } from '../../receipts/receipt.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-sale-detail',
@@ -114,5 +115,49 @@ export class SaleDetailComponent implements OnInit, OnDestroy {
       return user.email || 'Sin correo electrónico';
     }
     return 'Sin correo electrónico';
+  }
+
+  deleteSale(): void {
+    if (!this.sale || !this.sale._id) return;
+
+    Swal.fire({
+      title: '¿Confirmar eliminación?',
+      text: '¿Estás seguro de que quieres eliminar esta venta? Esta acción no se puede deshacer y los productos se devolverán al inventario.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed && this.sale?._id) {
+        this.loading = true;
+        this.saleService.deleteSale(this.sale._id)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (response) => {
+              this.loading = false;
+              Swal.fire({
+                title: '¡Eliminada!',
+                text: 'La venta ha sido eliminada correctamente',
+                icon: 'success',
+                confirmButtonText: 'OK'
+              }).then(() => {
+                this.router.navigate(['/sales']);
+              });
+            },
+            error: (err) => {
+              this.loading = false;
+              console.error('Error al eliminar la venta:', err);
+              Swal.fire({
+                title: 'Error',
+                text: err.error?.msg || 'Error al eliminar la venta',
+                icon: 'error',
+                confirmButtonText: 'OK'
+              });
+            }
+          });
+      }
+    });
   }
 }
