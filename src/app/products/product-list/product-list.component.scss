@@ -30,9 +30,24 @@
       font-weight: 500;
     }
 
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
     @media (max-width: 599px) {
       flex-direction: column;
       align-items: stretch;
+
+      .header-actions {
+        width: 100%;
+
+        button {
+          flex: 1;
+        }
+      }
     }
   }
 

@@ -7,9 +7,14 @@
   <!-- List Header -->
   <div class="list-header">
     <h1 class="list-title">Productos</h1>
-    <button mat-raised-button color="primary" routerLink="/products/new">
-      <mat-icon>add</mat-icon> Agregar Producto
-    </button>
+    <div class="header-actions">
+      <button mat-raised-button color="accent" (click)="exportToCSV()" [disabled]="loading">
+        <mat-icon>download</mat-icon> Exportar Inventario
+      </button>
+      <button mat-raised-button color="primary" routerLink="/products/new">
+        <mat-icon>add</mat-icon> Agregar Producto
+      </button>
+    </div>
   </div>
 
   <!-- Search Bar -->

@@ -130,4 +130,14 @@ export class ProductService {
       console.log(pair[0] + ': ' + pair[1]);
     }
   }
+
+  /**
+   * Export all inventory to CSV file
+   * @returns Observable with the CSV blob
+   */
+  exportInventoryToCSV(): Observable<Blob> {
+    return this.http.get(`${this.baseUrl}/api/products/export/csv`, {
+      responseType: 'blob'
+    });
+  }
 }

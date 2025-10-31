@@ -185,4 +185,42 @@ export class ProductListComponent implements OnInit, OnDestroy {
     }
     return '';
   }
+
+  exportToCSV() {
+    this.loading = true;
+    this.productService.exportInventoryToCSV()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (blob: Blob) => {
+          // Crear un enlace temporal para descargar el archivo
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+
+          // Generar nombre de archivo con fecha actual
+          const today = new Date().toISOString().split('T')[0];
+          link.download = `inventario_${today}.csv`;
+
+          // Simular clic para descargar
+          link.click();
+
+          // Limpiar
+          window.URL.revokeObjectURL(url);
+
+          this.loading = false;
+          this.snackBar.open('Inventario exportado con éxito', 'Cerrar', {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          });
+        },
+        error: (err) => {
+          console.error('Error al exportar inventario:', err);
+          this.loading = false;
+          this.snackBar.open('Error al exportar el inventario', 'Cerrar', {
+            duration: 3000,
+            panelClass: ['error-snackbar']
+          });
+        }
+      });
+  }
 }
