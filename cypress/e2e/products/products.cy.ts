@@ -9,8 +9,9 @@ describe('Products Component', () => {
     // Check page title
     cy.get('.list-title').should('contain.text', 'Productos');
 
-    // Check add product button
-    cy.get('.list-header button').should('contain.text', 'Agregar Producto');
+    // Check add product button and export button
+    cy.get('.list-header button').contains('Agregar Producto').should('exist');
+    cy.get('.list-header button').contains('Exportar Inventario').should('exist');
 
     // Check search field
     cy.get('.search-container input').should('have.attr', 'placeholder', 'Nombre, código de barras...');
@@ -104,13 +105,13 @@ describe('Products Component', () => {
       cy.spy(win.history, 'pushState').as('navigate');
     });
 
-    // Click on the add product button
-    cy.get('.list-header button').click();
-    
+    // Click on the add product button (the one with routerLink, not the export button)
+    cy.get('.list-header button').contains('Agregar Producto').click();
+
     // Verify navigation to add product page
-    cy.get('@navigate').should('be.calledWith', 
-      Cypress.sinon.match.any, 
-      Cypress.sinon.match.any, 
+    cy.get('@navigate').should('be.calledWith',
+      Cypress.sinon.match.any,
+      Cypress.sinon.match.any,
       '/products/new'
     );
   });
