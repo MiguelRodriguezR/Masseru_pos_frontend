@@ -161,9 +161,10 @@ export class ProductListComponent implements OnInit, OnDestroy {
             },
             error: (err) => {
               console.error(err);
+              const errorMessage = err.error?.error || err.error?.msg || 'Error al eliminar el producto';
               Swal.fire(
                 'Error',
-                'Error al eliminar el producto',
+                errorMessage,
                 'error'
               );
               this.loading = false;
