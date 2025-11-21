@@ -183,10 +183,13 @@ export class StatsService {
     
     sales.forEach(sale => {
       sale.items.forEach((item: any) => {
-        if (item.product && item.product.purchaseCost) {
-          totalRevenue += item.salePrice * item.quantity;
-          totalCost += item.product.purchaseCost * item.quantity;
+        // Skip items with deleted products for cost calculation
+        if (!item.product || !item.product.purchaseCost) {
+          return;
         }
+
+        totalRevenue += item.salePrice * item.quantity;
+        totalCost += item.product.purchaseCost * item.quantity;
       });
     });
     
@@ -211,6 +214,11 @@ export class StatsService {
     
     sales.forEach(sale => {
       sale.items.forEach((item: any) => {
+        // Skip items with deleted products
+        if (!item.product || !item.product._id) {
+          return;
+        }
+
         if (!soldItems[item.product._id]) {
           soldItems[item.product._id] = 0;
         }
