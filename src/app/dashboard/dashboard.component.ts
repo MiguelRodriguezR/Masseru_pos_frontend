@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 import { StatsService, StatsFilter } from './stats.service';
 import { ProductService } from '../products/product.service';
 import { Product } from '../products/product.model';
+import { UserDataService } from '../shared/user-data.service';
 import { Subject, takeUntil, forkJoin } from 'rxjs';
 import { formatCurrency, formatDate, getCurrencySymbol } from '@angular/common';
 import Swal from 'sweetalert2';
@@ -51,7 +52,18 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   averageTicket = 0;
   inventoryValue = 0;
   inventoryTurnover = 0;
-  operativeExpensesPercentage = 0.3
+  operativeExpensesPercentage = 0.3;
+
+  // Nuevos indicadores financieros
+  friPercentage = 15;
+  inventoryRecoveryFund = 0;
+  withdrawableProfit = 0;
+  totalReinvestment = 0;
+
+  // Salud de inventario
+  idealInventoryValue = 0;
+  outOfStockCount = 0;
+  inventoryHealthPercentage = 0;
   
   // Top products
   topSellingProducts: any[] = [];
@@ -125,7 +137,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private statsService: StatsService,
     private productService: ProductService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private userDataService: UserDataService
   ) {
     this.filterForm = this.fb.group({
       startDate: [''],
@@ -135,9 +148,25 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   
   ngOnInit(): void {
+    const currentUser = this.userDataService.getCurrentUser();
+    this.friPercentage = currentUser?.settings?.friPercentage ?? 15;
+
+    // Subscribe to user changes to update FRI% dynamically
+    this.userDataService.currentUser$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(user => {
+        if (user) {
+          const newFri = user.settings?.friPercentage ?? 15;
+          if (newFri !== this.friPercentage) {
+            this.friPercentage = newFri;
+            this.calculateProfitMargins();
+          }
+        }
+      });
+
     this.loadProducts();
     this.loadAllStats();
-    
+
     // Listen for filter changes
     this.filterForm.valueChanges
       .pipe(takeUntil(this.destroy$))
@@ -225,12 +254,14 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       salesStats: this.statsService.getSalesStats(filter),
       productStats: this.statsService.getProductStats(filter),
       customerStats: this.statsService.getCustomerStats(filter),
-      posSessionStats: this.statsService.getPosSessionStats(filter)
+      posSessionStats: this.statsService.getPosSessionStats(filter),
+      operationalExpenseStats: this.statsService.getOperationalExpenseStats(filter)
     })
     .pipe(takeUntil(this.destroy$))
     .subscribe({
       next: (data) => {
         this.processSalesStats(data.salesStats);
+        this.processExpenseStats(data.operationalExpenseStats);
         this.processProductStats(data.productStats);
         this.processCustomerStats(data.customerStats);
         this.processPosSessionStats(data.posSessionStats);
@@ -429,6 +460,11 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     this.topSellingProducts = data.topSellingProducts || [];
     this.lowStockProducts = data.lowStockProducts || [];
     this.inventoryValue = data.inventoryValue || 0;
+    this.idealInventoryValue = data.idealInventoryValue || 0;
+    this.outOfStockCount = data.outOfStockCount || 0;
+    this.inventoryHealthPercentage = this.idealInventoryValue > 0
+      ? (this.inventoryValue / this.idealInventoryValue) * 100
+      : 0;
     
     // Process product data for charts
     if (this.topSellingProducts.length > 0) {
@@ -617,12 +653,20 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     const margins = this.statsService.calculateProfitMargins(this.salesStats.sales);
     
     this.grossProfit = margins.grossProfit;
-    
-    // Estimate net profit (simplified - in a real app you'd include more expenses)
-    // Assuming operating expenses are about 30% of gross profit
-    //const operatingExpenses = this.grossProfit * this.operativeExpensesPercentage;
+
+    // Ganancia Neta = Ganancia Bruta - Gastos Operacionales
     this.netProfit = this.grossProfit - this.totalOperativeExpenses;
-    
+
+    // FRI: % configurable de la ganancia neta (solo si hay ganancia positiva)
+    const friRate = this.friPercentage / 100;
+    this.inventoryRecoveryFund = this.netProfit > 0 ? this.netProfit * friRate : 0;
+
+    // Utilidad Retirable = Ganancia Neta - FRI
+    this.withdrawableProfit = this.netProfit - this.inventoryRecoveryFund;
+
+    // Reinversión Total = COGS del periodo + FRI
+    this.totalReinvestment = margins.totalCost + this.inventoryRecoveryFund;
+
     // Update profit margin chart data
     this.profitMarginChartData.datasets[0].data = [
       margins.totalCost,
@@ -649,22 +693,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   
   calculateReinvestmentSuggestion(): void {
-    // Simple reinvestment suggestion based on profit and inventory
-    // In a real app, this would be more sophisticated
-    if (this.netProfit <= 0 || !this.lowStockProducts || this.lowStockProducts.length === 0) {
-      return;
-    }
-    
-    // Suggest reinvesting 40% of net profit into inventory
-    const reinvestmentAmount = this.netProfit * 0.4;
-    
-    // Prioritize low stock products
-    const criticalProducts = this.getCriticalProductsText();
-    
-    if (criticalProducts) {
-      // This would be displayed in the UI
-      console.log(`Sugerencia: Reinvertir ${reinvestmentAmount.toLocaleString('es', {style: 'currency', currency: 'COP'})} en inventario, priorizando: ${criticalProducts}`);
-    }
+    // La reinversión ahora se calcula en calculateProfitMargins() como:
+    // totalReinvestment = COGS del periodo + FRI
+    // Se muestra directamente en el template
   }
   
   getCriticalProductsText(): string {

@@ -78,6 +78,20 @@
         [value]="netProfit.toLocaleString('es', {style: 'currency', currency: 'COP'})"
         [label]="'Después de gastos, considerando gastos en $' + (totalOperativeExpenses.toLocaleString('es', {style: 'currency', currency: 'COP'})) ">
       </app-summary-stat-card>
+
+      <!-- Inventory Recovery Fund (FRI) -->
+      <app-summary-stat-card
+        title="Fondo Recuperación Inv."
+        [value]="inventoryRecoveryFund.toLocaleString('es', {style: 'currency', currency: 'COP'})"
+        [label]="friPercentage + '% reservado - Intocable'">
+      </app-summary-stat-card>
+
+      <!-- Withdrawable Profit -->
+      <app-summary-stat-card
+        title="Utilidad Retirable"
+        [value]="withdrawableProfit.toLocaleString('es', {style: 'currency', currency: 'COP'})"
+        label="Disponible para el dueño">
+      </app-summary-stat-card>
     </div>
 
     <!-- Charts Section -->
@@ -120,13 +134,25 @@
 
     <!-- Inventory and POS Section -->
     <div class="dashboard-grid">
-      <!-- Inventory Status -->
-      <app-stat-card title="Inventario">
+      <!-- Inventory Health -->
+      <app-stat-card title="Salud de Inventario">
         <div class="stat-card">
-          <div class="stat-value">{{ inventoryValue.toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</div>
-          <div class="stat-label">Valor total</div>
+          <div class="stat-value">{{ inventoryHealthPercentage | number:'1.0-0' }}%</div>
+          <div class="stat-label">Cobertura de inventario</div>
         </div>
         <div class="stat-card" style="margin-top: 1rem;">
+          <div class="stat-value">{{ inventoryValue.toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</div>
+          <div class="stat-label">Valor actual</div>
+        </div>
+        <div class="stat-card" style="margin-top: 0.5rem;">
+          <div class="stat-value">{{ idealInventoryValue.toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</div>
+          <div class="stat-label">Valor ideal (basado en ventas)</div>
+        </div>
+        <div class="stat-card" style="margin-top: 0.5rem;">
+          <div class="stat-value">{{ outOfStockCount }}</div>
+          <div class="stat-label">Productos agotados</div>
+        </div>
+        <div class="stat-card" style="margin-top: 0.5rem;">
           <div class="stat-value">{{ inventoryTurnover | number:'1.1-2' }}</div>
           <div class="stat-label">Rotación de stock</div>
         </div>
@@ -150,16 +176,18 @@
       </app-stat-card>
     </div>
 
-    <!-- Reinvestment Suggestion -->
-    <div class="dashboard-grid" *ngIf="netProfit > 0 && lowStockProducts.length > 0">
-      <app-suggestion-card title="Sugerencia de Reinversión">
-        <p>
-          Basado en su ganancia neta actual de <strong>{{ netProfit.toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</strong>, 
-          se recomienda reinvertir aproximadamente <strong>{{ (netProfit * 0.4).toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</strong> 
-          en inventario.
-        </p>
+    <!-- Reinvestment Total Suggestion -->
+    <div class="dashboard-grid" *ngIf="totalReinvestment > 0">
+      <app-suggestion-card title="Reinversión Total Sugerida">
+        <p>Para mantener y mejorar tu stock, transfiere a proveedores:</p>
+        <div style="margin: 1rem 0;">
+          <div><strong>COGS del periodo:</strong> {{ (totalReinvestment - inventoryRecoveryFund).toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</div>
+          <div><strong>+ Fondo Recuperación ({{ friPercentage }}%):</strong> {{ inventoryRecoveryFund.toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</div>
+          <hr style="margin: 0.5rem 0;">
+          <div><strong>= Total a transferir:</strong> {{ totalReinvestment.toLocaleString('es', {style: 'currency', currency: 'COP'}) }}</div>
+        </div>
         <p *ngIf="lowStockProducts.length > 0">
-          <strong>Prioridad de reabastecimiento:</strong> 
+          <strong>Prioridad de reabastecimiento:</strong>
           {{ getCriticalProductsText() }}
         </p>
       </app-suggestion-card>

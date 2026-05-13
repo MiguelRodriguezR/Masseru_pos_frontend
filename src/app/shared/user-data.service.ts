@@ -104,6 +104,13 @@ export class UserDataService {
   }
 
   /**
+   * Update the cached current user data
+   */
+  updateCurrentUser(user: User): void {
+    this.currentUserSubject.next(user);
+  }
+
+  /**
    * Clear user data on logout
    */
   clearUserData(): void {

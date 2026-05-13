@@ -75,6 +75,20 @@
             </span>
           </div>
         </div>
+
+        <div class="info-card" style="margin-top: 1rem;">
+          <h3 class="card-title">Configuración del Negocio</h3>
+          <div class="info-row">
+            <span class="info-label">Fondo de Recuperación de Inventario:</span>
+            <span class="info-value">{{ user.settings?.friPercentage || 15 }}%</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label"></span>
+            <span class="info-value" style="font-size: 0.85rem; color: #666;">
+              Porcentaje de la Ganancia Neta reservado automáticamente para recuperar inventario agotado.
+            </span>
+          </div>
+        </div>
       </div>
 
       <!-- Edit Form -->
@@ -128,7 +142,23 @@
                 Si esta opción está desactivada, el usuario no podrá iniciar sesión en el sistema.
               </div>
             </div>
-            
+
+            <h3 class="card-title" style="margin-top: 1.5rem;">Configuración del Negocio</h3>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>% Fondo Recuperación Inventario (FRI)</mat-label>
+                <input matInput type="number" formControlName="friPercentage" min="0" max="100">
+                <mat-hint>Porcentaje de la Ganancia Neta reservado para recuperar inventario</mat-hint>
+                <mat-error *ngIf="userForm.get('friPercentage')?.hasError('min')">
+                  El porcentaje no puede ser negativo
+                </mat-error>
+                <mat-error *ngIf="userForm.get('friPercentage')?.hasError('max')">
+                  El porcentaje no puede ser mayor a 100
+                </mat-error>
+              </mat-form-field>
+            </div>
+
             <div class="form-actions">
               <button mat-button type="button" (click)="editMode = false">Cancelar</button>
               <button mat-raised-button color="primary" type="submit" [disabled]="userForm.invalid">Guardar Cambios</button>

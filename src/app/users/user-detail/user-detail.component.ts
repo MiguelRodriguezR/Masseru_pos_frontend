@@ -33,7 +33,8 @@ export class UserDetailComponent implements OnInit, OnDestroy {
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       role: ['', Validators.required],
-      approved: [false]
+      approved: [false],
+      friPercentage: [15, [Validators.min(0), Validators.max(100)]]
     });
   }
 
@@ -64,7 +65,10 @@ export class UserDetailComponent implements OnInit, OnDestroy {
         .subscribe({
           next: (data) => {
             this.user = data;
-            this.userForm.patchValue(data);
+            this.userForm.patchValue({
+              ...data,
+              friPercentage: data.settings?.friPercentage ?? 15
+            });
             this.loading = false;
           },
           error: (err) => {
@@ -84,14 +88,29 @@ export class UserDetailComponent implements OnInit, OnDestroy {
   onSubmit() {
     if(this.user && this.user._id && this.userForm.valid) {
       this.loading = true;
-      this.userService.updateUser(this.user._id, this.userForm.value)
+      const { friPercentage, ...formData } = this.userForm.value;
+      const updateData = {
+        ...formData,
+        settings: { friPercentage: friPercentage ?? 15 }
+      };
+      this.userService.updateUser(this.user._id, updateData)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
             this.loading = false;
             this.editMode = false;
             // Update local user data
-            this.user = { ...this.user, ...this.userForm.value };
+            const { friPercentage: fri, ...rest } = this.userForm.value;
+            this.user = {
+              ...this.user,
+              ...rest,
+              settings: { friPercentage: fri ?? 15 }
+            };
+            // Update cached user if editing the current logged-in user
+            const currentUserId = this.userDataService.getUserId();
+            if (this.user && this.user._id === currentUserId) {
+              this.userDataService.updateCurrentUser(this.user);
+            }
             Swal.fire({
               title: 'Éxito',
               text: 'Usuario actualizado correctamente',
